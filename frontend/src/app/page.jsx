@@ -23,10 +23,11 @@ export default function HomePage() {
         </div>
       </section>
 
-
       {/* Product Preview */}
       <section className="py-16 px-6 max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-12">Our Cups & Accessories</h2>
+        <h2 className="text-3xl font-bold text-center mb-12 !text-allpac">
+          Our Cups & Accessories
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {[
             {
@@ -48,7 +49,7 @@ export default function HomePage() {
             <div key={i} className="bg-white shadow-md rounded-xl overflow-hidden">
               <img src={item.image} alt={item.title} className="h-48 w-full object-cover" />
               <div className="p-4 text-center">
-                <h3 className="text-xl font-semibold">{item.title}</h3>
+                <h3 className="text-xl font-semibold !text-allpac">{item.title}</h3>
                 <a
                   href={item.link}
                   className="mt-3 inline-block text-red-600 hover:underline font-medium"
@@ -64,8 +65,10 @@ export default function HomePage() {
       {/* Why Choose Us */}
       <section className="bg-gray-100 py-16 px-6">
         <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-6">Why Choose Allpac?</h2>
-          <ul className="text-left list-disc pl-6 space-y-3 max-w-xl mx-auto">
+          <h2 className="text-3xl font-bold mb-6 !text-allpac">
+            Why Choose Allpac?
+          </h2>
+          <ul className="text-left list-disc pl-6 space-y-3 max-w-xl mx-auto !text-allpac">
             <li>Fast turnaround time for orders</li>
             <li>Fully customizable designs and branding</li>
             <li>Eco-compliant packaging options</li>
@@ -76,22 +79,36 @@ export default function HomePage() {
 
       {/* How It Works */}
       <section className="py-16 px-6 max-w-5xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-10">How It Works</h2>
+        <h2 className="text-3xl font-bold text-center mb-10 !text-allpac">
+          How It Works
+        </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
           <div>
             <div className="text-5xl text-red-600 mb-2">1</div>
-            <h3 className="font-semibold text-lg mb-1">Choose your cup size</h3>
-            <p className="text-sm">Pick from hot or cold sizes that match your needs.</p>
+            <h3 className="font-semibold text-lg mb-1 !text-allpac">
+              Choose your cup size
+            </h3>
+            <p className="text-sm !text-allpac">
+              Pick from hot or cold sizes that match your needs.
+            </p>
           </div>
           <div>
             <div className="text-5xl text-red-600 mb-2">2</div>
-            <h3 className="font-semibold text-lg mb-1">Upload or request a design</h3>
-            <p className="text-sm">Send us your artwork or ask our team for help.</p>
+            <h3 className="font-semibold text-lg mb-1 !text-allpac">
+              Upload or request a design
+            </h3>
+            <p className="text-sm !text-allpac">
+              Send us your artwork or ask our team for help.
+            </p>
           </div>
           <div>
             <div className="text-5xl text-red-600 mb-2">3</div>
-            <h3 className="font-semibold text-lg mb-1">We print and ship</h3>
-            <p className="text-sm">Get your custom cups delivered in no time.</p>
+            <h3 className="font-semibold text-lg mb-1 !text-allpac">
+              We print and ship
+            </h3>
+            <p className="text-sm !text-allpac">
+              Get your custom cups delivered in no time.
+            </p>
           </div>
         </div>
       </section>
