@@ -2,20 +2,27 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-white text-allpac">
       {/* Hero Section */}
-      <section className="text-center py-16 px-4 bg-gray-50">
-        <h1 className="text-4xl sm:text-5xl font-bold mb-4">
-          Custom-Printed Paper Cups Delivered Fast
-        </h1>
-        <p className="text-lg mb-6 max-w-xl mx-auto">
-          Print your brand on hot and cold paper cups with quick turnaround and low minimums.
-        </p>
-        <a
-          href="/products"
-          className="inline-block bg-red-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-red-700 transition"
-        >
-          Browse Products
-        </a>
+      <section
+        className="relative text-center py-24 px-4 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/images/hero-cups.png')" }}
+      >
+        <div className="absolute inset-0 bg-white/75 backdrop-blur-sm"></div>
+        <div className="relative z-10 max-w-3xl mx-auto">
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-allpac">
+            Custom-Printed Paper Cups Delivered Fast
+          </h1>
+          <p className="text-lg mb-6 max-w-xl mx-auto text-allpac">
+            Print your brand on hot and cold paper cups with quick turnaround and low minimums.
+          </p>
+          <a
+            href="/products"
+            className="inline-block bg-red-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-red-700 transition"
+          >
+            Browse Products
+          </a>
+        </div>
       </section>
+
 
       {/* Product Preview */}
       <section className="py-16 px-6 max-w-6xl mx-auto">
