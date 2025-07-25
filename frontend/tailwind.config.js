@@ -1,5 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: false,
+
   content: [
     "./src/**/*.{js,ts,jsx,tsx}", // already included in your config
   ],
