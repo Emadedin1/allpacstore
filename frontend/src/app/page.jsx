@@ -1,133 +1,76 @@
 export default function HomePage() {
+  const products = [
+    {
+      title: "10 oz Hot Cup",
+      image: "/images/paper-cups-cover.jpg",
+      link: "/products/10oz-hot",
+    },
+    {
+      title: "12 oz Hot Cup",
+      image: "/images/hot-cups.jpg",
+      link: "/products/12oz-hot",
+    },
+    {
+      title: "16 oz Hot Cup",
+      image: "/images/hot-cups.jpg",
+      link: "/products/16oz-hot",
+    },
+    {
+      title: "22 oz Cold Cup",
+      image: "/images/cold-cups.jpg",
+      link: "/products/22oz-cold",
+    },
+    {
+      title: "32 oz Cold Cup",
+      image: "/images/cold-cups.jpg",
+      link: "/products/32oz-cold",
+    },
+  ];
+
   return (
-    <main className="min-h-screen bg-white text-allpac">
-      {/* Hero Section */}
+    <main className="min-h-screen bg-white">
+      {/* Hero */}
       <section
         className="relative text-center py-24 px-4 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/hero-cups.png')" }}
       >
         <div className="absolute inset-0 bg-white/80 sm:bg-white/60 backdrop-blur-sm"></div>
-        <div className="relative z-10 max-w-3xl mx-auto">
-          <h1
-            className="text-4xl sm:text-5xl font-bold mb-4"
-            style={{ color: "#0d5694" }}
-          >
+        <div className="relative z-10 max-w-3xl mx-auto text-black">
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4">
             Custom-Printed Paper Cups Delivered Fast
           </h1>
-          <p
-            className="text-lg mb-6 max-w-xl mx-auto"
-            style={{ color: "#0d5694" }}
-          >
+          <p className="text-lg mb-6 max-w-xl mx-auto">
             Print your brand on hot and cold paper cups with quick turnaround and low minimums.
           </p>
           <a
-            href="/products"
+            href="#products"
             className="inline-block bg-red-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-red-700 transition"
           >
-            Browse Products
+            Shop Products
           </a>
         </div>
       </section>
 
-      {/* Product Preview */}
-      <section className="py-16 px-6 max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-12 !text-allpac">
-          Our Cups & Accessories
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-          {[
-            {
-              title: "Hot Cups",
-              image: "/images/hot-cups.jpg",
-              link: "/products",
-            },
-            {
-              title: "Cold Cups",
-              image: "/images/cold-cups.jpg",
-              link: "/products",
-            },
-            {
-              title: "Accessories",
-              image: "/images/sleeves.jpg",
-              link: "/products",
-            },
-          ].map((item, i) => (
-            <div key={i} className="bg-white shadow-md rounded-xl overflow-hidden">
-              <img src={item.image} alt={item.title} className="h-48 w-full object-cover" />
+      {/* Product Grid */}
+      <section id="products" className="py-16 px-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          {products.map((product, i) => (
+            <a
+              key={i}
+              href={product.link}
+              className="bg-white border shadow-sm rounded-xl overflow-hidden hover:shadow-md transition"
+            >
+              <img
+                src={product.image}
+                alt={product.title}
+                className="h-40 w-full object-cover"
+              />
               <div className="p-4 text-center">
-                <h3 className="text-xl font-semibold !text-allpac">{item.title}</h3>
-                <a
-                  href={item.link}
-                  className="mt-3 inline-block text-red-600 hover:underline font-medium"
-                >
-                  View {item.title}
-                </a>
+                <h3 className="text-md font-semibold text-allpac">{product.title}</h3>
               </div>
-            </div>
+            </a>
           ))}
         </div>
-      </section>
-
-      {/* Why Choose Us */}
-      <section className="bg-gray-100 py-16 px-6">
-        <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-6 !text-allpac">
-            Why Choose Allpac?
-          </h2>
-          <ul className="text-left list-disc pl-6 space-y-3 max-w-xl mx-auto !text-allpac">
-            <li>Fast turnaround time for orders</li>
-            <li>Fully customizable designs and branding</li>
-            <li>Eco-compliant packaging options</li>
-            <li>Canadian-based factory & shipping</li>
-          </ul>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="py-16 px-6 max-w-5xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-10 !text-allpac">
-          How It Works
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
-          <div>
-            <div className="text-5xl text-red-600 mb-2">1</div>
-            <h3 className="font-semibold text-lg mb-1 !text-allpac">
-              Choose your cup size
-            </h3>
-            <p className="text-sm !text-allpac">
-              Pick from hot or cold sizes that match your needs.
-            </p>
-          </div>
-          <div>
-            <div className="text-5xl text-red-600 mb-2">2</div>
-            <h3 className="font-semibold text-lg mb-1 !text-allpac">
-              Upload or request a design
-            </h3>
-            <p className="text-sm !text-allpac">
-              Send us your artwork or ask our team for help.
-            </p>
-          </div>
-          <div>
-            <div className="text-5xl text-red-600 mb-2">3</div>
-            <h3 className="font-semibold text-lg mb-1 !text-allpac">
-              We print and ship
-            </h3>
-            <p className="text-sm !text-allpac">
-              Get your custom cups delivered in no time.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="bg-red-600 text-white text-center py-12 px-6">
-        <h2 className="text-3xl font-bold mb-4">Ready to Print Your Cups?</h2>
-        <a
-          href="/products"
-          className="inline-block bg-white text-red-600 px-6 py-3 rounded-md font-semibold hover:bg-gray-100 transition"
-        >
-          Shop Paper Cups
-        </a>
       </section>
     </main>
   );
