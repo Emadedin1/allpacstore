@@ -8,10 +8,16 @@ export default function HomePage() {
       >
         <div className="absolute inset-0 bg-white/80 sm:bg-white/60 backdrop-blur-sm"></div>
         <div className="relative z-10 max-w-3xl mx-auto">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4 !text-allpac">
+          <h1
+            className="text-4xl sm:text-5xl font-bold mb-4"
+            style={{ color: "#0d5694" }}
+          >
             Custom-Printed Paper Cups Delivered Fast
           </h1>
-          <p className="text-lg mb-6 max-w-xl mx-auto !text-allpac">
+          <p
+            className="text-lg mb-6 max-w-xl mx-auto"
+            style={{ color: "#0d5694" }}
+          >
             Print your brand on hot and cold paper cups with quick turnaround and low minimums.
           </p>
           <a
