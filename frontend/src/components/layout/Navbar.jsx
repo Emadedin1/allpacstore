@@ -9,7 +9,10 @@ export default function Navbar() {
   return (
     <header className="bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold text-red-600">Allpac</Link>
+        <Link href="/">
+          <img src="/images/allpac-logo.png" alt="Allpac Logo" className="h-20 w-auto" />
+        </Link>
+
 
         <button
           className="sm:hidden text-gray-700"
