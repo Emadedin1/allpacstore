@@ -6,7 +6,7 @@ export default function HomePage() {
         className="relative text-center py-24 px-4 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/hero-cups.png')" }}
       >
-        <div className="absolute inset-0 bg-white/75 backdrop-blur-sm"></div>
+        <div className="absolute inset-0 bg-white/80 sm:bg-white/60 backdrop-blur-sm"></div>
         <div className="relative z-10 max-w-3xl mx-auto">
           <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-allpac">
             Custom-Printed Paper Cups Delivered Fast
