@@ -6,23 +6,24 @@ import { ShoppingCart, User } from "lucide-react";
 export default function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const buttonRef = useRef(null); // 🆕 Add ref for button
 
-  // ✅ Close user menu on outside click
+  // ✅ Close menu on outside click — but ignore clicks on menu or icon
   useEffect(() => {
     function handleClickOutside(event) {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target)
+      ) {
         setUserMenuOpen(false);
       }
     }
 
-    if (userMenuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
+    document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [userMenuOpen]);
+  }, []);
 
   return (
     <header className="bg-white shadow-md">
@@ -34,30 +35,29 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Nav and Icons */}
+        {/* Nav & Icons */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 w-full sm:w-auto sm:justify-end">
-          {/* Nav links */}
           <nav className="flex justify-center gap-4 text-sm sm:text-base text-allpac">
             <Link href="/products" className="hover:underline">Products</Link>
             <Link href="/about" className="hover:underline">About</Link>
             <Link href="/contact" className="hover:underline">Contact</Link>
           </nav>
 
-          {/* Icons */}
           <div className="flex justify-center sm:justify-end gap-4 items-center relative">
             <Link href="/cart" className="text-allpac hover:text-red-600">
               <ShoppingCart size={20} />
             </Link>
 
-            {/* User Icon */}
+            {/* 👤 User Icon */}
             <button
-              onClick={() => setUserMenuOpen(!userMenuOpen)}
+              ref={buttonRef}
+              onClick={() => setUserMenuOpen((prev) => !prev)}
               className="text-allpac hover:text-red-600"
             >
               <User size={20} />
             </button>
 
-            {/* Dropdown */}
+            {/* Menu */}
             {userMenuOpen && (
               <div
                 ref={menuRef}
@@ -67,7 +67,7 @@ export default function Navbar() {
                   <li><Link href="/login" onClick={() => setUserMenuOpen(false)}>Login / Create Account</Link></li>
                   <li><Link href="/account" onClick={() => setUserMenuOpen(false)}>My Account</Link></li>
                   <li><Link href="/order-tracking" onClick={() => setUserMenuOpen(false)}>Order Tracking</Link></li>
-                  <li><button className="w-full text-left" onClick={() => {/* logout logic */}}>Logout</button></li>
+                  <li><button className="w-full text-left" onClick={() => {/* logout */}}>Logout</button></li>
                 </ul>
               </div>
             )}
