@@ -10,7 +10,7 @@ export default function Navbar() {
     <header className="bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/">
-          <img src="/images/allpac-logo.png" alt="Allpac Logo" className="h-20 w-auto" />
+          <img src="/images/allpac-logo.png" alt="Allpac Logo" className="h-15 w-auto" />
         </Link>
 
 
