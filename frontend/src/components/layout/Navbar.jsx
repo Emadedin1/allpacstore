@@ -6,9 +6,9 @@ import { ShoppingCart, User } from "lucide-react";
 export default function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const menuRef = useRef(null);
-  const buttonRef = useRef(null); // 🆕 Add ref for button
+  const buttonRef = useRef(null);
 
-  // ✅ Close menu on outside click — but ignore clicks on menu or icon
+  // Close menu on outside click — but ignore clicks on menu or icon
   useEffect(() => {
     function handleClickOutside(event) {
       if (
@@ -64,10 +64,31 @@ export default function Navbar() {
                 className="absolute top-10 right-0 bg-white border shadow-md rounded-md p-4 z-50 min-w-[180px] text-sm"
               >
                 <ul className="space-y-2 text-allpac">
-                  <li><Link href="/login" onClick={() => setUserMenuOpen(false)}>Login / Create Account</Link></li>
-                  <li><Link href="/account" onClick={() => setUserMenuOpen(false)}>My Account</Link></li>
-                  <li><Link href="/order-tracking" onClick={() => setUserMenuOpen(false)}>Order Tracking</Link></li>
-                  <li><button className="w-full text-left" onClick={() => {/* logout */}}>Logout</button></li>
+                  <li>
+                    <Link href="/login" onClick={() => setUserMenuOpen(false)}>
+                      Login
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/register" onClick={() => setUserMenuOpen(false)}>
+                      Create Account
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/account" onClick={() => setUserMenuOpen(false)}>
+                      My Account
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/order-tracking" onClick={() => setUserMenuOpen(false)}>
+                      Order Tracking
+                    </Link>
+                  </li>
+                  <li>
+                    <button className="w-full text-left" onClick={() => {/* logout */}}>
+                      Logout
+                    </button>
+                  </li>
                 </ul>
               </div>
             )}
