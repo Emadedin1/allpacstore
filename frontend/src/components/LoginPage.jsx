@@ -46,11 +46,16 @@ const styles = {
     cursor: "pointer",
     transition: "background 0.2s",
   },
-  buttonAlt: {
-    background: "#eaeaea",
-    color: "#333",
-    border: "1px solid #ddd",
-    marginLeft: "4px",
+  buttonSwitch: {
+    background: "#fff",
+    color: "#0070f3",
+    border: "1px solid #0070f3",
+    fontWeight: 500,
+    padding: "8px 18px",
+    borderRadius: "6px",
+    marginLeft: "6px",
+    marginRight: "6px",
+    cursor: "pointer",
   },
   error: {
     color: "#e00",
@@ -168,10 +173,10 @@ export default function LoginPage({ mode: initialMode = "login" }) {
       <div style={styles.switch}>
         {mode === "login" ? (
           <span>
-            Don&apos;t have an account?
+            Don&apos;t have an account?{" "}
             <button
               type="button"
-              style={{ ...styles.button, ...styles.buttonAlt }}
+              style={styles.buttonSwitch}
               onClick={() => setMode("register")}
             >
               Create Account
@@ -179,10 +184,10 @@ export default function LoginPage({ mode: initialMode = "login" }) {
           </span>
         ) : (
           <span>
-            Already have an account?
+            Already have an account?{" "}
             <button
               type="button"
-              style={{ ...styles.button, ...styles.buttonAlt }}
+              style={styles.buttonSwitch}
               onClick={() => setMode("login")}
             >
               Login
