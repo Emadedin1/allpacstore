@@ -10,8 +10,7 @@ const cupList = [
     desc: 'Double-wall insulated hot cup for coffee or tea.',
     qty: 1000,
     price: 92,
-    image: '/cups/10oz.png',
-    pricePerCup: (92 / 1000).toFixed(3)
+    image: '/cups/10oz.png'
   },
   {
     size: '12 oz',
@@ -19,8 +18,7 @@ const cupList = [
     desc: 'Most popular size for cafes. Double-wall for insulation.',
     qty: 1000,
     price: 94,
-    image: '/cups/12oz.png',
-    pricePerCup: (94 / 1000).toFixed(3)
+    image: '/cups/12oz.png'
   },
   {
     size: '16 oz',
@@ -28,8 +26,7 @@ const cupList = [
     desc: 'Larger size for lattes and premium hot beverages.',
     qty: 1000,
     price: 96,
-    image: '/cups/16oz.png',
-    pricePerCup: (96 / 1000).toFixed(3)
+    image: '/cups/16oz.png'
   },
   {
     size: '22 oz',
@@ -37,8 +34,7 @@ const cupList = [
     desc: 'Perfect for soft drinks, smoothies, and cold beverages.',
     qty: 1000,
     price: 88,
-    image: '/cups/22oz.png',
-    pricePerCup: (88 / 1000).toFixed(3)
+    image: '/cups/22oz.png'
   },
   {
     size: '32 oz',
@@ -46,31 +42,25 @@ const cupList = [
     desc: 'Extra large cold cup, great for events or promotions.',
     qty: 1000,
     price: 90,
-    image: '/cups/32oz.png',
-    pricePerCup: (90 / 1000).toFixed(3)
+    image: '/cups/32oz.png'
   }
 ]
 
 export default function ProductSections() {
   return (
-    <div className="py-16 px-4 max-w-7xl mx-auto">
-      <h2 className="text-2xl font-bold text-center mb-8">All Our Cups</h2>
-      <div className="flex flex-wrap justify-center gap-6">
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-10 w-full max-w-5xl mx-auto place-items-center">
 
-
-        {cupList.map((cup, idx) => (
-          <CupCard
-            key={idx}
-            size={cup.size}
-            type={cup.type}
-            description={cup.desc}
-            qtyPerCase={cup.qty}
-            pricePerCase={cup.price}
-            pricePerCup={cup.pricePerCup}
-            imageSrc={cup.image}
-          />
-        ))}
-      </div>
+      {cupList.map((cup, index) => (
+        <CupCard
+          key={index}
+          size={cup.size}
+          type={cup.type}
+          desc={cup.desc}
+          qty={cup.qty}
+          price={cup.price}
+          image={cup.image}
+        />
+      ))}
     </div>
   )
 }
