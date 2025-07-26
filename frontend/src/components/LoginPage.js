@@ -77,7 +77,7 @@ export default function LoginPage() {
       <div style={{ marginTop: 20 }}>
         {mode === "login" ? (
           <span>
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <button type="button" onClick={() => setMode("register")}>
               Create Account
             </button>
