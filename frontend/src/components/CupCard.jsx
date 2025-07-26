@@ -36,7 +36,7 @@ export default function CupCard({ size, type, desc, qty, price, image }) {
             placeholder="Enter total cups"
             className="w-full p-1 border border-gray-300 rounded mb-1 text-sm"
           />
-          <button className="w-full bg-blue-600 text-white py-1 rounded hover:bg-blue-700 transition text-sm font-semibold">
+          <button className="w-full bg-yellow-600 text-white py-1 rounded hover:bg-blue-700 transition text-sm font-semibold">
             Add to Cart
           </button>
         </div>
