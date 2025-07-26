@@ -19,9 +19,9 @@ export default function CupCard({ size, type, desc, qty, price, image }) {
       {/* Right: Text */}
       <div className="p-3 flex flex-col justify-between flex-1 text-sm">
         <div>
-          <h2 className="text-lg font-bold">{size}</h2>        
+          <h2 className="text-3xl font-bold">{size}</h2>
           <p className="text-base text-gray-700">{type} Cup</p>
-          <p className="text-sm text-gray-600 mt-1">{desc}</p> 
+          <p className="text-sm text-gray-600 mt-1">{desc}</p>
 
           <div className="text-sm font-semibold mt-2 space-y-1">
             <p><span className="font-bold">Qty/Case:</span> {qty}</p>
@@ -33,10 +33,10 @@ export default function CupCard({ size, type, desc, qty, price, image }) {
         <div className="mt-2">
           <input
             type="number"
-            placeholder="Enter total cups"
+            placeholder="Enter Case Quantity"
             className="w-full p-1 border border-gray-300 rounded mb-1 text-sm"
           />
-          <button className="w-full bg-yellow-600 text-white py-1 rounded hover:bg-blue-700 transition text-sm font-semibold">
+          <button className="w-full bg-[#FFD814] text-black py-1 rounded hover:bg-blue-700 transition text-sm font-semibold">
             Add to Cart
           </button>
         </div>

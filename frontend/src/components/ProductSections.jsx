@@ -5,7 +5,7 @@ import CupCard from './CupCard'
 
 const cupList = [
   {
-    size: '10 oz',
+    size: '10 oz Cup',
     type: 'Hot',
     desc: 'Double-wall insulated hot cup for coffee or tea.',
     qty: 1000,
@@ -13,7 +13,7 @@ const cupList = [
     image: '/cups/10oz.png'
   },
   {
-    size: '12 oz',
+    size: '12 oz Cup',
     type: 'Hot',
     desc: 'Most popular size for cafes. Double-wall for insulation.',
     qty: 1000,
@@ -21,7 +21,7 @@ const cupList = [
     image: '/cups/12oz.png'
   },
   {
-    size: '16 oz',
+    size: '16 oz Cup',
     type: 'Hot',
     desc: 'Larger size for lattes and premium hot beverages.',
     qty: 1000,
@@ -29,7 +29,7 @@ const cupList = [
     image: '/cups/16oz.png'
   },
   {
-    size: '22 oz',
+    size: '22 oz Cup',
     type: 'Cold',
     desc: 'Perfect for soft drinks, smoothies, and cold beverages.',
     qty: 1000,
@@ -37,7 +37,7 @@ const cupList = [
     image: '/cups/22oz.png'
   },
   {
-    size: '32 oz',
+    size: '32 oz Cup',
     type: 'Cold',
     desc: 'Extra large cold cup, great for events or promotions.',
     qty: 1000,
