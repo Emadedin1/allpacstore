@@ -1,27 +1,16 @@
-require('dotenv').config();          // load .env first!
+require('dotenv').config(); // Load environment variables
 
 const mongoose = require('mongoose');
-
-// Connect to MongoDB using Mongoose
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => {
-  console.log('✅ Mongoose connected');
-}).catch(err => {
-  console.error('❌ Mongoose connection error:', err);
-});
-
 const express = require('express');
-const getDB   = require('./lib/db');
+const getDB = require('./lib/db');
 
 const app = express();
 app.use(express.json());
 
-// example route using native driver
+// Example route using native MongoDB driver (for legacy code)
 app.get('/api/products', async (req, res) => {
   try {
-    const db = await getDB();                       // grab the shared connection
+    const db = await getDB(); // native connection
     const products = await db.collection('products').find().toArray();
     res.json(products);
   } catch (err) {
@@ -30,13 +19,17 @@ app.get('/api/products', async (req, res) => {
   }
 });
 
-getDB()                                             // first call opens the conn
-  .then(() => {
-    const port = process.env.PORT || 4000;
-    app.listen(port, () => console.log(`🚀 API listening on ${port}`));
-  })
-  .catch(err => {
-    console.error('❌ MongoDB connection failed:', err);
-    process.exit(1);
-  });
-
+// Connect to MongoDB using Mongoose and start Express server
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => {
+  console.log('✅ Mongoose connected');
+  const port = process.env.PORT || 4000;
+  app.listen(port, () => console.log(`🚀 API listening on ${port}`));
+})
+.catch(err => {
+  console.error('❌ Mongoose connection error:', err);
+  process.exit(1);
+});
