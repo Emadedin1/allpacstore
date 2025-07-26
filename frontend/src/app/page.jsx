@@ -1,7 +1,8 @@
 'use client'
 
 import React from 'react'
-import ProductSections from '@/components/ProductSections'
+import ProductSections from '../components/ProductSections'
+
 
 export default function Home() {
   return (
