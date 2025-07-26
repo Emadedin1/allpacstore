@@ -1,4 +1,17 @@
 require('dotenv').config();          // load .env first!
+
+const mongoose = require('mongoose');
+
+// Connect to MongoDB using Mongoose
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => {
+  console.log('✅ Mongoose connected');
+}).catch(err => {
+  console.error('❌ Mongoose connection error:', err);
+});
+
 const express = require('express');
 const getDB   = require('./lib/db');
 
