@@ -7,6 +7,10 @@ const getDB = require('./lib/db');
 const app = express();
 app.use(express.json());
 
+// Add your authentication routes here!
+const authRoutes = require('./routes/auth');
+app.use('/api/auth', authRoutes);
+
 // Example route using native MongoDB driver (for legacy code)
 app.get('/api/products', async (req, res) => {
   try {
