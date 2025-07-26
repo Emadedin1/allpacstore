@@ -2,6 +2,75 @@
 
 import React, { useState } from "react";
 
+const styles = {
+  container: {
+    maxWidth: 400,
+    margin: "40px auto",
+    padding: "32px",
+    borderRadius: "12px",
+    background: "#fff",
+    boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+    fontFamily: "Segoe UI, Roboto, Arial, sans-serif",
+  },
+  title: {
+    textAlign: "center",
+    marginBottom: 24,
+    fontWeight: 600,
+    fontSize: "1.5rem",
+    color: "#333",
+  },
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "16px",
+  },
+  input: {
+    padding: "10px 12px",
+    borderRadius: "6px",
+    border: "1px solid #ddd",
+    fontSize: "1rem",
+    outline: "none",
+    transition: "border-color 0.2s",
+  },
+  inputFocus: {
+    borderColor: "#0070f3",
+  },
+  button: {
+    padding: "10px 0",
+    borderRadius: "6px",
+    border: "none",
+    background: "#0070f3",
+    color: "#fff",
+    fontWeight: 600,
+    fontSize: "1rem",
+    cursor: "pointer",
+    transition: "background 0.2s",
+  },
+  buttonAlt: {
+    background: "#eaeaea",
+    color: "#333",
+    border: "1px solid #ddd",
+    marginLeft: "4px",
+  },
+  error: {
+    color: "#e00",
+    textAlign: "center",
+    fontSize: "0.98rem",
+    marginTop: "4px",
+  },
+  success: {
+    color: "#090",
+    textAlign: "center",
+    fontSize: "0.98rem",
+    marginTop: "4px",
+  },
+  switch: {
+    marginTop: 18,
+    textAlign: "center",
+    fontSize: "0.98rem",
+  },
+};
+
 export default function LoginPage({ mode: initialMode = "login" }) {
   const [mode, setMode] = useState(initialMode);
   const [email, setEmail] = useState("");
@@ -9,6 +78,7 @@ export default function LoginPage({ mode: initialMode = "login" }) {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [focus, setFocus] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,7 +104,6 @@ export default function LoginPage({ mode: initialMode = "login" }) {
             ? "Login successful!"
             : "Account created! You can now log in."
         );
-        // Optionally redirect or update UI here
       } else {
         setError(data.error || "Failed");
       }
@@ -44,14 +113,22 @@ export default function LoginPage({ mode: initialMode = "login" }) {
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: "auto" }}>
-      <h2>{mode === "login" ? "Login" : "Create Account"}</h2>
-      <form onSubmit={handleSubmit}>
+    <div style={styles.container}>
+      <div style={styles.title}>
+        {mode === "login" ? "Login" : "Create Account"}
+      </div>
+      <form style={styles.form} onSubmit={handleSubmit}>
         {mode === "register" && (
           <input
             type="text"
             placeholder="Name"
             value={name}
+            style={{
+              ...styles.input,
+              ...(focus === "name" ? styles.inputFocus : {}),
+            }}
+            onFocus={() => setFocus("name")}
+            onBlur={() => setFocus(null)}
             onChange={(e) => setName(e.target.value)}
             required
           />
@@ -60,6 +137,12 @@ export default function LoginPage({ mode: initialMode = "login" }) {
           type="email"
           placeholder="Email"
           value={email}
+          style={{
+            ...styles.input,
+            ...(focus === "email" ? styles.inputFocus : {}),
+          }}
+          onFocus={() => setFocus("email")}
+          onBlur={() => setFocus(null)}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
@@ -67,27 +150,41 @@ export default function LoginPage({ mode: initialMode = "login" }) {
           type="password"
           placeholder="Password"
           value={password}
+          style={{
+            ...styles.input,
+            ...(focus === "password" ? styles.inputFocus : {}),
+          }}
+          onFocus={() => setFocus("password")}
+          onBlur={() => setFocus(null)}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit">
+        <button type="submit" style={styles.button}>
           {mode === "login" ? "Login" : "Register"}
         </button>
-        {error && <div style={{ color: "red" }}>{error}</div>}
-        {success && <div style={{ color: "green" }}>{success}</div>}
+        {error && <div style={styles.error}>{error}</div>}
+        {success && <div style={styles.success}>{success}</div>}
       </form>
-      <div style={{ marginTop: 20 }}>
+      <div style={styles.switch}>
         {mode === "login" ? (
           <span>
-            Don&apos;t have an account?{" "}
-            <button type="button" onClick={() => setMode("register")}>
+            Don&apos;t have an account?
+            <button
+              type="button"
+              style={{ ...styles.button, ...styles.buttonAlt }}
+              onClick={() => setMode("register")}
+            >
               Create Account
             </button>
           </span>
         ) : (
           <span>
-            Already have an account?{" "}
-            <button type="button" onClick={() => setMode("login")}>
+            Already have an account?
+            <button
+              type="button"
+              style={{ ...styles.button, ...styles.buttonAlt }}
+              onClick={() => setMode("login")}
+            >
               Login
             </button>
           </span>
