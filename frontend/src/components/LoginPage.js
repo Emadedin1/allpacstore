@@ -1,9 +1,7 @@
 import React, { useState } from "react";
+
 export default function LoginPage({ mode: initialMode = "login" }) {
   const [mode, setMode] = useState(initialMode);
-  
-export default function LoginPage() {
-  const [mode, setMode] = useState("login"); // "login" or "register"
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
