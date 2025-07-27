@@ -9,6 +9,8 @@
     "express": "^5.1.0",
     "mongodb": "^6.18.0",
     "mongoose": "^8.16.4"
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.0"
   },
   "scripts": {
     "start": "node index.js",
