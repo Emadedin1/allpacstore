@@ -8,95 +8,118 @@ export default function Navbar() {
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
 
-  // Close menu on outside click — but ignore clicks on menu or icon
+  // close dropdown on outside click
   useEffect(() => {
-    function handleClickOutside(event) {
+    function handleClickOutside(e) {
       if (
         menuRef.current &&
-        !menuRef.current.contains(event.target) &&
+        !menuRef.current.contains(e.target) &&
         buttonRef.current &&
-        !buttonRef.current.contains(event.target)
+        !buttonRef.current.contains(e.target)
       ) {
         setUserMenuOpen(false);
       }
     }
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
-    <header className="bg-white shadow-md">
-      <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-
-
+    <header className="bg-white shadow-md relative">
+      {/* Row 1: logo + (desktop: nav+icons) or (mobile: icons) */}
+      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex justify-start w-full sm:w-auto mb-3 sm:mb-0">
-          <Link href="/">
-            <img src="/images/allpac-logo.png" alt="Allpac Logo" className="h-12 w-auto" />
-          </Link>
-        </div>
+        <Link href="/">
+          <img
+            src="/images/allpac-logo.png"
+            alt="Allpac Logo"
+            className="h-12 w-auto"
+          />
+        </Link>
 
-        {/* Nav & Icons */}
-        <div className="flex items-center gap-4 justify-center sm:justify-end flex-1 flex-wrap">
-          <nav className="flex gap-4 text-sm sm:text-base text-allpac">
+        {/* Desktop: nav links + icons */}
+        <div className="hidden sm:flex items-center space-x-6">
+          <nav className="flex space-x-6 text-allpac text-sm">
             <Link href="/products" className="hover:underline">Products</Link>
             <Link href="/about" className="hover:underline">About</Link>
             <Link href="/contact" className="hover:underline">Contact</Link>
           </nav>
+          <Link href="/cart" className="text-allpac hover:text-red-600">
+            <ShoppingCart size={20} />
+          </Link>
+          <button
+            ref={buttonRef}
+            onClick={() => setUserMenuOpen((prev) => !prev)}
+            className="text-allpac hover:text-red-600"
+          >
+            <User size={20} />
+          </button>
+        </div>
 
-          <div className="flex justify-center sm:justify-end gap-4 items-center relative">
-            <Link href="/cart" className="text-allpac hover:text-red-600">
-              <ShoppingCart size={20} />
-            </Link>
-
-            {/* 👤 User Icon */}
-            <button
-              ref={buttonRef}
-              onClick={() => setUserMenuOpen((prev) => !prev)}
-              className="text-allpac hover:text-red-600"
-            >
-              <User size={20} />
-            </button>
-
-            {/* Menu */}
-            {userMenuOpen && (
-              <div
-                ref={menuRef}
-                className="absolute top-10 right-0 bg-white border shadow-md rounded-md p-4 z-50 min-w-[180px] text-sm"
-              >
-                <ul className="space-y-2 text-allpac">
-                  <li>
-                    <Link href="/login" onClick={() => setUserMenuOpen(false)}>
-                      Login
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/register" onClick={() => setUserMenuOpen(false)}>
-                      Create Account
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/account" onClick={() => setUserMenuOpen(false)}>
-                      My Account
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/order-tracking" onClick={() => setUserMenuOpen(false)}>
-                      Order Tracking
-                    </Link>
-                  </li>
-                  <li>
-                    <button className="w-full text-left" onClick={() => {/* logout */ }}>
-                      Logout
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            )}
-          </div>
+        {/* Mobile: icons only */}
+        <div className="flex sm:hidden items-center space-x-4">
+          <Link href="/cart" className="text-allpac hover:text-red-600">
+            <ShoppingCart size={20} />
+          </Link>
+          <button
+            ref={buttonRef}
+            onClick={() => setUserMenuOpen((prev) => !prev)}
+            className="text-allpac hover:text-red-600"
+          >
+            <User size={20} />
+          </button>
         </div>
       </div>
+
+      {/* Row 2: mobile-only nav links */}
+      <nav className="sm:hidden bg-white">
+        <div className="max-w-7xl mx-auto px-4 pb-4 flex justify-center space-x-6 text-allpac text-sm">
+          <Link href="/products" className="hover:underline">Products</Link>
+          <Link href="/about" className="hover:underline">About</Link>
+          <Link href="/contact" className="hover:underline">Contact</Link>
+        </div>
+      </nav>
+
+      {/* User dropdown */}
+      {userMenuOpen && (
+        <div
+          ref={menuRef}
+          className="absolute top-16 right-4 bg-white border shadow-md rounded-md p-4 z-50 min-w-[180px] text-sm"
+        >
+          <ul className="space-y-2 text-allpac">
+            <li>
+              <Link href="/login" onClick={() => setUserMenuOpen(false)}>
+                Login
+              </Link>
+            </li>
+            <li>
+              <Link href="/register" onClick={() => setUserMenuOpen(false)}>
+                Create Account
+              </Link>
+            </li>
+            <li>
+              <Link href="/account" onClick={() => setUserMenuOpen(false)}>
+                My Account
+              </Link>
+            </li>
+            <li>
+              <Link href="/order-tracking" onClick={() => setUserMenuOpen(false)}>
+                Order Tracking
+              </Link>
+            </li>
+            <li>
+              <button
+                className="w-full text-left"
+                onClick={() => {
+                  /* logout */
+                }}
+              >
+                Logout
+              </button>
+            </li>
+          </ul>
+        </div>
+      )}
     </header>
   );
 }
