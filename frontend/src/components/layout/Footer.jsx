@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-300 pt-10 pb-6 mt-16">
+    <footer className="bg-gray-900 text-gray-300 pt-10 pb-6 mt-0">
       <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-3 gap-10">
 
         {/* Logo & Tagline */}
@@ -37,7 +37,7 @@ export default function Footer() {
       </div>
 
       {/* Bottom copyright */}
-      <div className="mt-10 border-t border-gray-700 pt-4 text-center text-xs text-gray-500">
+      <div className="mt-0 border-t border-gray-700 pt-4 text-center text-xs text-gray-500">
         &copy; {new Date().getFullYear()} Allpac. All rights reserved.
       </div>
     </footer>
