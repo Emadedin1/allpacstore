@@ -27,11 +27,11 @@ export default function Navbar() {
 
   return (
     <header className="bg-white shadow-md">
-      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between gap-4 flex-wrap">
+      <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 
 
         {/* Logo */}
-        <div className="flex justify-center sm:justify-start mb-3 sm:mb-0">
+        <div className="flex justify-start w-full sm:w-auto mb-3 sm:mb-0">
           <Link href="/">
             <img src="/images/allpac-logo.png" alt="Allpac Logo" className="h-12 w-auto" />
           </Link>
@@ -39,7 +39,7 @@ export default function Navbar() {
 
         {/* Nav & Icons */}
         <div className="flex items-center gap-4 justify-center sm:justify-end flex-1 flex-wrap">
-          <nav className="flex justify-center gap-4 text-sm sm:text-base text-allpac">
+          <nav className="flex gap-4 text-sm sm:text-base text-allpac">
             <Link href="/products" className="hover:underline">Products</Link>
             <Link href="/about" className="hover:underline">About</Link>
             <Link href="/contact" className="hover:underline">Contact</Link>
