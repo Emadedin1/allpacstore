@@ -75,14 +75,7 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Mobile: nav links centered under the logo+icons */}
-        <div className="sm:hidden w-full mt-3 flex justify-center">
-          <nav className="flex space-x-4 text-allpac text-sm">
-            <Link href="/products" className="hover:underline">Products</Link>
-            <Link href="/about" className="hover:underline">About</Link>
-            <Link href="/contact" className="hover:underline">Contact</Link>
-          </nav>
-        </div>
+  
 
       </div>
 
