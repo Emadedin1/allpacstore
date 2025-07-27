@@ -78,8 +78,6 @@ export default function Navbar() {
           </button>
         </div>
 
-
-
       </div>
 
       {/* Row 2: mobile-only nav links */}
