@@ -38,14 +38,19 @@ export default function CupCard({ cup }) {
   return (
     <div
       onClick={handleCardClick}
-      className="flex items-stretch bg-blue-50 rounded-xl shadow-md overflow-hidden w-full max-w-[620px] cursor-pointer hover:shadow-lg transition-shadow"
+      className="
+    flex flex-col md:flex-row items-stretch
+    bg-blue-50 rounded-xl shadow-md overflow-hidden
+    w-full max-w-[620px] sm:max-w-full
+    cursor-pointer hover:shadow-lg transition-shadow
+  "
     >
       {/* Left: product image */}
-      <div className="flex-shrink-0 w-[220px]">
+      <div className="w-full h-[220px] md:w-[220px] md:h-auto">
         <img
           src={cup.image}
           alt={`${cup.size} Cup`}
-          className="flex-shrink-0 w-[220px] h-full object-cover"
+          className="w-full h-full object-cover"
         />
       </div>
       {/* Right: all the text, price, input + button */}
