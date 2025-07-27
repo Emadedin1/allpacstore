@@ -3,18 +3,22 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-300 py-10 mt-16">
-      <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-3 gap-8">
+    <footer className="bg-gray-900 text-gray-300 pt-10 pb-6 mt-16">
+      <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-3 gap-10">
+
+        {/* Logo & Tagline */}
         <div>
-          <h3 className="text-lg font-semibold text-white mb-2">Allpac</h3>
-          <p className="text-sm">
-            Custom-printed paper cups delivered fast. Eco-friendly options. Built with quality.
+          <h3 className="text-xl font-bold text-white mb-2">Allpac</h3>
+          <p className="text-sm leading-relaxed">
+            Custom-printed paper cups delivered fast. <br />
+            Eco-friendly options. Built with quality.
           </p>
         </div>
 
+        {/* Navigation Links */}
         <div>
-          <h4 className="text-md font-semibold text-white mb-2">Navigation</h4>
-          <ul className="space-y-1 text-sm">
+          <h4 className="text-lg font-semibold text-white mb-3">Quick Links</h4>
+          <ul className="space-y-2 text-sm">
             <li><Link href="/" className="hover:text-white">Home</Link></li>
             <li><Link href="/products" className="hover:text-white">Products</Link></li>
             <li><Link href="/about" className="hover:text-white">About</Link></li>
@@ -24,14 +28,16 @@ export default function Footer() {
           </ul>
         </div>
 
+        {/* Contact Info */}
         <div>
-          <h4 className="text-md font-semibold text-white mb-2">Contact</h4>
-          <p className="text-sm">Windsor, ON, Canada</p>
-          <p className="text-sm">Email: info@allpacgroup.com</p>
+          <h4 className="text-lg font-semibold text-white mb-3">Contact</h4>
+          <p className="text-sm mb-1">📍 Windsor, Ontario, Canada</p>
+          <p className="text-sm">✉️ <a href="mailto:info@allpacgroup.com" className="hover:text-white">info@allpacgroup.com</a></p>
         </div>
       </div>
 
-      <div className="text-center text-xs text-gray-500 mt-10">
+      {/* Bottom copyright */}
+      <div className="mt-10 border-t border-gray-700 pt-4 text-center text-xs text-gray-500">
         &copy; {new Date().getFullYear()} Allpac. All rights reserved.
       </div>
     </footer>
