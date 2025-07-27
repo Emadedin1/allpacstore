@@ -17,8 +17,9 @@ export default function Home() {
             Custom-Printed Paper Cups Delivered Fast
           </h1>
           <p className="text-lg mb-6 max-w-xl mx-auto text-black">
-            Print your brand on hot and cold paper cups with quick turnaround and low minimums.
+            Based in Canada 🇨🇦 — print your brand on hot and cold paper cups with fast turnaround and low minimums.
           </p>
+
           <a
             href="#product-sections"
             className="inline-block bg-[#FFD814] text-black px-6 py-3 rounded-md font-semibold hover:bg-Yellow-700 transition"
