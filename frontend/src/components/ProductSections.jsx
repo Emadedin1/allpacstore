@@ -1,66 +1,67 @@
-'use client'
+// src/components/ProductSections.jsx
+"use client";
 
-import React from 'react'
-import CupCard from './CupCard'
+import CupCard from "./CupCard";
 
-const cupList = [
+const cups = [
   {
-    size: '10 oz Cup',
-    type: 'Hot',
-    desc: 'Double-wall insulated hot cup for coffee or tea.',
-    qty: 1000,
-    price: 92,
-    image: '/cups/10oz.png'
+    slug: "10oz",
+    size: "10 oz",
+    type: "Hot Cup",
+    desc: "Double-wall insulated hot cup for coffee or tea.",
+    image: "/cups/10oz.png",
+    qtyCase: 1000,
+    priceCase: 92,       // total $/case
   },
   {
-    size: '12 oz Cup',
-    type: 'Hot',
-    desc: 'Most popular size for cafes. Double-wall for insulation.',
-    qty: 1000,
-    price: 94,
-    image: '/cups/12oz.png'
+    slug: "12oz",
+    size: "12 oz",
+    type: "Hot Cup",
+    desc: "Most popular size for cafes. Double-wall for insulation.",
+    image: "/cups/12oz.png",
+    qtyCase: 1000,
+    priceCase: 94,
   },
   {
-    size: '16 oz Cup',
-    type: 'Hot',
-    desc: 'Larger size for lattes and premium hot beverages.',
-    qty: 1000,
-    price: 96,
-    image: '/cups/16oz.png'
+    slug: "16oz",
+    size: "16 oz",
+    type: "Hot Cup",
+    desc: "Larger size for lattes and premium hot beverages.",
+    image: "/cups/16oz.png",
+    qtyCase: 1000,
+    priceCase: 96,
   },
   {
-    size: '22 oz Cup',
-    type: 'Cold',
-    desc: 'Perfect for soft drinks, smoothies, and cold beverages.',
-    qty: 1000,
-    price: 88,
-    image: '/cups/22oz.png'
+    slug: "22oz",
+    size: "22 oz",
+    type: "Cold Cup",
+    desc: "Perfect for soft drinks, smoothies, and cold beverages.",
+    image: "/cups/22oz.png",
+    qtyCase: 1000,
+    priceCase: 88,
   },
   {
-    size: '32 oz Cup',
-    type: 'Cold',
-    desc: 'Extra large cold cup, great for events or promotions.',
-    qty: 1000,
-    price: 90,
-    image: '/cups/32oz.png'
-  }
-]
+    slug: "32oz",
+    size: "32 oz",
+    type: "Cold Cup",
+    desc: "Extra large cold cup, great for events or promotions.",
+    image: "/cups/32oz.png",
+    qtyCase: 1000,
+    priceCase: 90,
+  },
+];
 
 export default function ProductSections() {
   return (
-<div className="grid grid-cols-1 sm:grid-cols-2 gap-10 w-full max-w-5xl mx-auto place-items-center">
-
-      {cupList.map((cup, index) => (
-        <CupCard
-          key={index}
-          size={cup.size}
-          type={cup.type}
-          desc={cup.desc}
-          qty={cup.qty}
-          price={cup.price}
-          image={cup.image}
-        />
+    <div
+      className={`
+        grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
+        gap-x-80 gap-y-6 max-w-7xl mx-auto px-4 place-items-center
+      `}
+    >
+      {cups.map((cup) => (
+        <CupCard key={cup.slug} cup={cup} />
       ))}
     </div>
-  )
+  );
 }

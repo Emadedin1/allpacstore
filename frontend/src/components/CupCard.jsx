@@ -1,46 +1,101 @@
-'use client'
+// src/components/CupCard.jsx
+"use client";
 
-import React from 'react'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-export default function CupCard({ size, type, desc, qty, price, image }) {
-  const pricePerCup = (price / qty).toFixed(3)
+export default function CupCard({ cup }) {
+  // ─── State & router ───
+  const [caseQty, setCaseQty] = useState("");
+  const router = useRouter();
 
+  // ─── Pricing logic ───
+  const pricePerCup = cup.priceCase / cup.qtyCase;
+  const subtotal = caseQty
+    ? (caseQty * pricePerCup).toFixed(2)
+    : "0.00";
+
+  // ─── Stubbed cart actions ───
+  const addItem = (item, qty) => {
+    console.log("ADD TO CART:", item.slug, "×", qty);
+  };
+  const openCart = () => {
+    console.log("OPEN CART PANEL");
+  };
+
+  // ─── Handlers ───
+  const handleCardClick = () => {
+    router.push(`/products/${cup.slug}`);
+  };
+
+  const handleAddToCart = (e) => {
+    e.stopPropagation();             // prevent the outer click
+    addItem(cup, Number(caseQty) || 1);
+    openCart();
+  };
+
+  // ─── JSX ───
   return (
-    <div className="flex bg-blue-50 rounded-xl shadow-md overflow-hidden w-[500px] h-[270px]">
-      {/* Left: Image */}
-      <div className="flex items-center justify-center bg-white w-[260px] h-[270px]">
-        <img
-          src={image}
-          alt={`${size} ${type} cup`}
-          className="w-full h-full object-cover"
-        />
-      </div>
+    <div
+      onClick={handleCardClick}
+      className="
+        m-0 flex bg-blue-50 rounded-xl shadow-md
+        overflow-hidden w-[500px] max-w-3xl
+        cursor-pointer hover:shadow-lg transition-shadow
+      "
+    >
+      {/* Left: product image */}
+      <img
+        src={cup.image}
+        alt={`${cup.size} Cup`}
+        className="w-[220px] h-[300px] object-cover"
+      />
 
-      {/* Right: Text */}
-      <div className="p-3 flex flex-col justify-between flex-1 text-sm">
+      {/* Right: all the text, price, input + button */}
+      <div className="p-4 flex flex-col justify-between flex-1">
+        {/* Title / type / description */}
         <div>
-          <h2 className="text-3xl font-bold">{size}</h2>
-          <p className="text-base text-gray-700">{type} Cup</p>
-          <p className="text-sm text-gray-600 mt-1">{desc}</p>
-
-          <div className="text-sm font-semibold mt-2 space-y-1">
-            <p><span className="font-bold">Qty/Case:</span> {qty}</p>
-            <p><span className="font-bold">Price/Case:</span> ${price}</p>
-            <p><span className="font-bold">Price/Cup:</span> ${pricePerCup}</p>
-          </div>
+          <h2 className="text-lg font-bold mb-1">
+            {cup.size} Cup
+          </h2>
+          <p className="text-base mb-1">{cup.type}</p>
+          <p className="text-sm mb-4">{cup.desc}</p>
         </div>
 
-        <div className="mt-2">
-          <input
-            type="number"
-            placeholder="Enter Case Quantity"
-            className="w-full p-1 border border-gray-300 rounded mb-1 text-sm"
-          />
-          <button className="w-full bg-[#FFD814] text-black py-1 rounded hover:bg-blue-700 transition text-sm font-semibold">
-            Add to Cart
-          </button>
+        {/* Price per cup & subtotal */}
+        <div>
+          <p className="text-2xl font-bold mb-1">
+            ${pricePerCup.toFixed(3)}/Cup
+          </p>
+          <p className="text-sm font-semibold">
+            Subtotal: ${subtotal}
+          </p>
         </div>
+
+        {/* Quantity input */}
+        <input
+          onClick={e => e.stopPropagation()}
+          type="number"
+          min="0"
+          value={caseQty}
+          onChange={(e) => setCaseQty(e.target.value)}
+          placeholder="Enter Case Quantity"
+          className="mt-2 p-2 border border-gray-300 rounded-md text-sm"
+
+        />
+
+        {/* Add to Cart button */}
+        <button
+          onClick={handleAddToCart}
+          className="
+            w-full py-2 mt-2
+            bg-[#FFD814] rounded-md
+            font-semibold text-sm
+          "
+        >
+          Add to Cart
+        </button>
       </div>
     </div>
-  )
+  );
 }
