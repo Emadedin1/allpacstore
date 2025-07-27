@@ -63,9 +63,12 @@ export default function Navbar() {
 
         {/* Mobile: icons only, stay on logo's row */}
         <div className="flex sm:hidden items-center space-x-4">
-          <Link href="/cart" className="text-allpac hover:text-red-600">
+          <button
+            onClick={openCart}
+            className="text-allpac hover:text-red-600 no-close"
+          >
             <ShoppingCart size={20} />
-          </Link>
+          </button>
           <button
             ref={buttonRef}
             onClick={() => setUserMenuOpen((prev) => !prev)}
@@ -75,14 +78,7 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Mobile: nav links centered under the logo+icons */}
-        <div className="sm:hidden w-full mt-3 flex justify-center">
-          <nav className="flex space-x-4 text-allpac text-sm">
-            <Link href="/products" className="hover:underline">Products</Link>
-            <Link href="/about" className="hover:underline">About</Link>
-            <Link href="/contact" className="hover:underline">Contact</Link>
-          </nav>
-        </div>
+
 
       </div>
 
