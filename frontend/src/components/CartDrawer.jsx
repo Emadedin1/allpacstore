@@ -14,6 +14,8 @@ export default function CartDrawer() {
     } = useCart();
     const drawerRef = useRef(null);
 
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+
     useEffect(() => {
         function handleClickOutside(e) {
             // if drawer is open, and click is neither inside drawer nor on a .no-close element:
@@ -37,6 +39,8 @@ export default function CartDrawer() {
         0
     ).toFixed(2);
 
+    
+
     return (
 
 
@@ -44,12 +48,13 @@ export default function CartDrawer() {
         <div
             ref={drawerRef}
             className={`
-        fixed top-0 right-0 h-full w-80 z-50
-        bg-white shadow-xl
-        transform transition-transform duration-300
-        ${isOpen ? "translate-x-0" : "translate-x-full"}
-        flex flex-col
-      `}
+                fixed z-50 bg-white shadow-xl transform transition-transform duration-300 flex flex-col
+                        
+                ${isMobile
+                    ? `${isOpen ? "translate-y-0" : "translate-y-full"} bottom-0 w-full h-1/2`
+                    : `${isOpen ? "translate-x-0" : "translate-x-full"} top-0 right-0 w-80 h-full`
+                }
+              `}
         >
             {/* Header */}
             <div className="p-4 border-b flex justify-between items-center">
