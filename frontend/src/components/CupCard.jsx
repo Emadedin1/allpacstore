@@ -76,10 +76,11 @@ export default function CupCard({ cup }) {
         <input
           onClick={e => e.stopPropagation()}
           type="number"
-          min="0"
+          min={300}
+          step={100}
           value={caseQty}
           onChange={(e) => setCaseQty(e.target.value)}
-          placeholder="Enter Case Quantity"
+          placeholder="Enter Cup Quantity"
           className="mt-2 p-2 border border-gray-300 rounded-md text-sm"
 
         />
