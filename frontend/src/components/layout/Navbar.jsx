@@ -27,7 +27,9 @@ export default function Navbar() {
 
   return (
     <header className="bg-white shadow-md">
-      <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center">
+      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between gap-4 flex-wrap">
+
+
         {/* Logo */}
         <div className="flex justify-center sm:justify-start mb-3 sm:mb-0">
           <Link href="/">
@@ -36,7 +38,7 @@ export default function Navbar() {
         </div>
 
         {/* Nav & Icons */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4 w-full sm:w-auto sm:justify-end">
+        <div className="flex items-center gap-4 justify-center sm:justify-end flex-1 flex-wrap">
           <nav className="flex justify-center gap-4 text-sm sm:text-base text-allpac">
             <Link href="/products" className="hover:underline">Products</Link>
             <Link href="/about" className="hover:underline">About</Link>
@@ -85,7 +87,7 @@ export default function Navbar() {
                     </Link>
                   </li>
                   <li>
-                    <button className="w-full text-left" onClick={() => {/* logout */}}>
+                    <button className="w-full text-left" onClick={() => {/* logout */ }}>
                       Logout
                     </button>
                   </li>
