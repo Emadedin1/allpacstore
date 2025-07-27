@@ -8,7 +8,7 @@ export default function Home() {
     <main className="min-h-screen bg-white text-allpac">
       {/* Hero Section */}
       <section
-        className="relative text-center py-24 px-4 bg-cover bg-center bg-no-repeat"
+        className="relative text-center py-14 px-4 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/hero-cups.png')" }}
       >
         <div className="absolute inset-0 bg-white/80 sm:bg-white/60 backdrop-blur-sm"></div>
@@ -21,7 +21,7 @@ export default function Home() {
           </p>
           <a
             href="#product-sections"
-            className="inline-block bg-yellow-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-blue-700 transition"
+            className="inline-block bg-[#FFD814] text-black px-6 py-3 rounded-md font-semibold hover:bg-Yellow-700 transition"
           >
             Browse Products
           </a>
