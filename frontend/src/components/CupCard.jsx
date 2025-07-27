@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 export default function CupCard({ cup }) {
   // ─── State & router ───
-  const [caseQty, setCaseQty] = useState("");
+  const [caseQty, setCaseQty] = useState("300");
   const router = useRouter();
 
   // ─── Pricing logic ───
@@ -38,21 +38,18 @@ export default function CupCard({ cup }) {
   return (
     <div
       onClick={handleCardClick}
-      className="
-        m-0 flex bg-blue-50 rounded-xl shadow-md
-        overflow-hidden w-[500px] max-w-3xl
-        cursor-pointer hover:shadow-lg transition-shadow
-      "
+      className="flex items-stretch bg-blue-50 rounded-xl shadow-md overflow-hidden w-full max-w-[620px] cursor-pointer hover:shadow-lg transition-shadow"
     >
       {/* Left: product image */}
-      <img
-        src={cup.image}
-        alt={`${cup.size} Cup`}
-        className="w-[220px] h-[300px] object-cover"
-      />
-
+      <div className="flex-shrink-0 w-[220px]">
+        <img
+          src={cup.image}
+          alt={`${cup.size} Cup`}
+          className="flex-shrink-0 w-[220px] h-full object-cover"
+        />
+      </div>
       {/* Right: all the text, price, input + button */}
-      <div className="p-4 flex flex-col justify-between flex-1">
+      <div className="p-3 pr-10 flex flex-col justify-between flex-1 min-w-0">
         {/* Title / type / description */}
         <div>
           <h2 className="text-lg font-bold mb-1">

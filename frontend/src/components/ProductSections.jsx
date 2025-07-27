@@ -54,11 +54,17 @@ const cups = [
 export default function ProductSections() {
   return (
     <div
-      className={`
-        grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
-        gap-x-80 gap-y-6 max-w-7xl mx-auto px-4 place-items-center
-      `}
+      className="
+    grid
+    grid-cols-1         /* 1 col on all small/mobile widths */
+    md:grid-cols-2      /* 2 cols once viewport ≥768px */
+    xl:grid-cols-3      /* 3 cols once viewport ≥1024px */
+    gap-x-6 gap-y-8
+    max-w-7xl mx-auto px-4
+    place-items-start
+  "
     >
+
       {cups.map((cup) => (
         <CupCard key={cup.slug} cup={cup} />
       ))}
