@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema({
   email: {
@@ -23,4 +23,5 @@ const UserSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('User', UserSchema);
+// Prevent model overwrite in dev/hot-reload
+export default mongoose.models.User || mongoose.model("User", UserSchema);
