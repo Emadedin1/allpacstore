@@ -3,11 +3,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCart } from "../context/CartContext";
 
 export default function CupCard({ cup }) {
   // ─── State & router ───
   const [caseQty, setCaseQty] = useState("300");
   const router = useRouter();
+  const { addItem, openCart } = useCart();
 
   // ─── Pricing logic ───
   const pricePerCup = cup.priceCase / cup.qtyCase;
@@ -16,22 +18,15 @@ export default function CupCard({ cup }) {
     : "0.00";
 
   // ─── Stubbed cart actions ───
-  const addItem = (item, qty) => {
-    console.log("ADD TO CART:", item.slug, "×", qty);
-  };
-  const openCart = () => {
-    console.log("OPEN CART PANEL");
-  };
+  function handleAddToCart(e) {
+    e.stopPropagation();
+    addItem(cup, Number(caseQty) || 1);
+    openCart();
+  }
 
   // ─── Handlers ───
   const handleCardClick = () => {
     router.push(`/products/${cup.slug}`);
-  };
-
-  const handleAddToCart = (e) => {
-    e.stopPropagation();             // prevent the outer click
-    addItem(cup, Number(caseQty) || 1);
-    openCart();
   };
 
   // ─── JSX ───
@@ -93,7 +88,7 @@ export default function CupCard({ cup }) {
           className="
             w-full py-2 mt-2
             bg-[#FFD814] rounded-md
-            font-semibold text-sm
+            font-semibold text-sm no-close
           "
         >
           Add to Cart

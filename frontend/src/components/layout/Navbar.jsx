@@ -2,11 +2,13 @@
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { ShoppingCart, User } from "lucide-react";
+import { useCart } from "../../context/CartContext";
 
 export default function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
+  const { openCart } = useCart();
 
   // close dropdown on outside click
   useEffect(() => {
@@ -44,9 +46,12 @@ export default function Navbar() {
             <Link href="/about" className="hover:underline">About</Link>
             <Link href="/contact" className="hover:underline">Contact</Link>
           </nav>
-          <Link href="/cart" className="text-allpac hover:text-red-600">
+          <button
+            onClick={openCart}
+            className="text-allpac hover:text-red-600 no-close"
+          >
             <ShoppingCart size={20} />
-          </Link>
+          </button>
           <button
             ref={buttonRef}
             onClick={() => setUserMenuOpen((prev) => !prev)}
@@ -56,7 +61,7 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Mobile: icons only */}
+        {/* Mobile: icons only, stay on logo's row */}
         <div className="flex sm:hidden items-center space-x-4">
           <Link href="/cart" className="text-allpac hover:text-red-600">
             <ShoppingCart size={20} />
@@ -69,6 +74,16 @@ export default function Navbar() {
             <User size={20} />
           </button>
         </div>
+
+        {/* Mobile: nav links centered under the logo+icons */}
+        <div className="sm:hidden w-full mt-3 flex justify-center">
+          <nav className="flex space-x-4 text-allpac text-sm">
+            <Link href="/products" className="hover:underline">Products</Link>
+            <Link href="/about" className="hover:underline">About</Link>
+            <Link href="/contact" className="hover:underline">Contact</Link>
+          </nav>
+        </div>
+
       </div>
 
       {/* Row 2: mobile-only nav links */}
