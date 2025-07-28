@@ -2,7 +2,8 @@
 import { useCart } from "../context/CartContext";
 import { X } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+
 
 export default function CartDrawer() {
     const {
@@ -14,7 +15,15 @@ export default function CartDrawer() {
     } = useCart();
     const drawerRef = useRef(null);
 
-    const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
+    const [isMobile, setIsMobile] = useState(null);
+
+    useLayoutEffect(() => {
+        if (typeof window !== "undefined") {
+            setIsMobile(window.innerWidth < 640);
+        }
+    }, []);
+
+
 
     useEffect(() => {
         function handleClickOutside(e) {
@@ -39,7 +48,7 @@ export default function CartDrawer() {
         0
     ).toFixed(2);
 
-    
+    if (isMobile === null) return null;
 
     return (
 
