@@ -17,7 +17,7 @@ export default function Home() {
             Custom-Printed Paper Cups Delivered Fast
           </h1>
           <p className="text-lg mb-6 max-w-xl mx-auto text-black">
-            Based in Canada 🇨🇦 —  custom cups delivered fast, with low minimums and great pricing.
+            Based in Canada 🇨🇦 — custom cups delivered fast, with low minimums and premium quality.
           </p>
 
           <a
