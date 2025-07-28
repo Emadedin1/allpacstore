@@ -1,4 +1,4 @@
-// app/cart/page.jsx
+// src/app/cart/page.jsx
 "use client";
 
 import { useCart } from "../../context/CartContext";
@@ -9,84 +9,119 @@ export default function CartPage() {
   const { cartItems, updateItemQty, removeItem } = useCart();
 
   const handleQtyChange = (slug, delta) => {
-    const item = cartItems.find((item) => item.slug === slug);
+    const item = cartItems.find((i) => i.slug === slug);
     if (!item) return;
-    const newQty = item.quantity + delta;
-    if (newQty > 0) updateItemQty(slug, newQty);
+    const nextQty = item.quantity + delta;
+    if (nextQty >= 300) updateItemQty(slug, nextQty);
   };
+
+  // Calculate subtotal
+  const subtotal = cartItems
+    .reduce((sum, i) => sum + (i.priceCase / i.qtyCase) * i.quantity, 0)
+    .toFixed(2);
 
   if (cartItems.length === 0) {
     return (
       <div className="p-6 text-center">
         <h2 className="text-xl font-semibold">Your cart is empty</h2>
-        <Link href="/products" className="text-blue-500 underline mt-4 inline-block">
-          Browse products
+        <Link href="/products" className="text-blue-600 hover:underline mt-4 inline-block">
+          Continue Shopping
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Your Cart</h2>
-
-      <div className="space-y-6">
-        {cartItems.map((item, index) => (
-          <div
-            key={`${item.slug}-${index}`}
-            className="border p-4 rounded-lg shadow-sm flex items-center justify-between"
-          >
-            <div>
-              <h3 className="text-lg font-semibold">{item.size} Cup</h3>
-              <p className="text-sm text-gray-500">
-                ${(item.priceCase / item.qtyCase).toFixed(3)}/cup
-              </p>
-              <div className="flex items-center mt-2 gap-2">
-                <button
-                  onClick={() => handleQtyChange(item.slug, -100)}
-                  disabled={item.quantity <= 300}
-                  className={`p-1 border rounded ${item.quantity <= 300 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
-                    }`}
-                >
-                  <Minus size={16} />
-                </button>
-                <span>{item.quantity}</span>
-                <button
-                  onClick={() => handleQtyChange(item.slug, 100)}
-                  className="p-1 border rounded cursor-pointer"
-                >
-                  <Plus size={16} />
-                </button>
-              </div>
-            </div>
-            <div className="flex flex-col items-end">
-              <span className="font-semibold">
-                ${((item.priceCase / item.qtyCase) * item.quantity).toFixed(2)}
-              </span>
-              <button
-                onClick={() => removeItem(item.slug)}
-                className="text-red-500 mt-2 cursor-pointer"
-              >
-                <X size={16} />
-              </button>
-            </div>
-          </div>
-        ))}
+    <div className="p-6 max-w-5xl mx-auto">
+      {/* Header with continue shopping link */}
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">Your Cart</h2>
+        <Link href="/products" className="text-blue-600 hover:underline">
+          &larr; Continue Shopping
+        </Link>
       </div>
 
-      {/* Checkout Button */}
-      <div className="mt-10 text-right">
-        <Link href="/checkout">
-          <button
-            disabled={cartItems.some((item) => item.quantity < 300)}
-            className={`px-6 py-2 rounded text-white ${cartItems.some((item) => item.quantity < 300)
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-black hover:bg-gray-800 cursor-pointer"
-              }`}
-          >
-            Checkout
-          </button>
-        </Link>
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* ─── Left: Items List ─────────────────────────────── */}
+        <div className="flex-1 space-y-4">
+          {cartItems.map((item, idx) => {
+            const pricePerCup = item.priceCase / item.qtyCase;
+            const lineTotal = (pricePerCup * item.quantity).toFixed(2);
+
+            return (
+              <div
+                key={`${item.slug}-${idx}`}
+                className="border rounded-lg p-4 flex gap-4"
+              >
+                {/* Product Image */}
+                <img
+                  src={item.image}
+                  alt={`${item.size} oz cup`}
+                  className="w-24 h-24 object-cover rounded"
+                />
+
+                {/* Info & Quantity Controls */}
+                <div className="flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold">{item.size} oz Cup</h3>
+                    <p className="text-sm text-gray-500">
+                      ${pricePerCup.toFixed(3)}/cup · {item.qtyCase} per case
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleQtyChange(item.slug, -100)}
+                      disabled={item.quantity <= 300}
+                      className={`p-1 border rounded ${
+                        item.quantity <= 300
+                          ? "opacity-50 cursor-not-allowed"
+                          : "cursor-pointer"
+                      }`}
+                    >
+                      <Minus size={16} />
+                    </button>
+                    <span>{item.quantity}</span>
+                    <button
+                      onClick={() => handleQtyChange(item.slug, 100)}
+                      className="p-1 border rounded cursor-pointer"
+                    >
+                      <Plus size={16} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Price & Remove */}
+                <div className="flex flex-col items-end justify-between">
+                  <span className="font-semibold">${lineTotal}</span>
+                  <button
+                    onClick={() => removeItem(item.slug)}
+                    className="text-red-600 cursor-pointer"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* ─── Right: Sticky Summary ───────────────────────── */}
+        <div className="lg:w-80">
+          <div className="sticky top-24 border rounded p-4 bg-white space-y-2">
+            <div className="text-lg font-semibold">Subtotal</div>
+            <div className="text-2xl font-bold">${subtotal}</div>
+            <p className="text-sm text-gray-600">Tax: Calculated at checkout</p>
+            <p className="text-sm text-gray-600">Shipping: Calculated at checkout</p>
+            <p className="text-xs text-gray-500 italic">
+              Final total and charges shown at checkout
+            </p>
+            <Link href="/checkout">
+              <button className="mt-4 w-full bg-black text-white py-2 rounded hover:bg-gray-800 cursor-pointer">
+                Proceed to Checkout
+              </button>
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );
