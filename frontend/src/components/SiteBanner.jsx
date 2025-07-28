@@ -33,7 +33,7 @@ export default function SiteBanner() {
         left: 0,
         zIndex: 9999,
         background: '#0070F3',
-        color: '#222',
+        color: '#ffffff',
         padding: '8px 0',
         textAlign: 'center',
         fontWeight: 'bold',
