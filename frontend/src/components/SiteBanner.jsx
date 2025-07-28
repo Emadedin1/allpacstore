@@ -19,7 +19,7 @@ const bannerStyle = {
 export default function ShippingBanner() {
   return (
     <div style={bannerStyle}>
-      Free Shipping for All Orders in Windsor, ON.
+      Free Shipping for All Orders in Windsor, ON
     </div>
   );
 }
