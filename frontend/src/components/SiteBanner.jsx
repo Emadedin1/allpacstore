@@ -10,11 +10,11 @@ export default function SiteBanner() {
       const currentScrollY = window.scrollY;
 
       if (currentScrollY <= 0) {
-        setShow(true); // Always show at the top
+        setShow(true);
       } else if (currentScrollY > lastScrollY.current) {
-        setShow(false); // Scrolling down
+        setShow(false);
       } else {
-        setShow(true); // Scrolling up
+        setShow(true);
       }
 
       lastScrollY.current = currentScrollY;
@@ -29,17 +29,21 @@ export default function SiteBanner() {
       style={{
         width: '100%',
         position: 'fixed',
-        top: show ? 0 : -60, // Slide out of view when not shown
+        top: show ? 0 : -48,
         left: 0,
         zIndex: 9999,
         background: '#0070F3',
         color: '#ffffff',
-        padding: '8px 0',
+        padding: '10px 0',
         textAlign: 'center',
-        fontWeight: 'bold',
-        fontSize: '16px',
-        boxShadow: '0 2px 6px 0 rgba(0,0,0,0.03)',
+        fontFamily: `-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif`,
+        fontWeight: 400, // Regular
+        fontSize: '15px',
+        letterSpacing: '0.02em',
+        boxShadow: '0 2px 8px 0 rgba(0,0,0,0.04)',
+        borderBottom: '1px solid #f5e89e',
         transition: 'top 0.3s',
+        lineHeight: 1.5,
       }}
     >
       Free Shipping on All Orders in Windsor, ON!
