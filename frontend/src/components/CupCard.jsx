@@ -7,7 +7,7 @@ import { useCart } from "../context/CartContext";
 
 export default function CupCard({ cup }) {
   // ─── State & router ───
-  const [caseQty, setCaseQty] = useState("300");
+  const [caseQty, setCaseQty] = useState("");
   const router = useRouter();
   const { addItem, openCart } = useCart();
 
@@ -71,29 +71,33 @@ export default function CupCard({ cup }) {
 
         {/* Quantity input */}
         <input
-          onClick={e => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
           type="number"
           min={300}
           step={100}
           value={caseQty}
           onChange={(e) => setCaseQty(e.target.value)}
-          placeholder="Enter Cup Quantity"
+          placeholder="(min. 300) Qty"
           className="mt-2 p-2 border border-gray-300 rounded-md text-sm"
-
         />
+
+        {/* Show warning if less than 300 and not empty */}
+        {caseQty && caseQty < 300 && (
+          <p className="text-xs text-red-600 mt-1">Minimum order is 300 cups.</p>
+        )}
 
         {/* Add to Cart button */}
         <button
           onClick={handleAddToCart}
-          className="
-            w-full py-2 mt-2
-            bg-[#FFD814] rounded-md
-            font-semibold text-sm no-close
-            cursor-pointer
-          "
+          disabled={caseQty < 300}
+          className={`
+    w-full py-2 mt-2 rounded-md font-semibold text-sm no-close
+    ${caseQty >= 300 ? "bg-[#FFD814] cursor-pointer" : "bg-gray-300 cursor-not-allowed"}
+  `}
         >
           Add to Cart
         </button>
+
       </div>
     </div>
   );
