@@ -13,8 +13,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} !bg-white !text-black`}>
       <body className="antialiased">
-        <ShippingBanner /> {/* <-- Add this */}
-        <div style={{ paddingTop: 40 }} /> {/* <-- Add this for spacing */}
+        <ShippingBanner />
+        <div style={{ paddingTop: 40 }} />
         <CartProvider>
           <Navbar />
           <ClientCartDrawer />
@@ -24,3 +24,4 @@ export default function RootLayout({ children }) {
       </body>
     </html>
   );
+}
