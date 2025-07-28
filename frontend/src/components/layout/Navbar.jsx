@@ -7,17 +7,19 @@ import { useCart } from "../../context/CartContext";
 export default function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const menuRef = useRef(null);
-  const buttonRef = useRef(null);
+  // Separate refs for desktop and mobile user buttons
+  const desktopUserButtonRef = useRef(null);
+  const mobileUserButtonRef = useRef(null);
   const { openCart } = useCart();
 
-  // close dropdown on outside click
+  // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(e) {
       if (
         menuRef.current &&
         !menuRef.current.contains(e.target) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(e.target)
+        (!desktopUserButtonRef.current || !desktopUserButtonRef.current.contains(e.target)) &&
+        (!mobileUserButtonRef.current || !mobileUserButtonRef.current.contains(e.target))
       ) {
         setUserMenuOpen(false);
       }
@@ -27,7 +29,10 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header className="bg-white shadow-md relative">
+    <header
+      className="bg-white shadow-md relative"
+      style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
+    >
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link href="/">
@@ -40,7 +45,7 @@ export default function Navbar() {
 
         {/* Desktop: nav links + icons */}
         <div className="hidden sm:flex items-center space-x-8">
-          <nav className="flex space-x-8 text-allpac text-base font-semibold">
+          <nav className="flex space-x-4 text-allpac text-base font-semibold">
             <Link
               href="/products"
               className="px-4 py-2 rounded-lg hover:bg-gray-100 transition text-lg"
@@ -72,7 +77,7 @@ export default function Navbar() {
             <ShoppingCart size={30} />
           </button>
           <button
-            ref={buttonRef}
+            ref={desktopUserButtonRef}
             onClick={() => setUserMenuOpen((prev) => !prev)}
             className="text-allpac hover:text-red-600 cursor-pointer ml-2"
             style={{ padding: "10px" }}
@@ -82,7 +87,7 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Mobile: icons only, stay on logo's row */}
+        {/* Mobile: icons only */}
         <div className="flex sm:hidden items-center space-x-6">
           <button
             onClick={openCart}
@@ -92,7 +97,7 @@ export default function Navbar() {
             <ShoppingCart size={30} />
           </button>
           <button
-            ref={buttonRef}
+            ref={mobileUserButtonRef}
             onClick={() => setUserMenuOpen((prev) => !prev)}
             className="text-allpac hover:text-red-600 cursor-pointer"
             aria-label="Account"
@@ -104,7 +109,7 @@ export default function Navbar() {
 
       {/* Row 2: mobile-only nav links */}
       <nav className="sm:hidden bg-white">
-        <div className="max-w-7xl mx-auto px-4 pb-4 flex justify-center space-x-6 text-allpac text-base font-semibold">
+        <div className="max-w-7xl mx-auto px-4 pb-4 flex justify-center space-x-4 text-allpac text-base font-semibold">
           <Link
             href="/products"
             className="px-4 py-2 rounded-lg hover:bg-gray-100 transition text-lg"
@@ -133,8 +138,12 @@ export default function Navbar() {
       {userMenuOpen && (
         <div
           ref={menuRef}
-          // ...rest of your dropdown logic
-        />
+          className="absolute right-4 top-[70px] bg-white shadow-lg rounded-lg py-2 w-48 z-50"
+        >
+          <Link href="/account/orders" className="block px-4 py-2 hover:bg-gray-100">Order History</Link>
+          <Link href="/account/create" className="block px-4 py-2 hover:bg-gray-100">Create Account</Link>
+          <Link href="/account/login" className="block px-4 py-2 hover:bg-gray-100">Login</Link>
+        </div>
       )}
     </header>
   );
