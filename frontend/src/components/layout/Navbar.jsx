@@ -48,14 +48,14 @@ export default function Navbar() {
           </nav>
           <button
             onClick={openCart}
-            className="text-allpac hover:text-red-600 no-close"
+            className="text-allpac hover:text-red-600 no-close cursor-pointer"
           >
             <ShoppingCart size={20} />
           </button>
           <button
             ref={buttonRef}
             onClick={() => setUserMenuOpen((prev) => !prev)}
-            className="text-allpac hover:text-red-600"
+            className="text-allpac hover:text-red-600 cursor-pointer"
           >
             <User size={20} />
           </button>
@@ -65,14 +65,14 @@ export default function Navbar() {
         <div className="flex sm:hidden items-center space-x-4">
           <button
             onClick={openCart}
-            className="text-allpac hover:text-red-600 no-close"
+            className="text-allpac hover:text-red-600 no-close cursor-pointer"
           >
             <ShoppingCart size={20} />
           </button>
           <button
             ref={buttonRef}
             onClick={() => setUserMenuOpen((prev) => !prev)}
-            className="text-allpac hover:text-red-600"
+            className="text-allpac hover:text-red-600 cursor-pointer"
           >
             <User size={20} />
           </button>
@@ -118,7 +118,7 @@ export default function Navbar() {
             </li>
             <li>
               <button
-                className="w-full text-left"
+                className="w-full text-left cursor-pointer"
                 onClick={() => {
                   /* logout */
                 }}
