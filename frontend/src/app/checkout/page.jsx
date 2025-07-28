@@ -45,7 +45,7 @@ export default function CheckoutPage() {
         </div>
 
         {/* Place Order */}
-        <button className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+        <button className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 cursor-pointer">
           Place Order
         </button>
       </form>

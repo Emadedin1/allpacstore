@@ -68,11 +68,18 @@ export default function CartDrawer() {
             {/* Header */}
             <div className="p-4 border-b flex justify-between items-center">
                 <h2 className="text-lg font-bold">Your Cart</h2>
-                <button onClick={closeCart}>
+                <button onClick={closeCart}
+                    className="cursor-pointer">
                     <X size={20} />
                 </button>
             </div>
-
+            <Link
+                href="/cart"
+                onClick={closeCart}
+                className="mt-4 bg-black text-white text-center py-3 rounded hover:bg-gray-800 mx-4 mb-4"
+            >
+                Go to Cart
+            </Link>
             {/* Items */}
             <div className="p-4 flex-1 overflow-y-auto space-y-4">
                 {cartItems.length === 0 ? (
@@ -107,7 +114,7 @@ export default function CartDrawer() {
                                         />
                                         <button
                                             onClick={() => removeItem(item.slug)}
-                                            className="text-red-600 text-xs hover:underline"
+                                            className="text-red-600 text-xs hover:underline cursor-pointer"
                                         >
                                             Remove
                                         </button>
@@ -122,6 +129,7 @@ export default function CartDrawer() {
                 )}
             </div>
 
+
             {/* Footer */}
             <div className="p-4 border-t">
                 <div className="flex justify-between mb-4 font-semibold">
@@ -129,7 +137,7 @@ export default function CartDrawer() {
                     <span>${total}</span>
                 </div>
                 <Link href="/checkout">
-                    <button className="w-full bg-[#FFD814] py-2 rounded font-semibold">
+                    <button className="w-full bg-[#FFD814] py-2 rounded font-semibold cursor-pointer">
                         Checkout
                     </button>
                 </Link>

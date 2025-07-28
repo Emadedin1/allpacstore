@@ -89,6 +89,7 @@ export default function CupCard({ cup }) {
             w-full py-2 mt-2
             bg-[#FFD814] rounded-md
             font-semibold text-sm no-close
+            cursor-pointer
           "
         >
           Add to Cart
