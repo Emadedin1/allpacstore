@@ -3,7 +3,8 @@ import "./globals.css";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import { CartProvider } from "../context/CartContext";
-import ClientCartDrawer from "../components/layout/ClientCartDrawer"; // ✅ import this instead
+import ClientCartDrawer from "../components/layout/ClientCartDrawer"; 
+import ShippingBanner from "../components/ShippingBanner";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
