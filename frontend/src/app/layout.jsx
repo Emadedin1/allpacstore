@@ -4,7 +4,7 @@ import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import { CartProvider } from "../context/CartContext";
 import ClientCartDrawer from "../components/layout/ClientCartDrawer";
-import ShippingBanner from "../components/ShippingBanner"; // <-- Add this
+import SiteBanner from "../components/SiteBanner"; // <-- updated import
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -13,7 +13,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} !bg-white !text-black`}>
       <body className="antialiased">
-        <ShippingBanner />
+        <SiteBanner /> {/* <-- updated usage */}
         <div style={{ paddingTop: 40 }} />
         <CartProvider>
           <Navbar />
