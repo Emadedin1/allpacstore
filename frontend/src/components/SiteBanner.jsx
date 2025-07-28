@@ -32,7 +32,7 @@ export default function SiteBanner() {
         top: show ? 0 : -60, // Slide out of view when not shown
         left: 0,
         zIndex: 9999,
-        background: '#FFD814',
+        background: '#0070F3',
         color: '#222',
         padding: '8px 0',
         textAlign: 'center',
@@ -42,7 +42,7 @@ export default function SiteBanner() {
         transition: 'top 0.3s',
       }}
     >
-      Free shipping on all orders over $250 CAD! 🇨🇦
+      Free Shipping For All Orders in Windsor, ON!
     </div>
   );
 }
