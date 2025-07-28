@@ -42,7 +42,7 @@ export default function SiteBanner() {
         transition: 'top 0.3s',
       }}
     >
-      Free Shipping For All Orders in Windsor, ON!
+      Free Shipping on All Orders in Windsor, ON!
     </div>
   );
 }
