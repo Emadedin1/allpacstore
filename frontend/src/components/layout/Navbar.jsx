@@ -30,7 +30,7 @@ export default function Navbar() {
   return (
     <header className="bg-white shadow-md relative" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
       <div className="max-w-7xl mx-auto px-4 py-4">
-        {/* Desktop navbar (all on one row) */}
+        {/* Desktop navbar (logo left, everything else right) */}
         <div className="hidden sm:flex items-center justify-between w-full">
           {/* Logo */}
           <Link href="/">
@@ -40,32 +40,29 @@ export default function Navbar() {
               className="h-12 w-auto"
             />
           </Link>
-          {/* Center nav links */}
-          <nav className="flex items-center space-x-6 text-allpac text-base font-semibold flex-1 justify-center">
+          {/* Nav links + icons together */}
+          <div className="flex items-center space-x-6">
             <Link
               href="/products"
-              className="px-3 py-2 rounded-lg hover:bg-gray-100 transition text-base"
+              className="px-3 py-2 rounded-lg hover:bg-gray-100 transition text-base font-semibold"
               style={{ letterSpacing: "0.01em" }}
             >
               Products
             </Link>
             <Link
               href="/about"
-              className="px-3 py-2 rounded-lg hover:bg-gray-100 transition text-base"
+              className="px-3 py-2 rounded-lg hover:bg-gray-100 transition text-base font-semibold"
               style={{ letterSpacing: "0.01em" }}
             >
               About
             </Link>
             <Link
               href="/contact"
-              className="px-3 py-2 rounded-lg hover:bg-gray-100 transition text-base"
+              className="px-3 py-2 rounded-lg hover:bg-gray-100 transition text-base font-semibold"
               style={{ letterSpacing: "0.01em" }}
             >
               Contact
             </Link>
-          </nav>
-          {/* Right-side icons */}
-          <div className="flex items-center space-x-4">
             <button
               onClick={openCart}
               className="text-allpac hover:text-red-600 no-close cursor-pointer"
