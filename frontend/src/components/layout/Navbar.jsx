@@ -1,6 +1,5 @@
-"use client";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
 import { ShoppingCart, User } from "lucide-react";
 import { useCart } from "../../context/CartContext";
 
@@ -44,25 +43,25 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop: nav links + icons */}
-        <div className="hidden sm:flex items-center space-x-8">
-          <nav className="flex space-x-4 text-allpac text-base font-semibold">
+        <div className="hidden sm:flex items-center space-x-6">
+          <nav className="flex space-x-2 text-allpac text-base font-semibold">
             <Link
               href="/products"
-              className="px-4 py-2 rounded-lg hover:bg-gray-100 transition text-lg"
+              className="px-2 py-1 rounded-lg hover:bg-gray-100 transition text-base"
               style={{ letterSpacing: "0.01em" }}
             >
               Products
             </Link>
             <Link
               href="/about"
-              className="px-4 py-2 rounded-lg hover:bg-gray-100 transition text-lg"
+              className="px-2 py-1 rounded-lg hover:bg-gray-100 transition text-base"
               style={{ letterSpacing: "0.01em" }}
             >
               About
             </Link>
             <Link
               href="/contact"
-              className="px-4 py-2 rounded-lg hover:bg-gray-100 transition text-lg"
+              className="px-2 py-1 rounded-lg hover:bg-gray-100 transition text-base"
               style={{ letterSpacing: "0.01em" }}
             >
               Contact
@@ -71,16 +70,16 @@ export default function Navbar() {
           <button
             onClick={openCart}
             className="text-allpac hover:text-red-600 no-close cursor-pointer ml-2"
-            style={{ padding: "10px" }}
+            style={{ padding: "6px" }}
             aria-label="View cart"
           >
-            <ShoppingCart size={30} />
+            <ShoppingCart size={22} />
           </button>
           <button
             ref={desktopUserButtonRef}
             onClick={() => setUserMenuOpen((prev) => !prev)}
             className="text-allpac hover:text-red-600 cursor-pointer ml-2"
-            style={{ padding: "10px" }}
+            style={{ padding: "6px" }}
             aria-label="Account"
           >
             <User size={20} />
@@ -88,7 +87,7 @@ export default function Navbar() {
         </div>
 
         {/* Mobile: icons only */}
-        <div className="flex sm:hidden items-center space-x-6">
+        <div className="flex sm:hidden items-center space-x-4">
           <button
             onClick={openCart}
             className="text-allpac hover:text-red-600 no-close cursor-pointer"
@@ -102,49 +101,10 @@ export default function Navbar() {
             className="text-allpac hover:text-red-600 cursor-pointer"
             aria-label="Account"
           >
-            <User size={28} />
+            <User size={20} />
           </button>
         </div>
       </div>
-
-      {/* Row 2: mobile-only nav links */}
-      <nav className="sm:hidden bg-white">
-        <div className="max-w-7xl mx-auto px-4 pb-4 flex justify-center space-x-4 text-allpac text-base font-semibold">
-          <Link
-            href="/products"
-            className="px-2 py-1 rounded-lg hover:bg-gray-100 transition text-lg"
-            style={{ letterSpacing: "0.01em" }}
-          >
-            Products
-          </Link>
-          <Link
-            href="/about"
-            className="px-4 py-2 rounded-lg hover:bg-gray-100 transition text-lg"
-            style={{ letterSpacing: "0.01em" }}
-          >
-            About
-          </Link>
-          <Link
-            href="/contact"
-            className="px-4 py-2 rounded-lg hover:bg-gray-100 transition text-lg"
-            style={{ letterSpacing: "0.01em" }}
-          >
-            Contact
-          </Link>
-        </div>
-      </nav>
-
-      {/* User dropdown */}
-      {userMenuOpen && (
-        <div
-          ref={menuRef}
-          className="absolute right-4 top-[70px] bg-white shadow-lg rounded-lg py-2 w-48 z-50"
-        >
-          <Link href="/account/orders" className="block px-4 py-2 hover:bg-gray-100">Order History</Link>
-          <Link href="/account/create" className="block px-4 py-2 hover:bg-gray-100">Create Account</Link>
-          <Link href="/account/login" className="block px-4 py-2 hover:bg-gray-100">Login</Link>
-        </div>
-      )}
     </header>
   );
 }
