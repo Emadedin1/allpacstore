@@ -7,12 +7,10 @@ import { useState, useRef, useEffect } from "react";
 export default function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const menuRef = useRef(null);
-  // Separate refs for desktop and mobile user buttons
   const desktopUserButtonRef = useRef(null);
   const mobileUserButtonRef = useRef(null);
   const { openCart } = useCart();
 
-  // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(e) {
       if (
@@ -33,15 +31,17 @@ export default function Navbar() {
       className="bg-white shadow-md relative"
       style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
     >
-      <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center sm:justify-between w-full">
         {/* Logo */}
-        <Link href="/">
-          <img
-            src="/images/allpac-logo.png"
-            alt="Allpac Logo"
-            className="h-12 w-auto"
-          />
-        </Link>
+        <div className="flex-shrink-0 mb-2 sm:mb-0">
+          <Link href="/">
+            <img
+              src="/images/allpac-logo.png"
+              alt="Allpac Logo"
+              className="h-12 w-auto"
+            />
+          </Link>
+        </div>
 
         {/* Desktop: nav links + icons */}
         <div className="hidden sm:flex items-center space-x-8">
