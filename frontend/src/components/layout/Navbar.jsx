@@ -83,7 +83,7 @@ export default function Navbar() {
             style={{ padding: "10px" }}
             aria-label="Account"
           >
-            <User size={28} />
+            <User size={20} />
           </button>
         </div>
 
@@ -94,7 +94,7 @@ export default function Navbar() {
             className="text-allpac hover:text-red-600 no-close cursor-pointer"
             aria-label="View cart"
           >
-            <ShoppingCart size={30} />
+            <ShoppingCart size={22} />
           </button>
           <button
             ref={mobileUserButtonRef}
@@ -112,7 +112,7 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 pb-4 flex justify-center space-x-4 text-allpac text-base font-semibold">
           <Link
             href="/products"
-            className="px-4 py-2 rounded-lg hover:bg-gray-100 transition text-lg"
+            className="px-2 py-1 rounded-lg hover:bg-gray-100 transition text-lg"
             style={{ letterSpacing: "0.01em" }}
           >
             Products
