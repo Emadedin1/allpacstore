@@ -8,7 +8,6 @@ export default function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const menuRef = useRef(null);
   const desktopUserButtonRef = useRef(null);
-  const mobileUserButtonRef = useRef(null);
   const { openCart } = useCart();
 
   useEffect(() => {
@@ -16,8 +15,7 @@ export default function Navbar() {
       if (
         menuRef.current &&
         !menuRef.current.contains(e.target) &&
-        (!desktopUserButtonRef.current || !desktopUserButtonRef.current.contains(e.target)) &&
-        (!mobileUserButtonRef.current || !mobileUserButtonRef.current.contains(e.target))
+        (!desktopUserButtonRef.current || !desktopUserButtonRef.current.contains(e.target))
       ) {
         setUserMenuOpen(false);
       }
@@ -27,109 +25,61 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header
-      className="bg-white shadow-md relative"
-      style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
-    >
-      <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center sm:justify-between w-full">
+    <header className="bg-white shadow-md relative" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
+      {/* Top row: logo left, icons right */}
+      <div className="max-w-7xl mx-auto px-4 pt-4 flex items-center justify-between w-full">
         {/* Logo */}
-        <div className="flex-shrink-0 mb-2 sm:mb-0">
-          <Link href="/">
-            <img
-              src="/images/allpac-logo.png"
-              alt="Allpac Logo"
-              className="h-12 w-auto"
-            />
-          </Link>
-        </div>
-
-        {/* Desktop: nav links + icons */}
-        <div className="hidden sm:flex items-center space-x-8">
-          <nav className="flex space-x-4 text-allpac text-base font-semibold">
-            <Link
-              href="/products"
-              className="px-4 py-2 rounded-lg hover:bg-gray-100 transition text-lg"
-              style={{ letterSpacing: "0.01em" }}
-            >
-              Products
-            </Link>
-            <Link
-              href="/about"
-              className="px-4 py-2 rounded-lg hover:bg-gray-100 transition text-lg"
-              style={{ letterSpacing: "0.01em" }}
-            >
-              About
-            </Link>
-            <Link
-              href="/contact"
-              className="px-4 py-2 rounded-lg hover:bg-gray-100 transition text-lg"
-              style={{ letterSpacing: "0.01em" }}
-            >
-              Contact
-            </Link>
-          </nav>
+        <Link href="/">
+          <img
+            src="/images/allpac-logo.png"
+            alt="Allpac Logo"
+            className="h-12 w-auto"
+          />
+        </Link>
+        {/* Right-side icons */}
+        <div className="flex items-center space-x-4">
           <button
             onClick={openCart}
-            className="text-allpac hover:text-red-600 no-close cursor-pointer ml-2"
-            style={{ padding: "10px" }}
+            className="text-allpac hover:text-red-600 no-close cursor-pointer"
             aria-label="View cart"
           >
-            <ShoppingCart size={30} />
+            <ShoppingCart size={24} />
           </button>
           <button
             ref={desktopUserButtonRef}
             onClick={() => setUserMenuOpen((prev) => !prev)}
-            className="text-allpac hover:text-red-600 cursor-pointer ml-2"
-            style={{ padding: "10px" }}
+            className="text-allpac hover:text-red-600 cursor-pointer"
             aria-label="Account"
           >
-            <User size={20} />
+            <User size={22} />
           </button>
         </div>
-
-        {/* Mobile: nav links + icons */}
-        <div className="flex flex-col sm:hidden items-center w-full">
-          <nav className="flex flex-col items-center w-full">
-            <Link
-              href="/products"
-              className="py-2 w-full text-center hover:bg-gray-100 transition text-base font-semibold"
-              style={{ letterSpacing: "0.01em" }}
-            >
-              Products
-            </Link>
-            <Link
-              href="/about"
-              className="py-2 w-full text-center hover:bg-gray-100 transition text-base font-semibold"
-              style={{ letterSpacing: "0.01em" }}
-            >
-              About
-            </Link>
-            <Link
-              href="/contact"
-              className="py-2 w-full text-center hover:bg-gray-100 transition text-base font-semibold"
-              style={{ letterSpacing: "0.01em" }}
-            >
-              Contact
-            </Link>
-          </nav>
-          <div className="flex items-center space-x-6 mt-2">
-            <button
-              onClick={openCart}
-              className="text-allpac hover:text-red-600 no-close cursor-pointer"
-              aria-label="View cart"
-            >
-              <ShoppingCart size={22} />
-            </button>
-            <button
-              ref={mobileUserButtonRef}
-              onClick={() => setUserMenuOpen((prev) => !prev)}
-              className="text-allpac hover:text-red-600 cursor-pointer"
-              aria-label="Account"
-            >
-              <User size={28} />
-            </button>
-          </div>
-        </div>
+      </div>
+      {/* Second row: nav links centered */}
+      <div className="max-w-7xl mx-auto px-4 pb-4 flex justify-center w-full">
+        <nav className="flex space-x-6 text-allpac text-base font-semibold">
+          <Link
+            href="/products"
+            className="px-3 py-2 rounded-lg hover:bg-gray-100 transition text-base"
+            style={{ letterSpacing: "0.01em" }}
+          >
+            Products
+          </Link>
+          <Link
+            href="/about"
+            className="px-3 py-2 rounded-lg hover:bg-gray-100 transition text-base"
+            style={{ letterSpacing: "0.01em" }}
+          >
+            About
+          </Link>
+          <Link
+            href="/contact"
+            className="px-3 py-2 rounded-lg hover:bg-gray-100 transition text-base"
+            style={{ letterSpacing: "0.01em" }}
+          >
+            Contact
+          </Link>
+        </nav>
       </div>
     </header>
   );
