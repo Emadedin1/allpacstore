@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { ShoppingCart, User } from "lucide-react";
 import { useCart } from "../../context/CartContext";
+import { useState, useRef, useEffect } from "react";
 
 export default function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -43,25 +43,25 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop: nav links + icons */}
-        <div className="hidden sm:flex items-center space-x-6">
-          <nav className="flex space-x-2 text-allpac text-base font-semibold">
+        <div className="hidden sm:flex items-center space-x-8">
+          <nav className="flex space-x-4 text-allpac text-base font-semibold">
             <Link
               href="/products"
-              className="px-2 py-1 rounded-lg hover:bg-gray-100 transition text-base"
+              className="px-4 py-2 rounded-lg hover:bg-gray-100 transition text-lg"
               style={{ letterSpacing: "0.01em" }}
             >
               Products
             </Link>
             <Link
               href="/about"
-              className="px-2 py-1 rounded-lg hover:bg-gray-100 transition text-base"
+              className="px-4 py-2 rounded-lg hover:bg-gray-100 transition text-lg"
               style={{ letterSpacing: "0.01em" }}
             >
               About
             </Link>
             <Link
               href="/contact"
-              className="px-2 py-1 rounded-lg hover:bg-gray-100 transition text-base"
+              className="px-4 py-2 rounded-lg hover:bg-gray-100 transition text-lg"
               style={{ letterSpacing: "0.01em" }}
             >
               Contact
@@ -70,16 +70,16 @@ export default function Navbar() {
           <button
             onClick={openCart}
             className="text-allpac hover:text-red-600 no-close cursor-pointer ml-2"
-            style={{ padding: "6px" }}
+            style={{ padding: "10px" }}
             aria-label="View cart"
           >
-            <ShoppingCart size={22} />
+            <ShoppingCart size={30} />
           </button>
           <button
             ref={desktopUserButtonRef}
             onClick={() => setUserMenuOpen((prev) => !prev)}
             className="text-allpac hover:text-red-600 cursor-pointer ml-2"
-            style={{ padding: "6px" }}
+            style={{ padding: "10px" }}
             aria-label="Account"
           >
             <User size={20} />
@@ -87,7 +87,7 @@ export default function Navbar() {
         </div>
 
         {/* Mobile: icons only */}
-        <div className="flex sm:hidden items-center space-x-4">
+        <div className="flex sm:hidden items-center space-x-6">
           <button
             onClick={openCart}
             className="text-allpac hover:text-red-600 no-close cursor-pointer"
@@ -101,7 +101,7 @@ export default function Navbar() {
             className="text-allpac hover:text-red-600 cursor-pointer"
             aria-label="Account"
           >
-            <User size={20} />
+            <User size={28} />
           </button>
         </div>
       </div>
