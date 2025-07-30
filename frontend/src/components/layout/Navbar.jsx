@@ -88,48 +88,49 @@ export default function Navbar() {
         </div>
 
         {/* Mobile: nav links + icons */}
-<div className="flex flex-col sm:hidden items-center w-full">
-  <nav className="flex flex-col items-center w-full">
-    <Link
-      href="/products"
-      className="py-2 w-full text-center hover:bg-gray-100 transition text-base font-semibold"
-      style={{ letterSpacing: "0.01em" }}
-    >
-      Products
-    </Link>
-    <Link
-      href="/about"
-      className="py-2 w-full text-center hover:bg-gray-100 transition text-base font-semibold"
-      style={{ letterSpacing: "0.01em" }}
-    >
-      About
-    </Link>
-    <Link
-      href="/contact"
-      className="py-2 w-full text-center hover:bg-gray-100 transition text-base font-semibold"
-      style={{ letterSpacing: "0.01em" }}
-    >
-      Contact
-    </Link>
-  </nav>
-  <div className="flex items-center space-x-6 mt-2">
-    <button
-      onClick={openCart}
-      className="text-allpac hover:text-red-600 no-close cursor-pointer"
-      aria-label="View cart"
-    >
-      <ShoppingCart size={22} />
-    </button>
-    <button
-      ref={mobileUserButtonRef}
-      onClick={() => setUserMenuOpen((prev) => !prev)}
-      className="text-allpac hover:text-red-600 cursor-pointer"
-      aria-label="Account"
-    >
-      <User size={28} />
-    </button>
-  </div>
-</div>
+        <div className="flex flex-col sm:hidden items-center w-full">
+          <nav className="flex flex-col items-center w-full">
+            <Link
+              href="/products"
+              className="py-2 w-full text-center hover:bg-gray-100 transition text-base font-semibold"
+              style={{ letterSpacing: "0.01em" }}
+            >
+              Products
+            </Link>
+            <Link
+              href="/about"
+              className="py-2 w-full text-center hover:bg-gray-100 transition text-base font-semibold"
+              style={{ letterSpacing: "0.01em" }}
+            >
+              About
+            </Link>
+            <Link
+              href="/contact"
+              className="py-2 w-full text-center hover:bg-gray-100 transition text-base font-semibold"
+              style={{ letterSpacing: "0.01em" }}
+            >
+              Contact
+            </Link>
+          </nav>
+          <div className="flex items-center space-x-6 mt-2">
+            <button
+              onClick={openCart}
+              className="text-allpac hover:text-red-600 no-close cursor-pointer"
+              aria-label="View cart"
+            >
+              <ShoppingCart size={22} />
+            </button>
+            <button
+              ref={mobileUserButtonRef}
+              onClick={() => setUserMenuOpen((prev) => !prev)}
+              className="text-allpac hover:text-red-600 cursor-pointer"
+              aria-label="Account"
+            >
+              <User size={28} />
+            </button>
+          </div>
+        </div>
+      </div>
     </header>
   );
 }
