@@ -77,7 +77,7 @@ export default function CupCard({ cup }) {
           step={100}
           value={caseQty}
           onChange={(e) => setCaseQty(e.target.value)}
-          placeholder="(min. 500) Qty"
+          placeholder="Qty (Min. 500)"
           className="mt-2 p-2 border border-gray-300 rounded-md text-sm"
         />
 
