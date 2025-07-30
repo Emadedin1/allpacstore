@@ -46,7 +46,7 @@ export default function SiteBanner() {
         lineHeight: 1.5,
       }}
     >
-      Free Shipping on All Orders in Windsor, ON!
+      Free Shipping on All Orders in Windsor, ON
     </div>
   );
 }
