@@ -1,6 +1,6 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
+  "name": "allpacstore",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -14,7 +14,11 @@
     "next": "15.4.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "stripe": "^18.3.0"
+    "stripe": "^18.3.0",
+    "mongoose": "^8.16.4",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.0",
+    "dotenv": "^17.2.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
