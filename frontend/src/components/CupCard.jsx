@@ -12,6 +12,7 @@ export default function CupCard({ cup }) {
   const router = useRouter();
   const { addItem, openCart } = useCart();
   const [showUploadPopup, setShowUploadPopup] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState(null);
 
 
 
@@ -138,69 +139,84 @@ export default function CupCard({ cup }) {
         {/* Add to Cart button */}
         <button
           onClick={handleAddToCart}
-          disabled={caseQty < 500}
+          disabled={
+            caseQty < 500 ||
+            (designType === "Custom" && !uploadedFile)
+          }
           className={`
     w-full py-2 mt-2 rounded-md font-semibold text-sm no-close
-    ${caseQty >= 500 ? "bg-[#FFD814] cursor-pointer" : "bg-gray-300 cursor-not-allowed"}
+    ${caseQty >= 500 && (designType !== "Custom" || uploadedFile)
+              ? "bg-[#FFD814] cursor-pointer"
+              : "bg-gray-300 cursor-not-allowed"
+            }
   `}
         >
           Add to Cart
         </button>
 
         {showUploadPopup && (
-          <div className="fixed inset-0 backdrop-blur-sm bg-black/20 flex justify-center items-center z-50">
-            <div className="bg-white w-[90%] max-w-7xl max-h-3xl p-6 rounded-lg shadow-lg relative">
+          <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50">
+            <div className="bg-white w-full max-w-2xl p-6 rounded-lg shadow-lg relative">
+
               {/* Close button */}
               <button
                 onClick={() => setShowUploadPopup(false)}
-                className="absolute top-2 right-3 text-gray-500 text-2xl font-bold hover:text-black"
+                className="absolute top-3 right-4 text-gray-400 text-2xl font-bold hover:text-black"
               >
                 ×
               </button>
 
               {/* Popup content */}
-              <h2 className="text-xl font-semibold mb-4">Upload Your Custom Design</h2>
-              <p className="text-sm text-gray-600">[Upload form will go here in the next steps]</p>
+              <h2 className="text-2xl font-semibold mb-4">Upload Your Custom Design</h2>
+              <p className="text-sm text-gray-600 mb-4">
+                Please upload a square image (e.g. <strong>1000 x 1000 px</strong>) that will wrap around the paper cup.
+              </p>
+
               {/* Upload Box */}
-              <div
-                className="border-2 border-dashed border-gray-300 h-100 rounded-md p-6 text-center relative bg-white hover:border-blue-400 transition"
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  const file = e.dataTransfer.files?.[0];
-                  if (file) { 
-                    // TODO: handleFileUpload(file)
-                    console.log("Dropped file:", file);
-                  }
-                }}
-              >
-                <p className="text-gray-600 mb-2">Drop your design here</p>
+              <div className="border-2 border-dashed border-gray-300 h-64 rounded-md p-6 text-center mb-6">
+                <div className="flex flex-col justify-center items-center h-full space-y-2">
+                  <p className="text-gray-700">Drag & Drop your design here</p>
+                  <p className="text-sm text-gray-500">
+                    Required: <strong>1000 x 1000 px</strong>
+                  </p>
+                  <label
+                    htmlFor="file-upload"
+                    className="text-blue-600 underline cursor-pointer hover:text-blue-800"
+                  >
+                    or Upload
+                    <input
+                      type="file"
+                      id="file-upload"
+                      className="hidden"
+                      onChange={(e) => setUploadedFile(e.target.files[0])}
+                    />
 
-                <p className="text-sm text-gray-500 mb-2">
-                  Required: <span className="font-semibold">1000 x 1000 px</span>
-                </p>
-
-                <label
-                  htmlFor="file-upload"
-                  className="text-blue-600 underline cursor-pointer hover:text-blue-800"
-                >
-                  or Upload
-                </label>
-                <input
-                  id="file-upload"
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      // TODO: handleFileUpload(file)
-                      console.log("Selected file:", file);
-                    }
-                  }}
-                />
+                  </label>
+                </div>
               </div>
 
+              {designType === "Custom" && !uploadedFile && (
+                <p className="text-xs text-red-600 mt-2">
+                  Please upload a design before adding to cart.
+                </p>
+              )}
+
+
+              {/* Placeholder for 3D Preview */}
+              <div className="w-full h-48 bg-gray-100 rounded-md mb-6 flex items-center justify-center text-gray-400">
+                (3D Preview Coming Soon)
+              </div>
+
+              {/* Confirm Button */}
+              <button
+                onClick={() => {
+                  // Close for now, later you can trigger the next step
+                  setShowUploadPopup(false);
+                }}
+                className="w-full py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+              >
+                Confirm Upload
+              </button>
             </div>
           </div>
         )}
