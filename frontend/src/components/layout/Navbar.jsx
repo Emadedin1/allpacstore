@@ -11,21 +11,33 @@ export default function Navbar() {
   const menuRef = useRef(null);
   const { openCart } = useCart();
 
-  // Handle outside click for dropdown
+  // Handle outside click for dropdown, with a tiny delay so the opening click doesn't immediately close it
   useEffect(() => {
     if (!userMenuOpen) return;
-    function handleClickOutside(e) {
-      // Check both refs, since only one is visible at a time
-      // This fixes the bug where ref points to a hidden button (mobile) on desktop!
-      const isInMenu = menuRef.current && menuRef.current.contains(e.target);
-      const isInDesktopBtn = desktopUserButtonRef.current && desktopUserButtonRef.current.contains(e.target);
-      const isInMobileBtn = mobileUserButtonRef.current && mobileUserButtonRef.current.contains(e.target);
-      if (!isInMenu && !isInDesktopBtn && !isInMobileBtn) {
-        setUserMenuOpen(false);
+
+    const timer = setTimeout(() => {
+      function handleClickOutside(e) {
+        const isInMenu =
+          menuRef.current && menuRef.current.contains(e.target);
+        const isInDesktopBtn =
+          desktopUserButtonRef.current &&
+          desktopUserButtonRef.current.contains(e.target);
+        const isInMobileBtn =
+          mobileUserButtonRef.current &&
+          mobileUserButtonRef.current.contains(e.target);
+
+        if (!isInMenu && !isInDesktopBtn && !isInMobileBtn) {
+          setUserMenuOpen(false);
+        }
       }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, 10);
+
+    return () => clearTimeout(timer);
   }, [userMenuOpen]);
 
   function UserDropdown() {
@@ -63,13 +75,20 @@ export default function Navbar() {
   }
 
   return (
-    <header className="bg-white shadow-md relative" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
+    <header
+      className="bg-white shadow-md relative"
+      style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
+    >
       <div className="max-w-7xl mx-auto px-4 py-4">
         {/* Desktop navbar */}
         <div className="hidden sm:flex items-center justify-between w-full relative">
           {/* Logo */}
           <Link href="/">
-            <img src="/images/allpac-logo.png" alt="Allpac Logo" className="h-12 w-auto" />
+            <img
+              src="/images/allpac-logo.png"
+              alt="Allpac Logo"
+              className="h-12 w-auto"
+            />
           </Link>
           <div className="flex items-center space-x-6">
             <Link
@@ -115,11 +134,16 @@ export default function Navbar() {
             </div>
           </div>
         </div>
+
         {/* Mobile navbar */}
         <div className="flex flex-col sm:hidden w-full relative">
           <div className="flex items-center justify-between w-full">
             <Link href="/">
-              <img src="/images/allpac-logo.png" alt="Allpac Logo" className="h-12 w-auto" />
+              <img
+                src="/images/allpac-logo.png"
+                alt="Allpac Logo"
+                className="h-12 w-auto"
+              />
             </Link>
             <div className="flex items-center space-x-4">
               <button
