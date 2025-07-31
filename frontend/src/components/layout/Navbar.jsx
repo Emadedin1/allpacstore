@@ -112,7 +112,7 @@ export default function Navbar() {
                 className="text-allpac hover:text-red-600 cursor-pointer"
                 aria-label="Account"
               >
-                <User size={22} />
+                <User size={24} />
               </button>
               {userMenuOpen && <UserDropdown />}
             </div>
