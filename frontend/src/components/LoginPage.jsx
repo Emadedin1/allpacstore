@@ -85,11 +85,18 @@ export default function LoginPage({ mode: initialMode = "login" }) {
   const [success, setSuccess] = useState("");
   const [focus, setFocus] = useState(null);
 
+  // Read the base URL from an env var, fall back to current origin
+  const API_BASE =
+    process.env.NEXT_PUBLIC_API_BASE_URL || window.location.origin;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
-    const url = mode === "login" ? "/api/auth/login" : "/api/auth/register";
+
+    const endpoint = mode === "login" ? "login" : "register";
+    const url = `${API_BASE}/api/auth/${endpoint}`;
+
     const payload =
       mode === "login"
         ? { email, password }
@@ -102,18 +109,24 @@ export default function LoginPage({ mode: initialMode = "login" }) {
         body: JSON.stringify(payload),
       });
       const data = await res.json();
+
       if (res.ok) {
-        localStorage.setItem("token", data.token);
+        // save JWT (or whatever token your backend returns)
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+        }
         setSuccess(
           mode === "login"
             ? "Login successful!"
             : "Account created! You can now log in."
         );
+        setError("");
       } else {
-        setError(data.error || "Failed");
+        setError(data.error || "Something went wrong");
       }
-    } catch {
-      setError("Failed");
+    } catch (err) {
+      console.error("LoginPage error:", err);
+      setError("Failed to reach server");
     }
   };
 
@@ -173,22 +186,30 @@ export default function LoginPage({ mode: initialMode = "login" }) {
       <div style={styles.switch}>
         {mode === "login" ? (
           <span>
-            Don&apos;t have an account?{" "}
+            Don&apos;t have an account?
             <button
               type="button"
               style={styles.buttonSwitch}
-              onClick={() => setMode("register")}
+              onClick={() => {
+                setMode("register");
+                setError("");
+                setSuccess("");
+              }}
             >
               Create Account
             </button>
           </span>
         ) : (
           <span>
-            Already have an account?{" "}
+            Already have an account?
             <button
               type="button"
               style={styles.buttonSwitch}
-              onClick={() => setMode("login")}
+              onClick={() => {
+                setMode("login");
+                setError("");
+                setSuccess("");
+              }}
             >
               Login
             </button>
