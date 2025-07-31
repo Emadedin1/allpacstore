@@ -32,28 +32,28 @@ export default function Navbar() {
     return (
       <div
         ref={menuRef}
-        className="absolute z-50 right-0 mt-2 w-48 rounded-md shadow-lg bg-white transition"
-        style={{ top: '100%' }}
+        className="absolute z-50 right-0 mt-2 w-48 rounded-md shadow-lg bg-white transition pointer-events-auto"
+        style={{ top: "100%" }}
       >
         <div className="py-1 flex flex-col">
           <Link
             href="/login"
             className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-            onClick={() => setUserMenuOpen(false)}
+            onMouseDown={() => setUserMenuOpen(false)}
           >
             Login
           </Link>
           <Link
             href="/register"
             className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-            onClick={() => setUserMenuOpen(false)}
+            onMouseDown={() => setUserMenuOpen(false)}
           >
             Create Account
           </Link>
           <Link
             href="/order-history"
             className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-            onClick={() => setUserMenuOpen(false)}
+            onMouseDown={() => setUserMenuOpen(false)}
           >
             Order History
           </Link>
@@ -69,11 +69,7 @@ export default function Navbar() {
         <div className="hidden sm:flex items-center justify-between w-full relative">
           {/* Logo */}
           <Link href="/">
-            <img
-              src="/images/allpac-logo.png"
-              alt="Allpac Logo"
-              className="h-12 w-auto"
-            />
+            <img src="/images/allpac-logo.png" alt="Allpac Logo" className="h-12 w-auto" />
           </Link>
           {/* Nav links + icons together */}
           <div className="flex items-center space-x-6">
@@ -123,11 +119,7 @@ export default function Navbar() {
           {/* First row: Logo left, icons right */}
           <div className="flex items-center justify-between w-full">
             <Link href="/">
-              <img
-                src="/images/allpac-logo.png"
-                alt="Allpac Logo"
-                className="h-12 w-auto"
-              />
+              <img src="/images/allpac-logo.png" alt="Allpac Logo" className="h-12 w-auto" />
             </Link>
             <div className="flex items-center space-x-4">
               <button
