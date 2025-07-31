@@ -8,6 +8,7 @@ import { useCart } from "../context/CartContext";
 export default function CupCard({ cup }) {
   // ─── State & router ───
   const [caseQty, setCaseQty] = useState("");
+  const [designType, setDesignType] = useState("Plain White");
   const router = useRouter();
   const { addItem, openCart } = useCart();
 
@@ -24,6 +25,9 @@ export default function CupCard({ cup }) {
     openCart();
   }
 
+  // design/navigation dropdown
+  const designOptions = ["Plain White", "Preset A", "Preset B", "Custom"];
+
   // ─── Handlers ───
   const handleCardClick = () => {
     router.push(`/products/${cup.slug}`);
@@ -31,17 +35,19 @@ export default function CupCard({ cup }) {
 
   // ─── JSX ───
   return (
-    <div
-      onClick={handleCardClick}
-      className="
+
+    <div className="
     flex flex-col md:flex-row items-stretch
     bg-blue-50 rounded-xl shadow-md overflow-hidden
     w-full max-w-[620px] sm:max-w-full
-    cursor-pointer hover:shadow-lg transition-shadow
+     hover:shadow-lg transition-shadow
   "
     >
       {/* Left: product image */}
-      <div className="w-full h-[220px] md:w-[220px] md:h-auto">
+      <div
+        onClick={handleCardClick}
+        className="w-full h-[220px] md:w-[220px] md:h-auto cursor-pointer"
+      >
         <img
           src={cup.image}
           alt={`${cup.size} Cup`}
@@ -52,11 +58,38 @@ export default function CupCard({ cup }) {
       <div className="p-3 pr-10 flex flex-col justify-between flex-1 min-w-0">
         {/* Title / type / description */}
         <div>
-          <h2 className="text-lg font-bold mb-1">
+          <h2
+            onClick={handleCardClick}
+            className="text-lg font-bold mb-1 cursor-pointer"
+          >
             {cup.size} Cup
           </h2>
-          <p className="text-base mb-1">{cup.type}</p>
-          <p className="text-sm mb-4">{cup.desc}</p>
+          <p
+            onClick={handleCardClick}
+            className="text-base mb-1 cursor-pointer">{cup.type}</p>
+          <p
+            onClick={handleCardClick}
+            className="text-sm mb-4 cursor-pointer">{cup.desc}</p>
+        </div>
+
+
+        {/* Design selector */}
+        <div className="p-1 pl-0" onClick={(e) => e.stopPropagation()}>
+          <label htmlFor={`design-${cup.slug}`} className="block font-medium mb-1">
+            Choose Design
+          </label>
+          <select
+            id={`design-${cup.slug}`}
+            value={designType}
+            onChange={(e) => setDesignType(e.target.value)}
+            className="w-full border p-2 rounded-md text-sm"
+          >
+            {designOptions.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Price per cup & subtotal */}

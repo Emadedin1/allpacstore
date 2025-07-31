@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} !bg-white !text-black`}>
-      <body className="antialiased">
+      <body suppressHydrationWarning className="antialiased">
         <SiteBanner /> {/* <-- updated usage */}
         <div style={{ paddingTop: 40 }} />
         <CartProvider>
