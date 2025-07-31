@@ -32,7 +32,7 @@ export default function Navbar() {
     return (
       <div
         ref={menuRef}
-        className="absolute z-50 right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 transition"
+        className="absolute z-50 right-0 mt-2 w-48 rounded-md shadow-lg bg-white transition"
         style={{ top: '100%' }}
       >
         <div className="py-1 flex flex-col">
