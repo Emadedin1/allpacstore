@@ -6,7 +6,8 @@ import { useState, useRef, useEffect } from "react";
 
 export default function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const userButtonRef = useRef(null);
+  const desktopUserButtonRef = useRef(null);
+  const mobileUserButtonRef = useRef(null);
   const menuRef = useRef(null);
   const { openCart } = useCart();
 
@@ -14,12 +15,12 @@ export default function Navbar() {
   useEffect(() => {
     if (!userMenuOpen) return;
     function handleClickOutside(e) {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(e.target) &&
-        userButtonRef.current &&
-        !userButtonRef.current.contains(e.target)
-      ) {
+      // Check both refs, since only one is visible at a time
+      // This fixes the bug where ref points to a hidden button (mobile) on desktop!
+      const isInMenu = menuRef.current && menuRef.current.contains(e.target);
+      const isInDesktopBtn = desktopUserButtonRef.current && desktopUserButtonRef.current.contains(e.target);
+      const isInMobileBtn = mobileUserButtonRef.current && mobileUserButtonRef.current.contains(e.target);
+      if (!isInMenu && !isInDesktopBtn && !isInMobileBtn) {
         setUserMenuOpen(false);
       }
     }
@@ -27,7 +28,6 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [userMenuOpen]);
 
-  // Dropdown menu component
   function UserDropdown() {
     return (
       <div
@@ -103,7 +103,7 @@ export default function Navbar() {
             </button>
             <div className="relative flex items-center">
               <button
-                ref={userButtonRef}
+                ref={desktopUserButtonRef}
                 onClick={() => setUserMenuOpen((prev) => !prev)}
                 className="text-allpac hover:text-red-600 cursor-pointer flex items-center mt-[2px]"
                 aria-label="Account"
@@ -132,7 +132,7 @@ export default function Navbar() {
               </button>
               <div className="relative flex items-center">
                 <button
-                  ref={userButtonRef}
+                  ref={mobileUserButtonRef}
                   onClick={() => setUserMenuOpen((prev) => !prev)}
                   className="text-allpac hover:text-red-600 cursor-pointer flex items-center mt-[2px]"
                   aria-label="Account"
