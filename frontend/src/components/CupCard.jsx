@@ -90,6 +90,18 @@ export default function CupCard({ cup }) {
               </option>
             ))}
           </select>
+          {designType === "Custom" && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                // TODO: open your upload modal here
+              }}
+              className="mt-3 w-full bg-gray-600 text-white py-2 rounded-md hover:bg-green-700 cursor-pointer"
+            >
+              Upload Design
+            </button>
+          )}
+
         </div>
 
         {/* Price per cup & subtotal */}

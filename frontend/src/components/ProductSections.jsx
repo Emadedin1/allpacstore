@@ -8,7 +8,7 @@ const cups = [
     slug: "10oz",
     size: "10 oz",
     type: "Hot Cup",
-    desc: "Double-wall insulated hot cup for coffee or tea.",
+    desc: "Hot Cup, ideal for small beverages.",
     image: "/cups/10oz.png",
     qtyCase: 1000,
     priceCase: 92,       // total $/case
@@ -17,7 +17,7 @@ const cups = [
     slug: "12oz",
     size: "12 oz",
     type: "Hot Cup",
-    desc: "Most popular size for cafes. Double-wall for insulation.",
+    desc: "Most popular size for cafes. Perfect for coffee and tea.",
     image: "/cups/12oz.png",
     qtyCase: 1000,
     priceCase: 94,
