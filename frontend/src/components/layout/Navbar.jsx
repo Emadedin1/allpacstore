@@ -44,7 +44,7 @@ export default function Navbar() {
             Login
           </Link>
           <Link
-            href="/create-account"
+            href="/register"
             className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
             onClick={() => setUserMenuOpen(false)}
           >
