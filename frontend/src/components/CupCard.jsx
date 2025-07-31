@@ -168,7 +168,7 @@ export default function CupCard({ cup }) {
                 onDrop={(e) => {
                   e.preventDefault();
                   const file = e.dataTransfer.files?.[0];
-                  if (file) {
+                  if (file) { 
                     // TODO: handleFileUpload(file)
                     console.log("Dropped file:", file);
                   }
