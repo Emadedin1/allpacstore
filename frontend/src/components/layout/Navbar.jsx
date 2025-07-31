@@ -11,40 +11,36 @@ export default function Navbar() {
   const menuRef = useRef(null);
   const { openCart } = useCart();
 
-  // Handle outside click for dropdown, with a tiny delay so the opening click doesn't immediately close it
+  // Close dropdown when clicking outside
   useEffect(() => {
     if (!userMenuOpen) return;
 
-    const timer = setTimeout(() => {
-      function handleClickOutside(e) {
-        const isInMenu =
-          menuRef.current && menuRef.current.contains(e.target);
-        const isInDesktopBtn =
-          desktopUserButtonRef.current &&
-          desktopUserButtonRef.current.contains(e.target);
-        const isInMobileBtn =
-          mobileUserButtonRef.current &&
-          mobileUserButtonRef.current.contains(e.target);
-
-        if (!isInMenu && !isInDesktopBtn && !isInMobileBtn) {
-          setUserMenuOpen(false);
-        }
+    function handleClickOutside(e) {
+      const isInMenu =
+        menuRef.current && menuRef.current.contains(e.target);
+      const isInDesktopBtn =
+        desktopUserButtonRef.current &&
+        desktopUserButtonRef.current.contains(e.target);
+      const isInMobileBtn =
+        mobileUserButtonRef.current &&
+        mobileUserButtonRef.current.contains(e.target);
+      if (!isInMenu && !isInDesktopBtn && !isInMobileBtn) {
+        setUserMenuOpen(false);
       }
+    }
 
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }, 10);
-
-    return () => clearTimeout(timer);
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
   }, [userMenuOpen]);
 
   function UserDropdown() {
     return (
       <div
         ref={menuRef}
-        className="absolute z-50 right-0 mt-2 w-48 rounded-md shadow-lg bg-white transition"
+        onClick={(e) => e.stopPropagation()}
+        className="absolute z-50 right-0 mt-2 w-48 rounded-md shadow-lg bg-white"
         style={{ top: "100%" }}
       >
         <div className="py-1 flex flex-col">
@@ -73,6 +69,11 @@ export default function Navbar() {
       </div>
     );
   }
+
+  const toggleUserMenu = (e) => {
+    e.stopPropagation();
+    setUserMenuOpen((prev) => !prev);
+  };
 
   return (
     <header
@@ -123,7 +124,7 @@ export default function Navbar() {
             <div className="relative flex items-center">
               <button
                 ref={desktopUserButtonRef}
-                onClick={() => setUserMenuOpen((prev) => !prev)}
+                onClick={toggleUserMenu}
                 className="text-allpac hover:text-red-600 cursor-pointer flex items-center mt-[2px]"
                 aria-label="Account"
                 type="button"
@@ -157,7 +158,7 @@ export default function Navbar() {
               <div className="relative flex items-center">
                 <button
                   ref={mobileUserButtonRef}
-                  onClick={() => setUserMenuOpen((prev) => !prev)}
+                  onClick={toggleUserMenu}
                   className="text-allpac hover:text-red-600 cursor-pointer flex items-center mt-[2px]"
                   aria-label="Account"
                   type="button"
