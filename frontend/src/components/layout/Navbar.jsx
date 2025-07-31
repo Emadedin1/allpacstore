@@ -27,11 +27,46 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Dropdown menu component
+  function UserDropdown() {
+    return (
+      <div
+        ref={menuRef}
+        className="absolute z-50 right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 transition"
+        style={{ top: '100%' }}
+      >
+        <div className="py-1 flex flex-col">
+          <Link
+            href="/login"
+            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+            onClick={() => setUserMenuOpen(false)}
+          >
+            Login
+          </Link>
+          <Link
+            href="/create-account"
+            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+            onClick={() => setUserMenuOpen(false)}
+          >
+            Create Account
+          </Link>
+          <Link
+            href="/order-history"
+            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+            onClick={() => setUserMenuOpen(false)}
+          >
+            Order History
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <header className="bg-white shadow-md relative" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
       <div className="max-w-7xl mx-auto px-4 py-4">
         {/* Desktop navbar (logo left, everything else right) */}
-        <div className="hidden sm:flex items-center justify-between w-full">
+        <div className="hidden sm:flex items-center justify-between w-full relative">
           {/* Logo */}
           <Link href="/">
             <img
@@ -70,18 +105,21 @@ export default function Navbar() {
             >
               <ShoppingCart size={24} />
             </button>
-            <button
-              ref={desktopUserButtonRef}
-              onClick={() => setUserMenuOpen((prev) => !prev)}
-              className="text-allpac hover:text-red-600 cursor-pointer"
-              aria-label="Account"
-            >
-              <User size={22} />
-            </button>
+            <div className="relative">
+              <button
+                ref={desktopUserButtonRef}
+                onClick={() => setUserMenuOpen((prev) => !prev)}
+                className="text-allpac hover:text-red-600 cursor-pointer"
+                aria-label="Account"
+              >
+                <User size={22} />
+              </button>
+              {userMenuOpen && <UserDropdown />}
+            </div>
           </div>
         </div>
         {/* Mobile navbar (logo + icons row, links row) */}
-        <div className="flex flex-col sm:hidden w-full">
+        <div className="flex flex-col sm:hidden w-full relative">
           {/* First row: Logo left, icons right */}
           <div className="flex items-center justify-between w-full">
             <Link href="/">
@@ -99,14 +137,17 @@ export default function Navbar() {
               >
                 <ShoppingCart size={24} />
               </button>
-              <button
-                ref={mobileUserButtonRef}
-                onClick={() => setUserMenuOpen((prev) => !prev)}
-                className="text-allpac hover:text-red-600 cursor-pointer"
-                aria-label="Account"
-              >
-                <User size={22} />
-              </button>
+              <div className="relative">
+                <button
+                  ref={mobileUserButtonRef}
+                  onClick={() => setUserMenuOpen((prev) => !prev)}
+                  className="text-allpac hover:text-red-600 cursor-pointer"
+                  aria-label="Account"
+                >
+                  <User size={22} />
+                </button>
+                {userMenuOpen && <UserDropdown />}
+              </div>
             </div>
           </div>
           {/* Second row: centered nav links */}
