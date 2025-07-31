@@ -100,16 +100,16 @@ export default function Navbar() {
             </Link>
             <button
               onClick={openCart}
-              className="text-allpac hover:text-red-600 no-close cursor-pointer"
+              className="text-allpac hover:text-red-600 no-close cursor-pointer flex items-center"
               aria-label="View cart"
             >
               <ShoppingCart size={24} />
             </button>
-            <div className="relative">
+            <div className="relative flex items-center">
               <button
                 ref={desktopUserButtonRef}
                 onClick={() => setUserMenuOpen((prev) => !prev)}
-                className="text-allpac hover:text-red-600 cursor-pointer"
+                className="text-allpac hover:text-red-600 cursor-pointer flex items-center mt-[2px]"
                 aria-label="Account"
               >
                 <User size={24} />
@@ -132,19 +132,19 @@ export default function Navbar() {
             <div className="flex items-center space-x-4">
               <button
                 onClick={openCart}
-                className="text-allpac hover:text-red-600 no-close cursor-pointer"
+                className="text-allpac hover:text-red-600 no-close cursor-pointer flex items-center"
                 aria-label="View cart"
               >
                 <ShoppingCart size={24} />
               </button>
-              <div className="relative">
+              <div className="relative flex items-center">
                 <button
                   ref={mobileUserButtonRef}
                   onClick={() => setUserMenuOpen((prev) => !prev)}
-                  className="text-allpac hover:text-red-600 cursor-pointer"
+                  className="text-allpac hover:text-red-600 cursor-pointer flex items-center mt-[2px]"
                   aria-label="Account"
                 >
-                  <User size={22} />
+                  <User size={24} />
                 </button>
                 {userMenuOpen && <UserDropdown />}
               </div>
