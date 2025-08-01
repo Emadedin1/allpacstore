@@ -23,9 +23,13 @@ export default function Navbar() {
     // Listen for changes to localStorage from other tabs/windows
     window.addEventListener("storage", updateUserName);
     window.addEventListener("focus", updateUserName);
+    // Listen for our custom event for instant update after login
+    window.addEventListener("userNameChanged", updateUserName);
+
     return () => {
       window.removeEventListener("storage", updateUserName);
       window.removeEventListener("focus", updateUserName);
+      window.removeEventListener("userNameChanged", updateUserName);
     };
   }, []);
 
@@ -89,6 +93,7 @@ export default function Navbar() {
                 setUserMenuOpen(false);
                 setUserName("");
                 // Optionally, window.location.reload();
+                window.dispatchEvent(new Event("userNameChanged"));
               }}
             >
               Logout
