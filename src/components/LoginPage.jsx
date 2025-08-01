@@ -92,56 +92,56 @@ export default function LoginPage({ mode: initialMode = "login" }) {
     process.env.NEXT_PUBLIC_API_BASE_URL || window.location.origin;
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
+  e.preventDefault();
+  setError("");
+  setSuccess("");
 
-    const endpoint = mode === "login" ? "login" : "register";
-    const url = `${API_BASE}/api/auth/${endpoint}`;
+  const endpoint = mode === "login" ? "login" : "register";
+  const url = `${API_BASE}/api/auth/${endpoint}`;
 
-    const payload =
-      mode === "login"
-        ? { email, password }
-        : { email, password, name };
+  const payload =
+    mode === "login"
+      ? { email, password }
+      : { email, password, name };
 
-    try {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    console.log("LOGIN RESPONSE:", data); // <-- ADD THIS
 
-      if (res.ok) {
-        // save JWT (or whatever token your backend returns)
-        if (data.token) {
-          localStorage.setItem("token", data.token);
-        }
-        if (data.name) {
-          localStorage.setItem("name", data.name);
-          window.dispatchEvent(new Event("userNameChanged"));
-        }
-        setSuccess(
-          mode === "login"
-            ? "Login successful!"
-            : "Account created! You can now log in."
-        );
-        setError("");
-
-        // Redirect to homepage after successful login
-        if (mode === "login") {
-          setTimeout(() => {
-            router.push("/");
-          }, 500); // short delay for feedback
-        }
-      } else {
-        setError(data.error || "Something went wrong");
+    if (res.ok) {
+      if (data.token) {
+        localStorage.setItem("token", data.token);
       }
-    } catch (err) {
-      console.error("LoginPage error:", err);
-      setError("Failed to reach server");
+      if (data.name) {
+        localStorage.setItem("name", data.name);
+        window.dispatchEvent(new Event("userNameChanged")); // <-- ADD THIS
+      }
+      setSuccess(
+        mode === "login"
+          ? "Login successful!"
+          : "Account created! You can now log in."
+      );
+      setError("");
+
+      // Redirect to homepage after successful login
+      if (mode === "login") {
+        setTimeout(() => {
+          router.push("/");
+        }, 500); // short delay for feedback
+      }
+    } else {
+      setError(data.error || "Something went wrong");
     }
-  };
+  } catch (err) {
+    console.error("LoginPage error:", err);
+    setError("Failed to reach server");
+  }
+};
 
   return (
     <div style={styles.container}>
