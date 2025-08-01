@@ -103,37 +103,52 @@ export default function CartDrawer() {
                                     <div className="space-y-1">
                                         {/* Top row: input + Done + Remove */}
                                         <div className="flex items-center space-x-2">
-                                            <input
-                                                type="number"
-                                                min="0"
-                                                step="100"
-                                                value={editedQty[item.key] ?? item.quantity}
-                                                onChange={(e) => {
-                                                    const val = e.target.value;
-                                                    if (val === "") {
-                                                        setEditedQty((prev) => ({ ...prev, [item.key]: "" }));
-                                                    } else if (!isNaN(parseInt(val))) {
-                                                        setEditedQty((prev) => ({ ...prev, [item.key]: parseInt(val) }));
-                                                    }
-                                                }}
-                                                className="w-20 p-1 border rounded text-sm"
-                                            />
-                                            <button
-                                                onClick={() => {
-                                                    const qty = editedQty[item.key];
-                                                    if (qty >= 500) {
-                                                        updateItemQty(item.key, qty);
-                                                        setEditingKey(null);
-                                                    }
-                                                }}
-                                                disabled={!editedQty[item.key] || editedQty[item.key] < 500}
-                                                className={`text-sm px-2 py-1 rounded ${!editedQty[item.key] || editedQty[item.key] < 500
-                                                    ? "bg-gray-300 cursor-not-allowed"
-                                                    : "bg-black text-white cursor-pointer"
-                                                    }`}
-                                            >
-                                                Done
-                                            </button>
+                                            {editingKey === item.key ? (
+                                                <>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        step="100"
+                                                        value={editedQty[item.key] ?? item.quantity}
+                                                        onChange={(e) => {
+                                                            const val = e.target.value;
+                                                            if (val === "") {
+                                                                setEditedQty((prev) => ({ ...prev, [item.key]: "" }));
+                                                            } else if (!isNaN(parseInt(val))) {
+                                                                setEditedQty((prev) => ({ ...prev, [item.key]: parseInt(val) }));
+                                                            }
+                                                        }}
+                                                        className="w-20 p-1 border rounded text-sm"
+                                                    />
+                                                    <button
+                                                        onClick={() => {
+                                                            const qty = editedQty[item.key];
+                                                            if (qty >= 500) {
+                                                                updateItemQty(item.key, qty);
+                                                                setEditingKey(null);
+                                                            }
+                                                        }}
+                                                        disabled={!editedQty[item.key] || editedQty[item.key] < 500}
+                                                        className={`text-sm px-2 py-1 rounded ${!editedQty[item.key] || editedQty[item.key] < 500
+                                                            ? "bg-gray-300 cursor-not-allowed"
+                                                            : "bg-black text-white cursor-pointer"
+                                                            }`}
+                                                    >
+                                                        Done
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <span>{item.quantity}</span>
+                                                    <button
+                                                        onClick={() => setEditingKey(item.key)}
+                                                        className="text-blue-600 text-xs underline cursor-pointer"
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                </>
+                                            )}
+
                                             <button
                                                 onClick={() => removeItem(item.key)}
                                                 className="text-red-600 text-xs hover:underline cursor-pointer"
@@ -141,6 +156,7 @@ export default function CartDrawer() {
                                                 Remove
                                             </button>
                                         </div>
+
 
                                         {/* Bottom row: warning (won't push layout) */}
                                         {editedQty[item.key] < 500 && (
