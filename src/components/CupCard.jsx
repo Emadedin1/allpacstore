@@ -266,6 +266,7 @@ export default function CupCard({ cup }) {
               >
                 Confirm Upload
               </button>
+              
             </div>
           </div>
         )}
