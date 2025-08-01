@@ -22,20 +22,10 @@ export default function Navbar() {
 
     // Listen for changes to localStorage from other tabs/windows
     window.addEventListener("storage", updateUserName);
+    window.addEventListener("focus", updateUserName);
     return () => {
       window.removeEventListener("storage", updateUserName);
-    };
-  }, []);
-
-  // Also update name after login in the same tab (on focus)
-  useEffect(() => {
-    function handleFocus() {
-      const name = localStorage.getItem("name");
-      setUserName(name || "");
-    }
-    window.addEventListener("focus", handleFocus);
-    return () => {
-      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("focus", updateUserName);
     };
   }, []);
 
