@@ -13,9 +13,9 @@ export default function CupCard({ cup }) {
   const { addItem, openCart } = useCart();
   const [showUploadPopup, setShowUploadPopup] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
-
-
-
+  const [uploadedDesign, setUploadedDesign] = useState(null); // for image file
+  const [previewURL, setPreviewURL] = useState(""); // for showing preview
+  const [isDragging, setIsDragging] = useState(false);
 
   // ─── Pricing logic ───
   const pricePerCup = cup.priceCase / cup.qtyCase;
@@ -37,6 +37,15 @@ export default function CupCard({ cup }) {
   const handleCardClick = () => {
     router.push(`/products/${cup.slug}`);
   };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith("image/")) {
+      setUploadedDesign(file);
+      setPreviewURL(URL.createObjectURL(file)); // show preview
+    }
+  };
+
 
   // ─── JSX ───
   return (
@@ -173,26 +182,67 @@ export default function CupCard({ cup }) {
               </p>
 
               {/* Upload Box */}
-              <div className="border-2 border-dashed border-gray-300 h-64 rounded-md p-6 text-center mb-6">
-                <div className="flex flex-col justify-center items-center h-full space-y-2">
-                  <p className="text-gray-700">Drag & Drop your design here</p>
-                  <p className="text-sm text-gray-500">
-                    Required: <strong>1000 x 1000 px</strong>
-                  </p>
-                  <label
-                    htmlFor="file-upload"
-                    className="text-blue-600 underline cursor-pointer hover:text-blue-800"
-                  >
-                    or Upload
-                    <input
-                      type="file"
-                      id="file-upload"
-                      className="hidden"
-                      onChange={(e) => setUploadedFile(e.target.files[0])}
+              <div
+                className={`border-2 border-dashed rounded-md p-6 text-center min-h-[180px] mb-6 transition-all ${isDragging ? "border-blue-500 bg-blue-50" : "border-gray-400"
+                  }`}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setIsDragging(true);
+                }}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setIsDragging(false);
+                  const file = e.dataTransfer.files[0];
+                  if (file && file.type.startsWith("image/")) {
+                    setUploadedFile(file);
+                    setPreviewURL(URL.createObjectURL(file));
+                  }
+                }}
+              >
+                {!previewURL ? (
+                  <>
+                    <p className="text-sm mb-2">Drop your design here</p>
+                    <p className="text-xs text-gray-500 mb-1">
+                      Required: <strong>1000 x 1000 px</strong>
+                    </p>
+                    <label
+                      htmlFor="design-upload"
+                      className="text-blue-600 text-sm cursor-pointer underline"
+                    >
+                      or Upload
+                      <input
+                        type="file"
+                        id="design-upload"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file && file.type.startsWith("image/")) {
+                            setUploadedFile(file);
+                            setPreviewURL(URL.createObjectURL(file));
+                          }
+                        }}
+                      />
+                    </label>
+                  </>
+                ) : (
+                  <div className="relative inline-block">
+                    <img
+                      src={previewURL}
+                      alt="Preview"
+                      className="w-100 h-100 object-contain mx-auto border rounded"
                     />
-
-                  </label>
-                </div>
+                    <button
+                      onClick={() => {
+                        setUploadedFile(null);
+                        setPreviewURL("");
+                      }}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-700"
+                    >
+                      ×
+                    </button>
+                  </div>
+                )}
               </div>
 
               {designType === "Custom" && !uploadedFile && (
@@ -200,7 +250,6 @@ export default function CupCard({ cup }) {
                   Please upload a design before adding to cart.
                 </p>
               )}
-
 
               {/* Placeholder for 3D Preview */}
               <div className="w-full h-48 bg-gray-100 rounded-md mb-6 flex items-center justify-center text-gray-400">
