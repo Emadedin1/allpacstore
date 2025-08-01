@@ -13,8 +13,9 @@ export default function CupCard({ cup }) {
   const { addItem, openCart } = useCart();
   const [showUploadPopup, setShowUploadPopup] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
-  const [uploadedDesign, setUploadedDesign] = useState(null); // for image file
-  const [previewURL, setPreviewURL] = useState(""); // for showing preview
+  const [uploadedDesign, setUploadedDesign] = useState(null); // file
+  const [previewURL, setPreviewURL] = useState("");           // object URL
+  const [confirmed, setConfirmed] = useState(false);          // confirmation flag
   const [isDragging, setIsDragging] = useState(false);
 
   // ─── Pricing logic ───
@@ -116,6 +117,14 @@ export default function CupCard({ cup }) {
             </button>
           )}
 
+          {designType === "Custom" && confirmed && uploadedDesign && (
+            <div className="mt-2 p-2 bg-white border rounded shadow-sm text-sm flex items-center gap-2">
+              <img src={previewURL} alt="Design Preview" className="w-10 h-10 object-contain rounded border" />
+              <span className="truncate max-w-[150px]">{uploadedDesign.name}</span>
+            </div>
+          )}
+
+
         </div>
 
         {/* Price per cup & subtotal */}
@@ -170,7 +179,7 @@ export default function CupCard({ cup }) {
               {/* Close button */}
               <button
                 onClick={() => setShowUploadPopup(false)}
-                className="absolute top-3 right-4 text-gray-400 text-2xl font-bold hover:text-black"
+                className="absolute top-3 right-4 text-gray-400 text-2xl font-bold hover:text-black cursor-pointer"
               >
                 ×
               </button>
@@ -219,6 +228,7 @@ export default function CupCard({ cup }) {
                           const file = e.target.files[0];
                           if (file && file.type.startsWith("image/")) {
                             setUploadedFile(file);
+                            setUploadedDesign(file);
                             setPreviewURL(URL.createObjectURL(file));
                           }
                         }}
@@ -259,14 +269,17 @@ export default function CupCard({ cup }) {
               {/* Confirm Button */}
               <button
                 onClick={() => {
-                  // Close for now, later you can trigger the next step
-                  setShowUploadPopup(false);
+                  if (uploadedDesign) {
+                    setConfirmed(true);             // ✅ mark design as confirmed
+                    setShowUploadPopup(false);     // ✅ close popup
+                  }
                 }}
                 className="w-full py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
               >
                 Confirm Upload
               </button>
-              
+
+
             </div>
           </div>
         )}
