@@ -19,29 +19,44 @@ export function CartProvider({ children }) {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  function addItem(item, qty = 1) {
+  function addItem(item, qty = 1, uploadedDesign = null, previewURL = "", designType = "Plain White") {
+    const designName = uploadedDesign?.name || designType;
+    const uniqueKey = `${item.slug}-${designType}-${designName}`;
+
     setCartItems((cur) => {
-      const exists = cur.find((c) => c.slug === item.slug);
+      const exists = cur.find((c) => c.key === uniqueKey);
+
       if (exists) {
         return cur.map((c) =>
-          c.slug === item.slug
-            ? { ...c, quantity: c.quantity + qty }
-            : c
+          c.key === uniqueKey ? { ...c, quantity: c.quantity + qty } : c
         );
       }
-      return [...cur, { ...item, quantity: qty }];
+
+      return [
+        ...cur,
+        {
+          ...item,
+          quantity: qty,
+          uploadedDesign,
+          previewURL,
+          designName: uploadedDesign?.name || "",
+          designType,
+          key: uniqueKey,
+        },
+      ];
     });
   }
 
-  function updateItemQty(slug, quantity) {
+  function updateItemQty(key, quantity) {
     setCartItems((cur) =>
-      cur.map((c) => (c.slug === slug ? { ...c, quantity } : c))
+      cur.map((c) => (c.key === key ? { ...c, quantity } : c))
     );
   }
 
-  function removeItem(slug) {
-    setCartItems((cur) => cur.filter((c) => c.slug !== slug));
-  }
+  const removeItem = (key) => {
+    setCartItems((prevItems) => prevItems.filter((item) => item.key !== key));
+  };
+
 
   function openCart() {
     setIsOpen(true);

@@ -88,7 +88,7 @@ export default function CartDrawer() {
                     cartItems.map((item) => {
                         const pricePerCup = item.priceCase / item.qtyCase;
                         return (
-                            <div key={item.slug} className="flex items-start space-x-3">
+                            <div key={item.key} className="flex items-start space-x-3">
                                 <img
                                     src={item.image}
                                     alt={`${item.size} cup`}
@@ -100,20 +100,34 @@ export default function CartDrawer() {
                                         ${(pricePerCup).toFixed(3)}/cup
                                     </p>
 
+                                    <p className="text-xs text-gray-600">
+                                        Design: {item.designType === "Custom"
+                                            ? item.designName || "Custom"
+                                            : item.designType}
+                                    </p>
+                                    {item.previewURL && (
+                                        <img
+                                            src={item.previewURL}
+                                            alt="Design Preview"
+                                            className="w-12 h-12 object-contain mt-1 border rounded"
+                                        />
+                                    )}
+
                                     <div className="flex items-center space-x-2">
                                         <input
                                             type="number"
-                                            min="300"
+                                            min="500"
                                             step="100"
                                             value={item.quantity}
                                             onChange={(e) =>
-                                                updateItemQty(item.slug, Number(e.target.value))
+                                                updateItemQty(item.key, Number(e.target.value))
                                             }
+
                                             className="w-20 p-1 border rounded text-sm"
                                             onClick={(e) => e.stopPropagation()}
                                         />
                                         <button
-                                            onClick={() => removeItem(item.slug)}
+                                            onClick={() => removeItem(item.key)}
                                             className="text-red-600 text-xs hover:underline cursor-pointer"
                                         >
                                             Remove

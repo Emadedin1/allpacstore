@@ -8,8 +8,8 @@ import { X, Plus, Minus } from "lucide-react";
 export default function CartPage() {
   const { cartItems, updateItemQty, removeItem } = useCart();
 
-  const handleQtyChange = (slug, delta) => {
-    const item = cartItems.find((i) => i.slug === slug);
+  const handleQtyChange = (key, delta) => {
+    const item = cartItems.find((i) => i.key === key);
     if (!item) return;
     const nextQty = item.quantity + delta;
     if (nextQty >= 300) updateItemQty(slug, nextQty);
@@ -50,7 +50,7 @@ export default function CartPage() {
 
             return (
               <div
-                key={`${item.slug}-${idx}`}
+                key={item.key}
                 className="border rounded-lg p-4 flex gap-4"
               >
                 {/* Product Image */}
@@ -67,22 +67,35 @@ export default function CartPage() {
                     <p className="text-sm text-gray-500">
                       ${pricePerCup.toFixed(3)}/cup · {item.qtyCase} per case
                     </p>
+                    <p className="text-xs text-gray-600 mt-1">
+                      Design: {item.designType === "Custom"
+                        ? item.designName || "Custom"
+                        : item.designType}
+                    </p>
+
+                    {item.previewURL && (
+                      <img
+                        src={item.previewURL}
+                        alt="Design Preview"
+                        className="w-12 h-12 object-contain mt-1 border rounded"
+                      />
+                    )}
+
                   </div>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => handleQtyChange(item.slug, -100)}
+                      onClick={() => handleQtyChange(item.key, -100)}
                       disabled={item.quantity <= 300}
-                      className={`p-1 border rounded ${
-                        item.quantity <= 300
-                          ? "opacity-50 cursor-not-allowed"
-                          : "cursor-pointer"
-                      }`}
+                      className={`p-1 border rounded ${item.quantity <= 300
+                        ? "opacity-50 cursor-not-allowed"
+                        : "cursor-pointer"
+                        }`}
                     >
                       <Minus size={16} />
                     </button>
                     <span>{item.quantity}</span>
                     <button
-                      onClick={() => handleQtyChange(item.slug, 100)}
+                      onClick={() => handleQtyChange(item.key, 100)}
                       className="p-1 border rounded cursor-pointer"
                     >
                       <Plus size={16} />
@@ -94,7 +107,7 @@ export default function CartPage() {
                 <div className="flex flex-col items-end justify-between">
                   <span className="font-semibold">${lineTotal}</span>
                   <button
-                    onClick={() => removeItem(item.slug)}
+                    onClick={() => removeItem(item.key)}
                     className="text-red-600 cursor-pointer"
                   >
                     <X size={16} />

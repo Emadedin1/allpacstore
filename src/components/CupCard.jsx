@@ -27,7 +27,7 @@ export default function CupCard({ cup }) {
   // ─── Stubbed cart actions ───
   function handleAddToCart(e) {
     e.stopPropagation();
-    addItem(cup, Number(caseQty) || 1);
+    addItem(cup, Number(caseQty) || 1, uploadedDesign, previewURL, designType);
     openCart();
   }
 
@@ -96,7 +96,18 @@ export default function CupCard({ cup }) {
           <select
             id={`design-${cup.slug}`}
             value={designType}
-            onChange={(e) => setDesignType(e.target.value)}
+            onChange={(e) => {
+              const newType = e.target.value;
+              setDesignType(newType);
+
+              // Clear uploaded file if switching away from custom
+              if (newType !== "Custom") {
+                setUploadedFile(null);
+                setUploadedDesign(null);
+                setPreviewURL("");
+                setConfirmed(false);
+              }
+            }}
             className="w-full border p-2 rounded-md text-sm"
           >
             {designOptions.map((opt) => (
@@ -117,12 +128,17 @@ export default function CupCard({ cup }) {
             </button>
           )}
 
-          {designType === "Custom" && confirmed && uploadedDesign && (
+          {designType === "Custom" && confirmed && uploadedDesign && previewURL && (
             <div className="mt-2 p-2 bg-white border rounded shadow-sm text-sm flex items-center gap-2">
-              <img src={previewURL} alt="Design Preview" className="w-10 h-10 object-contain rounded border" />
+              <img
+                src={previewURL}
+                alt="Design Preview"
+                className="w-10 h-10 object-contain rounded border"
+              />
               <span className="truncate max-w-[150px]">{uploadedDesign.name}</span>
             </div>
           )}
+
 
 
         </div>
@@ -270,14 +286,16 @@ export default function CupCard({ cup }) {
               <button
                 onClick={() => {
                   if (uploadedDesign) {
-                    setConfirmed(true);             // ✅ mark design as confirmed
-                    setShowUploadPopup(false);     // ✅ close popup
+                    setPreviewURL(URL.createObjectURL(uploadedDesign)); // ✅ Ensure preview is fresh
+                    setConfirmed(true);                                 // ✅ Mark as confirmed
+                    setShowUploadPopup(false);                          // ✅ Close popup
                   }
                 }}
                 className="w-full py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
               >
                 Confirm Upload
               </button>
+
 
 
             </div>
