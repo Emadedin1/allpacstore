@@ -1,10 +1,18 @@
-// src/app/about/page.jsx
+"use client";
+import Link from "next/link";
+
 export default function AboutPage() {
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-8">
+      {/* Top row with Back to Home */}
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-4xl font-bold mb-2">About Allpac</h1>
+        <Link href="/" className="text-blue-600 hover:underline whitespace-nowrap">
+          &larr; Back to Home
+        </Link>
+      </div>
       {/* Hero */}
       <section className="text-center">
-        <h1 className="text-4xl font-bold mb-2">About Allpac</h1>
         <p className="text-lg text-gray-700">
           Based in Windsor, Ontario, Allpac is Canada’s trusted partner for custom-printed paper cups. 
           From single cafés to major events, we help brands stand out—one sustainable cup at a time.
@@ -63,7 +71,7 @@ export default function AboutPage() {
       <section>
         <h2 className="text-2xl font-semibold mb-2">Community & Support</h2>
         <p className="text-gray-700">
-          As a student-founded, family-operated business, we’re passionate about Windsor’s local economy.
+          We’re passionate about Windsor’s local economy.
           Whether you’re a new café or an established chain, our team is here to guide you every step of the way.
         </p>
       </section>
