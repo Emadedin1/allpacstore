@@ -1,10 +1,19 @@
-// src/app/contact/page.jsx
+"use client";
+import Link from "next/link";
+
 export default function ContactPage() {
   return (
     <div className="p-6 max-w-3xl mx-auto space-y-8">
+      {/* Top row with Back to Home */}
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-3xl font-bold mb-2">Get in Touch</h1>
+        <Link href="/" className="text-blue-600 hover:underline whitespace-nowrap">
+          &larr; Back to Home
+        </Link>
+      </div>
+
       {/* Header */}
       <section className="text-center">
-        <h1 className="text-3xl font-bold mb-2">Get in Touch</h1>
         <p className="text-gray-700">
           Questions about custom orders, pricing, or just want to say hi? Our Allpac team is here to help.
         </p>
@@ -84,7 +93,6 @@ export default function ContactPage() {
           </button>
         </form>
       </section>
-
     </div>
   );
 }
