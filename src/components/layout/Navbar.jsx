@@ -6,10 +6,38 @@ import { useState, useRef, useEffect } from "react";
 
 export default function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [userName, setUserName] = useState("");
   const desktopUserButtonRef = useRef(null);
   const mobileUserButtonRef = useRef(null);
   const menuRef = useRef(null);
   const { openCart } = useCart();
+
+  // Fetch user name from localStorage on mount and when storage changes
+  useEffect(() => {
+    function updateUserName() {
+      const name = localStorage.getItem("name");
+      setUserName(name || "");
+    }
+    updateUserName();
+
+    // Listen for changes to localStorage from other tabs/windows
+    window.addEventListener("storage", updateUserName);
+    return () => {
+      window.removeEventListener("storage", updateUserName);
+    };
+  }, []);
+
+  // Also update name after login in the same tab (on focus)
+  useEffect(() => {
+    function handleFocus() {
+      const name = localStorage.getItem("name");
+      setUserName(name || "");
+    }
+    window.addEventListener("focus", handleFocus);
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -44,20 +72,38 @@ export default function Navbar() {
         style={{ top: "100%" }}
       >
         <div className="py-1 flex flex-col">
-          <Link
-            href="/login"
-            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-            onClick={() => setUserMenuOpen(false)}
-          >
-            Login
-          </Link>
-          <Link
-            href="/register"
-            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-            onClick={() => setUserMenuOpen(false)}
-          >
-            Create Account
-          </Link>
+          {!userName && (
+            <>
+              <Link
+                href="/login"
+                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                onClick={() => setUserMenuOpen(false)}
+              >
+                Login
+              </Link>
+              <Link
+                href="/register"
+                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                onClick={() => setUserMenuOpen(false)}
+              >
+                Create Account
+              </Link>
+            </>
+          )}
+          {userName && (
+            <button
+              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-left"
+              onClick={() => {
+                localStorage.removeItem("token");
+                localStorage.removeItem("name");
+                setUserMenuOpen(false);
+                setUserName("");
+                // Optionally, window.location.reload();
+              }}
+            >
+              Logout
+            </button>
+          )}
           <Link
             href="/order-history"
             className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
@@ -130,6 +176,11 @@ export default function Navbar() {
                 type="button"
               >
                 <User size={24} />
+                {userName && (
+                  <span className="ml-2 font-semibold text-gray-800 max-w-[120px] truncate" title={userName}>
+                    {userName}
+                  </span>
+                )}
               </button>
               {userMenuOpen && <UserDropdown />}
             </div>
@@ -164,6 +215,11 @@ export default function Navbar() {
                   type="button"
                 >
                   <User size={24} />
+                  {userName && (
+                    <span className="ml-2 font-semibold text-gray-800 max-w-[80px] truncate" title={userName}>
+                      {userName}
+                    </span>
+                  )}
                 </button>
                 {userMenuOpen && <UserDropdown />}
               </div>
