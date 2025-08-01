@@ -26,25 +26,36 @@ export default function ProductsPage() {
         <ProductSections />
       </section>
 
-      {/* How It Works - matches About style */}
-      <section className="max-w-4xl mx-auto">
-        <h2 className="text-2xl font-semibold mb-4">How It Works</h2>
-        <div className="grid md:grid-cols-3 gap-6 text-gray-700">
+      <section className="bg-gray-100 text-black py-16 px-4">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between gap-12 text-left">
+
           {/* Step 1 */}
-          <div className="space-y-2">
-            <h3 className="font-semibold">1. Choose Cup Size</h3>
-            <p>Pick from hot or cold cups in 5 size options.</p>
+          <div className="flex gap-4 items-start">
+            <span className="text-7xl font-bold leading-none">1</span>
+            <div>
+              <h3 className="text-xl font-semibold mb-1">Choose Cup Size</h3>
+              <p className="text-sm">Pick from hot or cold cups in 5 size options.</p>
+            </div>
           </div>
+
           {/* Step 2 */}
-          <div className="space-y-2">
-            <h3 className="font-semibold">2. Upload Your Design</h3>
-            <p>Easily upload your logo or artwork — we’ll take care of the rest.</p>
+          <div className="flex gap-4 items-start">
+            <span className="text-7xl font-bold leading-none">2</span>
+            <div>
+              <h3 className="text-xl font-semibold mb-1">Upload Your Design</h3>
+              <p className="text-sm">Easily upload your logo or artwork — we’ll take care of the rest.</p>
+            </div>
           </div>
+
           {/* Step 3 */}
-          <div className="space-y-2">
-            <h3 className="font-semibold">3. Add to Cart</h3>
-            <p>Select your quantity and checkout — we print & deliver.</p>
+          <div className="flex gap-4 items-start">
+            <span className="text-7xl font-bold leading-none">3</span>
+            <div>
+              <h3 className="text-xl font-semibold mb-1">Add to Cart</h3>
+              <p className="text-sm">Select your quantity and checkout — we print & deliver.</p>
+            </div>
           </div>
+
         </div>
       </section>
     </div>
