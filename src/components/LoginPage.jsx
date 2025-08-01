@@ -117,8 +117,8 @@ export default function LoginPage({ mode: initialMode = "login" }) {
       if (data.token) {
         localStorage.setItem("token", data.token);
       }
-      if (data.name) {
-        localStorage.setItem("name", data.name);
+      if (data.name && data.user.name) {
+        localStorage.setItem("name", data.user.name);
         window.dispatchEvent(new Event("userNameChanged")); // <-- ADD THIS
       }
       setSuccess(
