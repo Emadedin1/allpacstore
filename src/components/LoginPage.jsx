@@ -119,6 +119,8 @@ export default function LoginPage({ mode: initialMode = "login" }) {
         }
         if (data.name) {
           localStorage.setItem("name", data.name);
+          // Force update of Navbar in current tab immediately
+          window.dispatchEvent(new Event("userNameChanged"));
         }
         setSuccess(
           mode === "login"
