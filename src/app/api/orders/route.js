@@ -1,18 +1,14 @@
 import { NextResponse } from "next/server";
-import Order from "@/models/order"; // Adjust if your Order model is elsewhere
-import dbConnect from "@/lib/dbConnect"; // Adjust if your db connection util is elsewhere
-import { getServerSession } from "next-auth"; // If using next-auth for session
-import { authOptions } from "@/lib/authOptions"; // Adjust path to your NextAuth options
+import Order from "../../models/order"; // Fix the path as per your structure
+import dbConnect from "../../lib/dbConnect"; // Fix the path if needed
 
-// Helper to get user ID. Update this if you use a different auth system.
+// Stub: Replace this with your real user ID check!
 async function getUserId(request) {
-  // NextAuth example (update if using a different auth system):
-  const session = await getServerSession(authOptions);
-  if (!session || !session.user || !session.user.id) return null;
-  return session.user.id;
+  // TODO: Extract userId from your auth/session/cookie/JWT
+  // For now, return a dummy value or throw unauthorized
+  return null; // e.g. "64c3ef0b7b9d2b7bb9e5420a"
 }
 
-// GET /api/orders - get all orders for the logged-in user
 export async function GET(request) {
   await dbConnect();
 
