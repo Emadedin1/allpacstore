@@ -47,17 +47,17 @@ export default function CupCard({ cup }) {
     }
   };
 
-
   // ─── JSX ───
   return (
 
     <div className="
-    flex flex-col md:flex-row items-stretch
-    bg-blue-50 rounded-xl shadow-md overflow-hidden
-    w-full max-w-[620px] sm:max-w-full
-     hover:shadow-lg transition-shadow
-  "
-    >
+  flex flex-col md:flex-row items-stretch
+  bg-blue-50 rounded-xl shadow-md overflow-hidden
+  w-full max-w-[620px] sm:max-w-full
+  hover:shadow-lg transition-shadow
+  min-h-[380px]
+">
+
       {/* Left: product image */}
       <div
         onClick={handleCardClick}

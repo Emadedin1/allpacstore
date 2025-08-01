@@ -139,7 +139,7 @@ export default function CartDrawer() {
                                                 </>
                                             ) : (
                                                 <>
-                                                    <span>{item.quantity}</span>
+                                                    <span>Qty: {item.quantity}</span>
                                                     <button
                                                         onClick={() => setEditingKey(item.key)}
                                                         className="text-blue-600 text-xs underline cursor-pointer"
