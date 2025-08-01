@@ -1,4 +1,3 @@
-// src/app/products/page.jsx
 "use client";
 
 import ProductSections from "../../components/ProductSections";
@@ -6,52 +5,48 @@ import Link from "next/link";
 
 export default function ProductsPage() {
   return (
-    <main className="min-h-screen bg-white text-black py-12 px-4">
-      {/* Header */}
-      <div className="max-w-7xl mx-auto mb-8 flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Our Cup Selection</h1>
+    <div className="p-6 max-w-4xl mx-auto space-y-8">
+      {/* Top row with Back to Home */}
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-4xl font-bold mb-2">Our Cup Selection</h1>
         <Link href="/" className="text-blue-600 hover:underline whitespace-nowrap">
           &larr; Back to Home
         </Link>
       </div>
+
+      {/* Hero / Intro */}
+      <section className="text-center mb-8">
+        <p className="text-lg text-gray-700">
+          Discover our full range of sustainable, custom-printed cups. Whether you need hot or cold cups, we have the perfect size and style to make your brand stand out.
+        </p>
+      </section>
 
       {/* Product Grid */}
       <section id="product-sections">
         <ProductSections />
       </section>
 
-      <section className="mt-10 bg-gray-100 text-black py-16 px-4">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between gap-12 text-left">
-
+      {/* How It Works */}
+      <section>
+        <h2 className="text-2xl font-semibold mb-4">How It Works</h2>
+        <div className="grid md:grid-cols-3 gap-6 text-gray-700">
           {/* Step 1 */}
-          <div className="flex gap-4 items-start">
-            <span className="text-7xl font-bold leading-none">1</span>
-            <div>
-              <h3 className="text-xl font-semibold mb-1">Choose Cup Size</h3>
-              <p className="text-sm">Pick from hot or cold cups in 5 size options.</p>
-            </div>
+          <div className="space-y-2">
+            <h3 className="font-semibold">1. Choose Cup Size</h3>
+            <p>Pick from hot or cold cups in 5 size options.</p>
           </div>
-
           {/* Step 2 */}
-          <div className="flex gap-4 items-start">
-            <span className="text-7xl font-bold leading-none">2</span>
-            <div>
-              <h3 className="text-xl font-semibold mb-1">Upload Your Design</h3>
-              <p className="text-sm">Easily upload your logo or artwork — we’ll take care of the rest.</p>
-            </div>
+          <div className="space-y-2">
+            <h3 className="font-semibold">2. Upload Your Design</h3>
+            <p>Easily upload your logo or artwork — we’ll take care of the rest.</p>
           </div>
-
           {/* Step 3 */}
-          <div className="flex gap-4 items-start">
-            <span className="text-7xl font-bold leading-none">3</span>
-            <div>
-              <h3 className="text-xl font-semibold mb-1">Add to Cart</h3>
-              <p className="text-sm">Select your quantity and checkout — we print & deliver.</p>
-            </div>
+          <div className="space-y-2">
+            <h3 className="font-semibold">3. Add to Cart</h3>
+            <p>Select your quantity and checkout — we print & deliver.</p>
           </div>
-
         </div>
       </section>
-    </main>
+    </div>
   );
 }
