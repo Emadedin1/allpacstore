@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const styles = {
   container: {
@@ -84,6 +85,7 @@ export default function LoginPage({ mode: initialMode = "login" }) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [focus, setFocus] = useState(null);
+  const router = useRouter();
 
   // Read the base URL from an env var, fall back to current origin
   const API_BASE =
@@ -115,12 +117,22 @@ export default function LoginPage({ mode: initialMode = "login" }) {
         if (data.token) {
           localStorage.setItem("token", data.token);
         }
+        if (data.name) {
+          localStorage.setItem("name", data.name);
+        }
         setSuccess(
           mode === "login"
             ? "Login successful!"
             : "Account created! You can now log in."
         );
         setError("");
+
+        // Redirect to homepage after successful login
+        if (mode === "login") {
+          setTimeout(() => {
+            router.push("/");
+          }, 500); // short delay for feedback
+        }
       } else {
         setError(data.error || "Something went wrong");
       }
