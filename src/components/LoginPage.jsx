@@ -111,15 +111,15 @@ export default function LoginPage({ mode: initialMode = "login" }) {
       body: JSON.stringify(payload),
     });
     const data = await res.json();
-    console.log("LOGIN RESPONSE:", data); // <-- ADD THIS
+    console.log("LOGIN RESPONSE:", data);
 
     if (res.ok) {
       if (data.token) {
         localStorage.setItem("token", data.token);
       }
-      if (data.name && data.user.name) {
+      if (data.user && data.user.name) {
         localStorage.setItem("name", data.user.name);
-        window.dispatchEvent(new Event("userNameChanged")); // <-- ADD THIS
+        window.dispatchEvent(new Event("userNameChanged"));
       }
       setSuccess(
         mode === "login"
