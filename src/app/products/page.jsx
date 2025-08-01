@@ -5,29 +5,29 @@ import Link from "next/link";
 
 export default function ProductsPage() {
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-8">
-      {/* Top row with Back to Home */}
-      <div className="flex justify-between items-center mb-4">
+    <div className="p-6 space-y-8">
+      {/* Heading Row */}
+      <div className="max-w-4xl mx-auto flex justify-between items-center mb-4">
         <h1 className="text-4xl font-bold mb-2">Our Cup Selection</h1>
         <Link href="/" className="text-blue-600 hover:underline whitespace-nowrap">
           &larr; Back to Home
         </Link>
       </div>
 
-      {/* Hero / Intro */}
-      <section className="text-center mb-8">
+      {/* Intro Paragraph */}
+      <section className="max-w-4xl mx-auto text-center mb-8">
         <p className="text-lg text-gray-700">
           Discover our full range of sustainable, custom-printed cups. Whether you need hot or cold cups, we have the perfect size and style to make your brand stand out.
         </p>
       </section>
 
-      {/* Product Grid */}
-      <section id="product-sections">
+      {/* Product Grid - use a wide container */}
+      <section id="product-sections" className="max-w-7xl mx-auto">
         <ProductSections />
       </section>
 
-      {/* How It Works */}
-      <section>
+      {/* How It Works - matches About style */}
+      <section className="max-w-4xl mx-auto">
         <h2 className="text-2xl font-semibold mb-4">How It Works</h2>
         <div className="grid md:grid-cols-3 gap-6 text-gray-700">
           {/* Step 1 */}
