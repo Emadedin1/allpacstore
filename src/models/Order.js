@@ -11,7 +11,6 @@ const orderSchema = new mongoose.Schema({
       name: String,
       qty: Number,
       price: Number,
-      // add more item fields if needed
     },
   ],
   total: Number,
@@ -20,7 +19,6 @@ const orderSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  // add any other fields you need
 });
 
 export default mongoose.models.Order || mongoose.model("Order", orderSchema);
