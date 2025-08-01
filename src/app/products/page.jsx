@@ -10,7 +10,7 @@ export default function ProductsPage() {
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-8 flex justify-between items-center">
         <h1 className="text-3xl font-bold">Our Cup Selection</h1>
-        <Link href="/" className="text-blue-600 hover:underline">
+        <Link href="/" className="text-blue-600 hover:underline whitespace-nowrap">
           &larr; Back to Home
         </Link>
       </div>
