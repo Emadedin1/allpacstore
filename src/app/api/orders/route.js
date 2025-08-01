@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import Order from "../../models/Order"; // Fix the path as per your structure
-import dbConnect from "../../lib/dbConnect"; // Fix the path if needed
+import Order from "../../../models/Order"; // Fix the path as per your structure
+import dbConnect from "../../../lib/dbConnect"; // Fix the path if needed
 
 // Stub: Replace this with your real user ID check!
 async function getUserId(request) {
