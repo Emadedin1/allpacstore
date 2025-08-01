@@ -6,10 +6,19 @@ import { useState, useRef, useEffect } from "react";
 
 export default function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [userName, setUserName] = useState("");
   const desktopUserButtonRef = useRef(null);
   const mobileUserButtonRef = useRef(null);
   const menuRef = useRef(null);
   const { openCart } = useCart();
+
+  // Check for logged in user on component mount
+  useEffect(() => {
+    const storedUserName = localStorage.getItem("userName");
+    if (storedUserName) {
+      setUserName(storedUserName);
+    }
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -36,6 +45,15 @@ export default function Navbar() {
   }, [userMenuOpen]);
 
   function UserDropdown() {
+    const handleLogout = () => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userName");
+      setUserName("");
+      setUserMenuOpen(false);
+      // Optionally redirect to home or login page
+      window.location.href = "/";
+    };
+
     return (
       <div
         ref={menuRef}
@@ -44,27 +62,52 @@ export default function Navbar() {
         style={{ top: "100%" }}
       >
         <div className="py-1 flex flex-col">
-          <Link
-            href="/login"
-            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-            onClick={() => setUserMenuOpen(false)}
-          >
-            Login
-          </Link>
-          <Link
-            href="/register"
-            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-            onClick={() => setUserMenuOpen(false)}
-          >
-            Create Account
-          </Link>
-          <Link
-            href="/order-history"
-            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-            onClick={() => setUserMenuOpen(false)}
-          >
-            Order History
-          </Link>
+          {userName ? (
+            // Logged in user options
+            <>
+              <div className="px-4 py-2 text-gray-700 font-medium border-b">
+                Welcome, {userName}
+              </div>
+              <Link
+                href="/order-history"
+                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                onClick={() => setUserMenuOpen(false)}
+              >
+                Order History
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            // Not logged in options
+            <>
+              <Link
+                href="/login"
+                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                onClick={() => setUserMenuOpen(false)}
+              >
+                Login
+              </Link>
+              <Link
+                href="/register"
+                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                onClick={() => setUserMenuOpen(false)}
+              >
+                Create Account
+              </Link>
+              <Link
+                href="/order-history"
+                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                onClick={() => setUserMenuOpen(false)}
+              >
+                Order History
+              </Link>
+            </>
+          )}
         </div>
       </div>
     );
@@ -130,6 +173,11 @@ export default function Navbar() {
                 type="button"
               >
                 <User size={24} />
+                {userName && (
+                  <span className="ml-2 text-sm font-medium">
+                    {userName}
+                  </span>
+                )}
               </button>
               {userMenuOpen && <UserDropdown />}
             </div>
@@ -164,6 +212,11 @@ export default function Navbar() {
                   type="button"
                 >
                   <User size={24} />
+                  {userName && (
+                    <span className="ml-1 text-sm font-medium">
+                      {userName}
+                    </span>
+                  )}
                 </button>
                 {userMenuOpen && <UserDropdown />}
               </div>

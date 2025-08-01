@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const styles = {
   container: {
@@ -84,6 +85,7 @@ export default function LoginPage({ mode: initialMode = "login" }) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [focus, setFocus] = useState(null);
+  const router = useRouter();
 
   // Read the base URL from an env var, fall back to current origin
   const API_BASE =
@@ -111,16 +113,26 @@ export default function LoginPage({ mode: initialMode = "login" }) {
       const data = await res.json();
 
       if (res.ok) {
-        // save JWT (or whatever token your backend returns)
-        if (data.token) {
-          localStorage.setItem("token", data.token);
+        if (mode === "login") {
+          // Store token and userName for login
+          if (data.token) {
+            localStorage.setItem("token", data.token);
+          }
+          if (data.user && data.user.name) {
+            localStorage.setItem("userName", data.user.name);
+          }
+          setSuccess("Login successful!");
+          setError("");
+          
+          // Redirect to homepage after successful login
+          setTimeout(() => {
+            router.push("/");
+          }, 500);
+        } else {
+          // Registration success
+          setSuccess("Account created! You can now log in.");
+          setError("");
         }
-        setSuccess(
-          mode === "login"
-            ? "Login successful!"
-            : "Account created! You can now log in."
-        );
-        setError("");
       } else {
         setError(data.error || "Something went wrong");
       }
