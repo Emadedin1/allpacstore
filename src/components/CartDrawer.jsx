@@ -17,6 +17,7 @@ export default function CartDrawer() {
     const [isMobile, setIsMobile] = useState(null);
     const [editingKey, setEditingKey] = useState(null);
     const [editedQty, setEditedQty] = useState({});
+    const [originalQty, setOriginalQty] = useState({});
 
     useLayoutEffect(() => {
         if (typeof window !== "undefined") {
@@ -32,9 +33,14 @@ export default function CartDrawer() {
                 !drawerRef.current.contains(e.target) &&
                 !e.target.closest(".no-close")
             ) {
+                // 👇 Reset any in-progress edits
+                setEditingKey(null);
+                setEditedQty({});
+                setOriginalQty({});
                 closeCart();
             }
         }
+
 
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -60,9 +66,18 @@ export default function CartDrawer() {
             {/* Header */}
             <div className="p-4 flex justify-between items-center">
                 <h2 className="text-lg font-bold">Your Cart</h2>
-                <button onClick={closeCart} className="cursor-pointer">
+                <button
+                    onClick={() => {
+                        setEditingKey(null);
+                        setEditedQty({});
+                        setOriginalQty({});
+                        closeCart();
+                    }}
+                    className="cursor-pointer"
+                >
                     <X size={20} />
                 </button>
+
             </div>
 
             {/* Items */}
@@ -141,7 +156,12 @@ export default function CartDrawer() {
                                                 <>
                                                     <span>Qty: {item.quantity}</span>
                                                     <button
-                                                        onClick={() => setEditingKey(item.key)}
+                                                        onClick={() => {
+                                                            setEditingKey(item.key);
+                                                            setOriginalQty((prev) => ({ ...prev, [item.key]: item.quantity }));
+                                                            setEditedQty((prev) => ({ ...prev, [item.key]: item.quantity }));
+                                                        }}
+
                                                         className="text-blue-600 text-xs underline cursor-pointer"
                                                     >
                                                         Edit
