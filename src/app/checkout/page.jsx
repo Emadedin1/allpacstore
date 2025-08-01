@@ -61,12 +61,20 @@ export default function CheckoutPage() {
         {/* Right: Order Summary */}
         <div className="lg:w-80 border rounded p-4 space-y-2 sticky top-24">
           <h2 className="text-xl font-semibold">Order Summary</h2>
-          {cartItems.map((item, i) => (
-            <div key={`${item.slug}-${i}`} className="flex justify-between text-sm text-gray-700">
-              <span>{item.quantity}× {item.size} oz cup</span>
-              <span>${((item.priceCase / item.qtyCase) * item.quantity).toFixed(2)}</span>
+          {cartItems.map((item, idx) => (
+            <div key={idx} className="mb-2">
+              <div className="flex justify-between">
+                <span>{item.quantity}× {item.size} oz cup</span>
+                <span>${(item.priceCase / item.qtyCase * item.quantity).toFixed(2)}</span>
+              </div>
+              {item.designName && (
+                <p className="text-xs text-gray-500 ml-1">
+                  Design: {item.designName}
+                </p>
+              )}
             </div>
           ))}
+
           <div className="flex justify-between font-semibold mt-2">
             <span>Subtotal</span>
             <span>${subtotal}</span>

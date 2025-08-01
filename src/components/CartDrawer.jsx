@@ -16,6 +16,7 @@ export default function CartDrawer() {
     const drawerRef = useRef(null);
 
     const [isMobile, setIsMobile] = useState(null);
+    const [editingQty, setEditingQty] = useState(null);
 
     useLayoutEffect(() => {
         if (typeof window !== "undefined") {
@@ -73,13 +74,6 @@ export default function CartDrawer() {
                     <X size={20} />
                 </button>
             </div>
-            <Link
-                href="/cart"
-                onClick={closeCart}
-                className="mt-4 bg-black text-white text-center py-3 rounded hover:bg-gray-800 mx-4 mb-4"
-            >
-                Go to Cart
-            </Link>
             {/* Items */}
             <div className="p-4 flex-1 overflow-y-auto space-y-4">
                 {cartItems.length === 0 ? (
@@ -114,18 +108,30 @@ export default function CartDrawer() {
                                     )}
 
                                     <div className="flex items-center space-x-2">
-                                        <input
-                                            type="number"
-                                            min="500"
-                                            step="100"
-                                            value={item.quantity}
-                                            onChange={(e) =>
-                                                updateItemQty(item.key, Number(e.target.value))
-                                            }
-
-                                            className="w-20 p-1 border rounded text-sm"
-                                            onClick={(e) => e.stopPropagation()}
-                                        />
+                                        {editingQty === item.key ? (
+                                            <input
+                                                type="number"
+                                                min="500"
+                                                step="100"
+                                                value={item.quantity}
+                                                onChange={(e) => {
+                                                    const val = Number(e.target.value);
+                                                    if (val >= 500) updateItemQty(item.key, val);
+                                                }}
+                                                onBlur={() => setEditingQty(null)}
+                                                className="w-20 p-1 border rounded text-sm"
+                                            />
+                                        ) : (
+                                            <div className="flex items-center gap-2">
+                                                <span>{item.quantity}</span>
+                                                <button
+                                                    className="text-blue-600 text-xs underline"
+                                                    onClick={() => setEditingQty(item.key)}
+                                                >
+                                                    Edit
+                                                </button>
+                                            </div>
+                                        )}
                                         <button
                                             onClick={() => removeItem(item.key)}
                                             className="text-red-600 text-xs hover:underline cursor-pointer"
