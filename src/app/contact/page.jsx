@@ -3,24 +3,24 @@ import Link from "next/link";
 
 export default function ContactPage() {
   return (
-    <div className="p-6 max-w-3xl mx-auto space-y-8">
+    <div className="p-6 max-w-4xl mx-auto space-y-8">
       {/* Top row with Back to Home */}
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-bold mb-2">Get in Touch</h1>
+        <h1 className="text-4xl font-bold mb-2">Get in Touch</h1>
         <Link href="/" className="text-blue-600 hover:underline whitespace-nowrap">
           &larr; Back to Home
         </Link>
       </div>
 
-      {/* Header */}
-      <section className="text-center">
-        <p className="text-gray-700">
+      {/* Hero */}
+      <section className="text-center mb-8">
+        <p className="text-lg text-gray-700">
           Questions about custom orders, pricing, or just want to say hi? Our Allpac team is here to help.
         </p>
       </section>
 
       {/* Contact Info */}
-      <section className="space-y-2 text-gray-700">
+      <section className="space-y-2 text-gray-700 mb-8">
         <p><strong>🏭 Warehouse & Office</strong><br/>
         3324 Marentette Ave, Windsor, ON N8X 4G4</p>
         <p><strong>✉️ Email</strong><br/>
@@ -31,6 +31,7 @@ export default function ContactPage() {
 
       {/* Contact Form */}
       <section>
+        <h2 className="text-2xl font-semibold mb-4">Contact Form</h2>
         <form className="space-y-4">
           <div>
             <label htmlFor="name" className="block font-medium mb-1">Name</label>
