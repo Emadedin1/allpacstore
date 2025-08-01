@@ -50,15 +50,15 @@ export default function CartDrawer() {
         <div
             ref={drawerRef}
             className={`
-        fixed z-50 bg-white shadow-xl transform transition-transform duration-300 flex flex-col
+        fixed z-50 bg-white shadow-xl transform transition-transform duration-300 flex flex-col overflow-x-hidden
         ${isMobile
                     ? `${isOpen ? "translate-y-0" : "translate-y-full"} bottom-0 w-full h-1/2`
-                    : `${isOpen ? "translate-x-0" : "translate-x-full"} top-0 right-0 w-80 h-full`
+                    : `${isOpen ? "translate-x-0" : "translate-x-full"} top-[64px] right-0 w-[400px] h-[calc(100%-64px)]`
                 }
       `}
         >
             {/* Header */}
-            <div className="p-4 border-b flex justify-between items-center">
+            <div className="p-4 flex justify-between items-center">
                 <h2 className="text-lg font-bold">Your Cart</h2>
                 <button onClick={closeCart} className="cursor-pointer">
                     <X size={20} />
@@ -128,8 +128,8 @@ export default function CartDrawer() {
                                                 }}
                                                 disabled={!editedQty[item.key] || editedQty[item.key] < 500}
                                                 className={`text-sm px-2 py-1 rounded ${!editedQty[item.key] || editedQty[item.key] < 500
-                                                        ? "bg-gray-300 cursor-not-allowed"
-                                                        : "bg-black text-white cursor-pointer"
+                                                    ? "bg-gray-300 cursor-not-allowed"
+                                                    : "bg-black text-white cursor-pointer"
                                                     }`}
                                             >
                                                 Done
@@ -160,7 +160,7 @@ export default function CartDrawer() {
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t">
+            <div className="p-4">
                 <div className="flex justify-between mb-4 font-semibold">
                     <span>Total:</span>
                     <span>${total}</span>
