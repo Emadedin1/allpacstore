@@ -1,6 +1,6 @@
-// src/app/products/[slug]/page.jsx
 "use client";
 
+import { pricing } from "../../../utils/pricing";
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,14 +14,15 @@ export default function ProductPage({ params: { slug } }) {
   if (!product) return <div className="p-4">Product not found.</div>;
 
   // 2️⃣ Cart & UI state
-  const { addItem, openCart } = useCart();
+  const { addItem, openCart, isOpen } = useCart();
   const [designType, setDesignType] = useState("Plain White");
   const [designFile, setDesignFile] = useState(null);
   const [previewURL, setPreviewURL] = useState("");
   const [qty, setQty] = useState(""); // start empty
 
   // 3️⃣ Pricing & texture/model URLs
-  const pricePerCup = product.priceCase / product.qtyCase;
+  const { plain, custom } = pricing[slug];
+  const pricePerCup = designType === "Plain White" ? plain : custom;
   const subtotal = qty ? (pricePerCup * Number(qty)).toFixed(2) : "0.00";
 
   const TEXTURES = {
@@ -38,8 +39,16 @@ export default function ProductPage({ params: { slug } }) {
 
   // 4️⃣ Handlers
   const handleAdd = () => {
-    addItem(product, Number(qty), designFile, previewURL, designType);
-    openCart();
+    addItem(
+      product,
+      Number(qty),
+      designFile,
+      previewURL,
+      designType,
+      pricePerCup
+    );
+    // only open the drawer if it’s currently closed
+    if (!isOpen) openCart();
   };
   const handleUpload = (e) => {
     const file = e.target.files[0];
@@ -91,6 +100,31 @@ export default function ProductPage({ params: { slug } }) {
               Minimum order quantity is 500 cups.
             </p>
           </div>
+
+          {/* Pricing Breakdown Table under Overview */}
+          <div className="hidden md:block bg-white rounded-lg p-6 shadow mt-6">
+            <h3 className="text-lg font-semibold mb-3">Pricing Breakdown</h3>
+            <table className="w-full table-auto border-collapse">
+              <thead>
+                <tr>
+                  <th className="border px-3 py-2 text-left">Size</th>
+                  <th className="border px-3 py-2 text-left">Plain White</th>
+                  <th className="border px-3 py-2 text-left">Custom Design</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(pricing).map(([key, { plain, custom }]) => (
+                  <tr key={key}>
+                    <td className="border px-3 py-2">
+                      {key.replace(/(\d+)(oz)/, '$1 oz')}
+                    </td>
+                    <td className="border px-3 py-2">${plain.toFixed(3)}/cup</td>
+                    <td className="border px-3 py-2">${custom.toFixed(3)}/cup</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Right: Form + 3D + panels + mobile Overview */}
@@ -108,7 +142,7 @@ export default function ProductPage({ params: { slug } }) {
           <fieldset className="space-y-2">
             <legend className="font-medium">Design Type</legend>
             <div className="flex gap-6">
-              {["Plain White", "Preset A", "Preset B", "Custom"].map((opt) => (
+              {['Plain White', 'Preset A', 'Preset B', 'Custom'].map((opt) => (
                 <label key={opt} className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="radio"
@@ -127,8 +161,7 @@ export default function ProductPage({ params: { slug } }) {
               ))}
             </div>
 
-            {/* Custom Upload */}
-            {designType === "Custom" && (
+            {designType === 'Custom' && (
               <div className="mt-2 space-y-2">
                 <label className="inline-block bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 cursor-pointer text-sm">
                   Upload Design
@@ -139,13 +172,9 @@ export default function ProductPage({ params: { slug } }) {
                     className="hidden"
                   />
                 </label>
-
-                {/* ←–––––––– Our new hint ––––––––→ */}
-                <p className="text-red-600 text-sm font-medium mt-2">
+                <p className="text-red-600 text-sm font-medium">
                   Notice: For best results, upload an image sized 1024×864 (or similar 6:5 ratio).
                 </p>
-
-
                 {previewURL && (
                   <div className="flex items-center gap-2">
                     <img src={previewURL} className="w-10 h-10 rounded" />
@@ -154,7 +183,6 @@ export default function ProductPage({ params: { slug } }) {
                 )}
               </div>
             )}
-
           </fieldset>
 
           {/* Quantity & Add */}
@@ -175,13 +203,11 @@ export default function ProductPage({ params: { slug } }) {
               disabled={
                 !qty ||
                 Number(qty) < 500 ||
-                (designType === "Custom" && !designFile)
+                (designType === 'Custom' && !designFile)
               }
-              className={`w-full py-2 rounded-lg text-sm font-semibold ${qty &&
-                Number(qty) >= 500 &&
-                (designType !== "Custom" || designFile)
-                ? "bg-yellow-400 text-black hover:bg-yellow-500"
-                : "bg-gray-300 text-gray-600 cursor-not-allowed"
+              className={`w-full py-2 rounded-lg text-sm font-semibold ${qty && Number(qty) >= 500 && (designType !== 'Custom' || designFile)
+                ? 'bg-yellow-400 text-black hover:bg-yellow-500'
+                : 'bg-gray-300 text-gray-600 cursor-not-allowed'
                 }`}
             >
               Add to Cart
@@ -203,14 +229,13 @@ export default function ProductPage({ params: { slug } }) {
                 >
                   <span className="font-medium">{label}</span>
                   <span
-                    className={`transform transition-transform duration-200 ${openSections[label] ? "rotate-180" : ""
-                      }`}
+                    className={`transform transition-transform duration-200 ${openSections[label] ? 'rotate-180' : ''}`}
                   >
                     ▼
                   </span>
                 </button>
                 <div
-                  className={`px-4 overflow-hidden transition-[max-height] duration-300 ${openSections[label] ? "max-h-48 py-3" : "max-h-0 py-0"
+                  className={`px-4 overflow-hidden transition-[max-height] duration-300 ${openSections[label] ? 'max-h-48 py-3' : 'max-h-0 py-0'
                     }`}
                 >
                   {content.map((line, i) => (
@@ -245,29 +270,31 @@ export default function ProductPage({ params: { slug } }) {
       <div>
         <h2 className="text-2xl font-bold mb-4">Other Products</h2>
         <div className="flex space-x-4 overflow-x-auto pb-2">
-          {products.filter((p) => p.slug !== slug).map((p) => (
-            <Link
-              key={p.slug}
-              href={`/products/${p.slug}`}
-              className="flex flex-col bg-blue-50 rounded-xl shadow-md flex-shrink-0 w-60 hover:shadow-lg transition-shadow"
-            >
-              <div className="w-full h-[180px]">
-                <Image
-                  src={p.image}
-                  alt={p.name}
-                  width={320}
-                  height={180}
-                  className="object-cover w-full h-full rounded-t-xl"
-                />
-              </div>
-              <div className="p-4 flex flex-col flex-1 justify-between">
-                <h3 className="text-lg font-bold">{p.name}</h3>
-                <p className="text-sm font-semibold mt-2">
-                  ${(p.priceCase / p.qtyCase).toFixed(3)}/cup
-                </p>
-              </div>
-            </Link>
-          ))}
+          {products
+            .filter((p) => p.slug !== slug)
+            .map((p) => (
+              <Link
+                key={p.slug}
+                href={`/products/${p.slug}`}
+                className="flex flex-col bg-blue-50 rounded-xl shadow-md flex-shrink-0 w-60 hover:shadow-lg transition-shadow"
+              >
+                <div className="w-full h-[180px]">
+                  <Image
+                    src={p.image}
+                    alt={p.name}
+                    width={320}
+                    height={180}
+                    className="object-cover w-full h-full rounded-t-xl"
+                  />
+                </div>
+                <div className="p-4 flex flex-col flex-1 justify-between">
+                  <h3 className="text-lg font-bold">{p.name}</h3>
+                  <p className="text-sm font-semibold mt-2">
+                    ${(p.priceCase / p.qtyCase).toFixed(3)}/cup
+                  </p>
+                </div>
+              </Link>
+            ))}
         </div>
       </div>
     </main>

@@ -47,9 +47,12 @@ export default function CartDrawer() {
     }, [isOpen, closeCart]);
 
     const total = cartItems
-        .reduce((sum, item) => sum + (item.priceCase / item.qtyCase) * item.quantity, 0)
+        .reduce((sum, item) => {
+            // fallback to old priceCase/qtyCase if pricePerCup is missing
+            const ppc = item.pricePerCup ?? (item.priceCase / item.qtyCase);
+            return sum + ppc * item.quantity;
+        }, 0)
         .toFixed(2);
-
     if (isMobile === null) return null;
 
     return (
@@ -86,7 +89,7 @@ export default function CartDrawer() {
                     <p className="text-center text-gray-500">Your cart is empty.</p>
                 ) : (
                     cartItems.map((item) => {
-                        const pricePerCup = item.priceCase / item.qtyCase;
+                        const pricePerCup = item.pricePerCup ?? (item.priceCase / item.qtyCase);
                         const isEditing = editingKey === item.key;
 
                         return (

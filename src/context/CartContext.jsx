@@ -1,3 +1,4 @@
+// src/context/CartContext.jsx
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
@@ -19,7 +20,22 @@ export function CartProvider({ children }) {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  function addItem(item, qty = 1, uploadedDesign = null, previewURL = "", designType = "Plain White") {
+  /**
+   * @param {Object} item           - product object (must have slug, size, image, etc.)
+   * @param {number} qty            - number of cups to add
+   * @param {File|null} uploadedDesign
+   * @param {string} previewURL
+   * @param {string} designType     - "Plain White" or custom preset name
+   * @param {number} pricePerCup    - price per cup based on designType
+   */
+  function addItem(
+    item,
+    qty = 1,
+    uploadedDesign = null,
+    previewURL = "",
+    designType = "Plain White",
+    pricePerCup = 0
+  ) {
     const designName = uploadedDesign?.name || designType;
     const uniqueKey = `${item.slug}-${designType}-${designName}`;
 
@@ -28,20 +44,25 @@ export function CartProvider({ children }) {
 
       if (exists) {
         return cur.map((c) =>
-          c.key === uniqueKey ? { ...c, quantity: c.quantity + qty } : c
+          c.key === uniqueKey
+            ? { ...c, quantity: c.quantity + qty }
+            : c
         );
       }
 
       return [
         ...cur,
         {
-          ...item,
+          key: uniqueKey,
+          slug: item.slug,
+          size: item.size,
+          image: item.image,
           quantity: qty,
           uploadedDesign,
           previewURL,
-          designName: uploadedDesign?.name || "",
           designType,
-          key: uniqueKey,
+          designName: uploadedDesign?.name || "",
+          pricePerCup,
         },
       ];
     });
@@ -49,14 +70,19 @@ export function CartProvider({ children }) {
 
   function updateItemQty(key, quantity) {
     setCartItems((cur) =>
-      cur.map((c) => (c.key === key ? { ...c, quantity } : c))
+      cur.map((c) =>
+        c.key === key
+          ? { ...c, quantity }
+          : c
+      )
     );
   }
 
   const removeItem = (key) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.key !== key));
+    setCartItems((prevItems) =>
+      prevItems.filter((item) => item.key !== key)
+    );
   };
-
 
   function openCart() {
     setIsOpen(true);
