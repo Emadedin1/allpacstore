@@ -101,11 +101,22 @@ export default function Navbar() {
             <Link href="/products" className={`${navFontClass} ${navBtnClass}`}>Products</Link>
             <Link href="/about" className={`${navFontClass} ${navBtnClass}`}>About</Link>
             <Link href="/contact" className={`${navFontClass} ${navBtnClass}`}>Contact</Link>
-            <button onClick={openCart} className="text-allpac hover:text-red-600 cursor-pointer flex items-center" aria-label="View cart" type="button">
+            <button
+              onClick={openCart}
+              className="text-allpac hover:text-red-600 cursor-pointer flex items-center"
+              aria-label="View cart"
+              type="button"
+            >
               <ShoppingCart size={24} />
             </button>
             <div className="relative flex items-center">
-              <button ref={desktopUserButtonRef} onClick={toggleUserMenu} className="text-allpac hover:text-red-600 cursor-pointer flex items-center mt-[2px]" aria-label="Account" type="button">
+              <button
+                ref={desktopUserButtonRef}
+                onClick={toggleUserMenu}
+                className="text-allpac hover:text-red-600 cursor-pointer flex items-center"
+                aria-label="Account"
+                type="button"
+              >
                 <User size={24} />
                 {userName && (
                   <span className="ml-2 font-semibold text-gray-800 max-w-[120px] truncate" title={userName}>
@@ -130,7 +141,7 @@ export default function Navbar() {
                 <ShoppingCart size={24} />
               </button>
               <div className="relative flex items-center">
-                <button ref={mobileUserButtonRef} onClick={toggleUserMenu} className="text-allpac hover:text-red-600 cursor-pointer flex items-center mt-[2px]" aria-label="Account" type="button">
+                <button ref={mobileUserButtonRef} onClick={toggleUserMenu} className="text-allpac hover:text-red-600 cursor-pointer flex items-center" aria-label="Account" type="button">
                   <User size={24} />
                   {userName && (
                     <span className="ml-2 font-semibold text-gray-800 max-w-[80px] truncate" title={userName}>
