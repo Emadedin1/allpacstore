@@ -129,8 +129,8 @@ export default function ProductPage({ params: { slug } }) {
 
             {/* Custom Upload */}
             {designType === "Custom" && (
-              <div className="mt-3">
-                <label className="bg-indigo-600 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-indigo-700 text-sm inline-block">
+              <div className="mt-2 space-y-2">
+                <label className="inline-block bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 cursor-pointer text-sm">
                   Upload Design
                   <input
                     type="file"
@@ -139,14 +139,22 @@ export default function ProductPage({ params: { slug } }) {
                     className="hidden"
                   />
                 </label>
+
+                {/* ←–––––––– Our new hint ––––––––→ */}
+                <p className="text-red-600 text-sm font-medium mt-2">
+                  Notice: For best results, upload an image sized 1024×864 (or similar 6:5 ratio).
+                </p>
+
+
                 {previewURL && (
-                  <div className="mt-2 flex items-center gap-2">
+                  <div className="flex items-center gap-2">
                     <img src={previewURL} className="w-10 h-10 rounded" />
                     <span className="text-sm">{designFile.name}</span>
                   </div>
                 )}
               </div>
             )}
+
           </fieldset>
 
           {/* Quantity & Add */}
@@ -169,13 +177,12 @@ export default function ProductPage({ params: { slug } }) {
                 Number(qty) < 500 ||
                 (designType === "Custom" && !designFile)
               }
-              className={`w-full py-2 rounded-lg text-sm font-semibold ${
-                qty &&
+              className={`w-full py-2 rounded-lg text-sm font-semibold ${qty &&
                 Number(qty) >= 500 &&
                 (designType !== "Custom" || designFile)
-                  ? "bg-yellow-400 text-black hover:bg-yellow-500"
-                  : "bg-gray-300 text-gray-600 cursor-not-allowed"
-              }`}
+                ? "bg-yellow-400 text-black hover:bg-yellow-500"
+                : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                }`}
             >
               Add to Cart
             </button>
@@ -196,17 +203,15 @@ export default function ProductPage({ params: { slug } }) {
                 >
                   <span className="font-medium">{label}</span>
                   <span
-                    className={`transform transition-transform duration-200 ${
-                      openSections[label] ? "rotate-180" : ""
-                    }`}
+                    className={`transform transition-transform duration-200 ${openSections[label] ? "rotate-180" : ""
+                      }`}
                   >
                     ▼
                   </span>
                 </button>
                 <div
-                  className={`px-4 overflow-hidden transition-[max-height] duration-300 ${
-                    openSections[label] ? "max-h-48 py-3" : "max-h-0 py-0"
-                  }`}
+                  className={`px-4 overflow-hidden transition-[max-height] duration-300 ${openSections[label] ? "max-h-48 py-3" : "max-h-0 py-0"
+                    }`}
                 >
                   {content.map((line, i) => (
                     <p key={i} className="text-gray-700 text-sm">{line}</p>

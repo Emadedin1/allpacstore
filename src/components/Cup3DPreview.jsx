@@ -2,33 +2,35 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Canvas, useFrame, useLoader } from "@react-three/fiber";
+import { Canvas, useLoader } from "@react-three/fiber";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { TextureLoader, RepeatWrapping } from "three";
 import { OrbitControls } from "@react-three/drei";
 
 function CupModel({ modelURL, dynamicTextureURL }) {
-  // 1️⃣ Load GLB once
+  // Load the GLTF model
   const gltf = useLoader(GLTFLoader, modelURL);
-
-  // 2️⃣ Load two textures: one dynamic (user/preset) and one static white
-  const dynamicTex = useLoader(TextureLoader, dynamicTextureURL);
+  
+  // Load dynamic (user or preset) texture or fallback to white
+  const dynamicSrc = dynamicTextureURL || "/textures/plain-white.png";
+  const dynamicTex = useLoader(TextureLoader, dynamicSrc);
   const whiteTex   = useLoader(TextureLoader, "/textures/plain-white.png");
 
-  // 3️⃣ Ensure proper wrapping
+  // Ensure both textures repeat correctly
   [dynamicTex, whiteTex].forEach((tex) => {
     tex.wrapS = tex.wrapT = RepeatWrapping;
     tex.repeat.set(1, 1);
   });
 
-  // 4️⃣ When loaders finish, assign per-material
+  // Once loaded, assign textures based on material name
   useEffect(() => {
     gltf.scene.traverse((obj) => {
       if (obj.isMesh) {
-        // Blender material names must match these
+        // In Blender, name the printed-design material "Textured"
         if (obj.material.name === "Textured") {
           obj.material.map = dynamicTex;
         } else {
+          // All other parts (e.g. inner cup) stay white
           obj.material.map = whiteTex;
         }
         obj.material.needsUpdate = true;
@@ -36,17 +38,15 @@ function CupModel({ modelURL, dynamicTextureURL }) {
     });
   }, [gltf, dynamicTex, whiteTex]);
 
-  // 5️⃣ Optional: slow auto-rotate
-
-
   return <primitive object={gltf.scene} />;
 }
+
 
 export default function Cup3DPreview({ modelURL, textureURL }) {
   const [canLoad, setCanLoad] = useState(false);
   const [hovered, setHovered] = useState(false);
 
-  // Quick HEAD check so we always render the <Canvas> even if the model is missing
+  // HEAD-check so we always render the canvas
   useEffect(() => {
     fetch(modelURL, { method: "HEAD" })
       .then((res) => setCanLoad(res.ok))
