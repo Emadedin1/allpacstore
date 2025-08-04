@@ -82,9 +82,9 @@ export default function Navbar() {
     setUserMenuOpen((prev) => !prev);
   };
 
-  // Font choices for nav links (no vertical padding!)
-  const navFontClass = "font-medium tracking-tight text-[1.08rem] flex items-center"; // flex+items-center for vertical align
-  const navBtnClass = "px-2 rounded hover:bg-gray-100 transition"; // remove py-2
+  // Remove vertical padding and use flex for nav links
+  const navFontClass = "font-medium tracking-tight text-[1.08rem]";
+  const navBtnClass = "px-2 flex items-center hover:bg-gray-100 transition"; // flex + items-center
 
   return (
     <header className="bg-white shadow-md relative" style={{ fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
@@ -95,17 +95,17 @@ export default function Navbar() {
           <Link href="/">
             <img src="/images/allpac-logo.png" alt="Allpac Logo" className="h-12 w-auto" />
           </Link>
-          {/* Right section: nav links + cart + user */}
-          <div className="flex items-center space-x-8">
-            {/* Nav links next to cart and user, use flex for each */}
+          {/* Right: nav links, cart, user - all in one flex container for perfect vertical alignment */}
+          <div className="flex items-center gap-x-8">
             <Link href="/products" className={`${navFontClass} ${navBtnClass}`}>Products</Link>
             <Link href="/about" className={`${navFontClass} ${navBtnClass}`}>About</Link>
             <Link href="/contact" className={`${navFontClass} ${navBtnClass}`}>Contact</Link>
             <button
               onClick={openCart}
-              className="text-allpac hover:text-red-600 cursor-pointer flex items-center" // flex for icon vertical align
+              className="text-allpac hover:text-red-600 cursor-pointer flex items-center"
               aria-label="View cart"
               type="button"
+              style={{ verticalAlign: "middle" }}
             >
               <ShoppingCart size={24} />
             </button>
@@ -113,9 +113,10 @@ export default function Navbar() {
               <button
                 ref={desktopUserButtonRef}
                 onClick={toggleUserMenu}
-                className="text-allpac hover:text-red-600 cursor-pointer flex items-center" // flex for icon vertical align
+                className="text-allpac hover:text-red-600 cursor-pointer flex items-center"
                 aria-label="Account"
                 type="button"
+                style={{ verticalAlign: "middle" }}
               >
                 <User size={24} />
                 {userName && (
