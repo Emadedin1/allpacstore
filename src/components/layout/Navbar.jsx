@@ -82,9 +82,10 @@ export default function Navbar() {
     setUserMenuOpen((prev) => !prev);
   };
 
-  // Remove vertical padding and use flex for nav links
+  // Small vertical adjustment for nav links (push down by 2px)
   const navFontClass = "font-medium tracking-tight text-[1.08rem]";
-  const navBtnClass = "px-2 flex items-center hover:bg-gray-100 transition"; // flex + items-center
+  const navBtnClass = "px-2 flex items-center hover:bg-gray-100 transition";
+  const navLinkStyle = { position: "relative", top: "2px" }; // pushes links down by 2px
 
   return (
     <header className="bg-white shadow-md relative" style={{ fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
@@ -95,17 +96,16 @@ export default function Navbar() {
           <Link href="/">
             <img src="/images/allpac-logo.png" alt="Allpac Logo" className="h-12 w-auto" />
           </Link>
-          {/* Right: nav links, cart, user - all in one flex container for perfect vertical alignment */}
+          {/* Right: nav links, cart, user - all in one flex container for vertical alignment */}
           <div className="flex items-center gap-x-8">
-            <Link href="/products" className={`${navFontClass} ${navBtnClass}`}>Products</Link>
-            <Link href="/about" className={`${navFontClass} ${navBtnClass}`}>About</Link>
-            <Link href="/contact" className={`${navFontClass} ${navBtnClass}`}>Contact</Link>
+            <Link href="/products" className={`${navFontClass} ${navBtnClass}`} style={navLinkStyle}>Products</Link>
+            <Link href="/about" className={`${navFontClass} ${navBtnClass}`} style={navLinkStyle}>About</Link>
+            <Link href="/contact" className={`${navFontClass} ${navBtnClass}`} style={navLinkStyle}>Contact</Link>
             <button
               onClick={openCart}
               className="text-allpac hover:text-red-600 cursor-pointer flex items-center"
               aria-label="View cart"
               type="button"
-              style={{ verticalAlign: "middle" }}
             >
               <ShoppingCart size={24} />
             </button>
@@ -116,7 +116,6 @@ export default function Navbar() {
                 className="text-allpac hover:text-red-600 cursor-pointer flex items-center"
                 aria-label="Account"
                 type="button"
-                style={{ verticalAlign: "middle" }}
               >
                 <User size={24} />
                 {userName && (
