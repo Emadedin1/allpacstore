@@ -1,29 +1,46 @@
+// src/app/products/[slug]/page.jsx
 "use client";
 
-import { getProductBySlug, products } from "../../../data/products";
-import { useCart } from "../../../context/CartContext";
-import { useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useCart } from "../../../context/CartContext";
+import { getProductBySlug, products } from "../../../data/products";
+import Cup3DPreview from "../../../components/Cup3DPreview";
 
 export default function ProductPage({ params: { slug } }) {
+  // 1️⃣ Lookup product
   const product = getProductBySlug(slug);
   if (!product) return <div className="p-4">Product not found.</div>;
 
+  // 2️⃣ Cart & UI state
   const { addItem, openCart } = useCart();
   const [designType, setDesignType] = useState("Plain White");
   const [designFile, setDesignFile] = useState(null);
   const [previewURL, setPreviewURL] = useState("");
   const [qty, setQty] = useState(""); // start empty
 
+  // 3️⃣ Pricing & texture/model URLs
   const pricePerCup = product.priceCase / product.qtyCase;
   const subtotal = qty ? (pricePerCup * Number(qty)).toFixed(2) : "0.00";
 
+  const TEXTURES = {
+    "Plain White": "/textures/plain-white.png",
+    "Preset A": "/textures/preset-a.png",
+    "Preset B": "/textures/preset-b.png",
+  };
+
+  // load `<slug>.glb` from your `/public/models` folder
+  const modelURL = `/models/${slug}.glb`;
+  // if custom, use blob preview; otherwise pick from your presets
+  const textureURL =
+    designType === "Custom" ? previewURL : TEXTURES[designType];
+
+  // 4️⃣ Handlers
   const handleAdd = () => {
     addItem(product, Number(qty), designFile, previewURL, designType);
     openCart();
   };
-
   const handleUpload = (e) => {
     const file = e.target.files[0];
     if (file?.type.startsWith("image/")) {
@@ -32,10 +49,12 @@ export default function ProductPage({ params: { slug } }) {
     }
   };
 
-  // Build your collapsible specs from data
-  const specs = Object.entries(product.specs).map(
-    ([label, lines]) => ({ label, content: lines })
-  );
+  // 5️⃣ Specs panels
+  const specs = [
+    { label: "Description", content: product.desc.split(". ").filter(Boolean) },
+    { label: "Material", content: [product.type] },
+    { label: "Case Qty", content: [`${product.qtyCase} cups per case`] },
+  ];
   const [openSections, setOpenSections] = useState(
     specs.reduce((acc, s) => ({ ...acc, [s.label]: false }), {})
   );
@@ -43,9 +62,10 @@ export default function ProductPage({ params: { slug } }) {
     setOpenSections((prev) => ({ ...prev, [label]: !prev[label] }));
 
   return (
-    <main className="max-w-6xl mx-auto p-4 md:p-6 space-y-6 md:space-y-8">
-      {/* Top: Image + Overview (desktop) */}
-      <div className="flex flex-col gap-6 md:flex-row md:gap-8">
+    <main className="max-w-6xl mx-auto p-4 md:p-6 space-y-8">
+      {/* ── TOP SECTION ── */}
+      <div className="flex flex-col md:flex-row gap-8">
+        {/* Left: Image + desktop Overview */}
         <div className="md:w-1/2 space-y-4">
           <Image
             src={product.image}
@@ -53,13 +73,13 @@ export default function ProductPage({ params: { slug } }) {
             width={600}
             height={600}
             className="rounded-lg object-cover w-full"
+            priority
           />
-          {/* Desktop-only Overview */}
-          <div className="hidden md:block mt-6 bg-gray-100 rounded-lg p-6">
+          <div className="hidden md:block bg-gray-100 rounded-lg p-6 mt-6">
             <h2 className="text-2xl font-semibold mb-3">Overview</h2>
             <p className="text-gray-700 mb-2">{product.desc}</p>
             <p className="text-gray-700 mb-1">
-              <strong>Material:</strong> {product.specs.Material.join(", ")}
+              <strong>Material:</strong> {product.type}
             </p>
             <p className="text-gray-700 mb-1">
               <strong>Case Qty:</strong> {product.qtyCase} cups
@@ -73,23 +93,23 @@ export default function ProductPage({ params: { slug } }) {
           </div>
         </div>
 
-        {/* RIGHT: Form + panels + mobile Overview */}
-        <div className="md:w-1/2 space-y-4">
-          <h1 className="text-2xl md:text-4xl font-bold">{product.name}</h1>
-          <p className="text-gray-600 text-sm md:text-base">{product.desc}</p>
-          <p className="text-lg md:text-xl font-semibold">
-            ${pricePerCup.toFixed(3)}/cup — ${product.priceCase}/case
-          </p>
+        {/* Right: Form + 3D + panels + mobile Overview */}
+        <div className="md:w-1/2 space-y-6">
+          {/* Title & Price */}
+          <div className="space-y-1">
+            <h1 className="text-3xl font-bold">{product.name}</h1>
+            <p className="text-gray-600 text-sm">{product.desc}</p>
+            <p className="text-lg font-semibold">
+              ${pricePerCup.toFixed(3)}/cup — ${product.priceCase}/case
+            </p>
+          </div>
 
           {/* Design Type */}
           <fieldset className="space-y-2">
             <legend className="font-medium">Design Type</legend>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex gap-6">
               {["Plain White", "Preset A", "Preset B", "Custom"].map((opt) => (
-                <label
-                  key={opt}
-                  className="flex items-center gap-2 cursor-pointer"
-                >
+                <label key={opt} className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="radio"
                     name="design"
@@ -97,8 +117,8 @@ export default function ProductPage({ params: { slug } }) {
                     checked={designType === opt}
                     onChange={() => {
                       setDesignType(opt);
-                      setDesignFile(null);
                       setPreviewURL("");
+                      setDesignFile(null);
                     }}
                     className="w-5 h-5 border-2 rounded-full checked:bg-yellow-400"
                   />
@@ -106,9 +126,11 @@ export default function ProductPage({ params: { slug } }) {
                 </label>
               ))}
             </div>
+
+            {/* Custom Upload */}
             {designType === "Custom" && (
-              <div className="mt-2">
-                <label className="inline-block bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 cursor-pointer text-sm">
+              <div className="mt-3">
+                <label className="bg-indigo-600 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-indigo-700 text-sm inline-block">
                   Upload Design
                   <input
                     type="file"
@@ -127,17 +149,17 @@ export default function ProductPage({ params: { slug } }) {
             )}
           </fieldset>
 
-          {/* Qty + Add */}
+          {/* Quantity & Add */}
           <div className="space-y-2">
             <label className="block font-medium text-sm">Quantity</label>
             <input
               type="number"
               min={500}
               step={100}
-              value={qty}
               placeholder="Qty (Min. 500)"
+              value={qty}
               onChange={(e) => setQty(e.target.value)}
-              className="w-24 md:w-32 border rounded p-2 text-sm"
+              className="w-32 border rounded p-2 text-sm"
             />
             <p className="font-semibold text-sm">Subtotal: ${subtotal}</p>
             <button
@@ -147,7 +169,7 @@ export default function ProductPage({ params: { slug } }) {
                 Number(qty) < 500 ||
                 (designType === "Custom" && !designFile)
               }
-              className={`no-close w-full py-2 md:py-3 rounded-lg font-semibold text-sm ${
+              className={`w-full py-2 rounded-lg text-sm font-semibold ${
                 qty &&
                 Number(qty) >= 500 &&
                 (designType !== "Custom" || designFile)
@@ -159,21 +181,18 @@ export default function ProductPage({ params: { slug } }) {
             </button>
           </div>
 
-          {/* 3D Preview */}
-          <div className="mt-4 md:mt-6 w-full h-48 md:h-64 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 text-sm">
-            3D Preview Coming Soon
+          {/* 3D Canvas */}
+          <div className="w-full h-64 md:h-96">
+            <Cup3DPreview modelURL={modelURL} textureURL={textureURL} />
           </div>
 
-          {/* Panels */}
-          <div className="space-y-4 mt-6 md:mt-8">
+          {/* Collapsible Specs */}
+          <div className="space-y-4">
             {specs.map(({ label, content }) => (
-              <div
-                key={label}
-                className="border rounded-lg shadow-sm overflow-hidden"
-              >
+              <div key={label} className="border rounded-lg overflow-hidden shadow-sm">
                 <button
                   onClick={() => toggle(label)}
-                  className="w-full px-4 py-2 md:py-3 bg-white flex justify-between items-center hover:bg-gray-50 transition text-sm md:text-base"
+                  className="w-full flex justify-between items-center px-4 py-2 bg-white hover:bg-gray-50 transition text-sm"
                 >
                   <span className="font-medium">{label}</span>
                   <span
@@ -186,13 +205,11 @@ export default function ProductPage({ params: { slug } }) {
                 </button>
                 <div
                   className={`px-4 overflow-hidden transition-[max-height] duration-300 ${
-                    openSections[label] ? "max-h-60 py-3" : "max-h-0 py-0"
+                    openSections[label] ? "max-h-48 py-3" : "max-h-0 py-0"
                   }`}
                 >
                   {content.map((line, i) => (
-                    <p key={i} className="text-gray-700 text-sm md:text-base">
-                      {line}
-                    </p>
+                    <p key={i} className="text-gray-700 text-sm">{line}</p>
                   ))}
                 </div>
               </div>
@@ -200,11 +217,11 @@ export default function ProductPage({ params: { slug } }) {
           </div>
 
           {/* Mobile Overview */}
-          <div className="md:hidden mt-6 bg-gray-100 rounded-lg p-4">
+          <div className="md:hidden bg-gray-100 rounded-lg p-4">
             <h2 className="text-xl font-semibold mb-2">Overview</h2>
             <p className="text-gray-700 mb-2">{product.desc}</p>
             <p className="text-gray-700 mb-1">
-              <strong>Material:</strong> {product.specs.Material.join(", ")}
+              <strong>Material:</strong> {product.type}
             </p>
             <p className="text-gray-700 mb-1">
               <strong>Case Qty:</strong> {product.qtyCase} cups
@@ -219,37 +236,33 @@ export default function ProductPage({ params: { slug } }) {
         </div>
       </div>
 
-      {/* Other Products Carousel */}
+      {/* ── OTHER PRODUCTS CAROUSEL ── */}
       <div>
-        <h2 className="text-xl md:text-2xl font-bold mb-4">
-          Other Products
-        </h2>
+        <h2 className="text-2xl font-bold mb-4">Other Products</h2>
         <div className="flex space-x-4 overflow-x-auto pb-2">
-          {products
-            .filter((p) => p.slug !== slug)
-            .map((p) => (
-              <Link
-                key={p.slug}
-                href={`/products/${p.slug}`}
-                className="flex flex-col bg-blue-50 rounded-xl shadow-md flex-shrink-0 w-60 hover:shadow-lg transition-shadow"
-              >
-                <div className="w-full h-[180px] cursor-pointer">
-                  <Image
-                    src={p.image}
-                    alt={p.name}
-                    width={320}
-                    height={180}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-4 flex flex-col flex-1 justify-between">
-                  <h3 className="text-lg font-bold">{p.name}</h3>
-                  <p className="text-sm font-semibold mt-2">
-                    ${(p.priceCase / p.qtyCase).toFixed(3)}/cup
-                  </p>
-                </div>
-              </Link>
-            ))}
+          {products.filter((p) => p.slug !== slug).map((p) => (
+            <Link
+              key={p.slug}
+              href={`/products/${p.slug}`}
+              className="flex flex-col bg-blue-50 rounded-xl shadow-md flex-shrink-0 w-60 hover:shadow-lg transition-shadow"
+            >
+              <div className="w-full h-[180px]">
+                <Image
+                  src={p.image}
+                  alt={p.name}
+                  width={320}
+                  height={180}
+                  className="object-cover w-full h-full rounded-t-xl"
+                />
+              </div>
+              <div className="p-4 flex flex-col flex-1 justify-between">
+                <h3 className="text-lg font-bold">{p.name}</h3>
+                <p className="text-sm font-semibold mt-2">
+                  ${(p.priceCase / p.qtyCase).toFixed(3)}/cup
+                </p>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </main>
