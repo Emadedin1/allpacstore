@@ -89,37 +89,35 @@ export default function Navbar() {
   return (
     <header className="bg-white shadow-md relative" style={{ fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
       <div className="max-w-7xl mx-auto px-4 py-4">
-        {/* Desktop navbar */}
-        <div className="hidden sm:flex flex-col w-full relative">
-          {/* Top row: logo, cart, user */}
-          <div className="flex items-center justify-between w-full">
-            <Link href="/">
-              <img src="/images/allpac-logo.png" alt="Allpac Logo" className="h-12 w-auto" />
-            </Link>
-            <div className="flex items-center space-x-6">
-              <button onClick={openCart} className="text-allpac hover:text-red-600 cursor-pointer flex items-center" aria-label="View cart" type="button">
-                <ShoppingCart size={24} />
-              </button>
-              <div className="relative flex items-center">
-                <button ref={desktopUserButtonRef} onClick={toggleUserMenu} className="text-allpac hover:text-red-600 cursor-pointer flex items-center mt-[2px]" aria-label="Account" type="button">
-                  <User size={24} />
-                  {userName && (
-                    <span className="ml-2 font-semibold text-gray-800 max-w-[120px] truncate" title={userName}>
-                      {userName}
-                    </span>
-                  )}
-                </button>
-                {userMenuOpen && <UserDropdown />}
-              </div>
-            </div>
-          </div>
-          {/* No horizontal line for desktop */}
-          {/* Second row: main nav links */}
-          <nav className="flex justify-center space-x-8 mt-3 mb-1">
+        {/* Desktop navbar - all in one row */}
+        <div className="hidden sm:flex items-center justify-between w-full relative">
+          {/* Left: logo */}
+          <Link href="/">
+            <img src="/images/allpac-logo.png" alt="Allpac Logo" className="h-12 w-auto" />
+          </Link>
+          {/* Center: nav links */}
+          <div className="flex items-center space-x-8">
             <Link href="/products" className={`${navFontClass} ${navBtnClass}`}>Products</Link>
             <Link href="/about" className={`${navFontClass} ${navBtnClass}`}>About</Link>
             <Link href="/contact" className={`${navFontClass} ${navBtnClass}`}>Contact</Link>
-          </nav>
+          </div>
+          {/* Right: cart and user */}
+          <div className="flex items-center space-x-6">
+            <button onClick={openCart} className="text-allpac hover:text-red-600 cursor-pointer flex items-center" aria-label="View cart" type="button">
+              <ShoppingCart size={24} />
+            </button>
+            <div className="relative flex items-center">
+              <button ref={desktopUserButtonRef} onClick={toggleUserMenu} className="text-allpac hover:text-red-600 cursor-pointer flex items-center mt-[2px]" aria-label="Account" type="button">
+                <User size={24} />
+                {userName && (
+                  <span className="ml-2 font-semibold text-gray-800 max-w-[120px] truncate" title={userName}>
+                    {userName}
+                  </span>
+                )}
+              </button>
+              {userMenuOpen && <UserDropdown />}
+            </div>
+          </div>
         </div>
 
         {/* Mobile navbar */}
