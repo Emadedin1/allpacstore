@@ -14,7 +14,7 @@ export default function ProductPage({ params: { slug } }) {
   const [designType, setDesignType] = useState("Plain White");
   const [designFile, setDesignFile] = useState(null);
   const [previewURL, setPreviewURL] = useState("");
-  const [qty, setQty] = useState("");
+  const [qty, setQty] = useState(""); // start empty
 
   const pricePerCup = product.priceCase / product.qtyCase;
   const subtotal = qty ? (pricePerCup * Number(qty)).toFixed(2) : "0.00";
@@ -32,7 +32,7 @@ export default function ProductPage({ params: { slug } }) {
     }
   };
 
-  // dynamic specs panels
+  // Build your collapsible specs from data
   const specs = Object.entries(product.specs).map(
     ([label, lines]) => ({ label, content: lines })
   );
@@ -44,9 +44,8 @@ export default function ProductPage({ params: { slug } }) {
 
   return (
     <main className="max-w-6xl mx-auto p-4 md:p-6 space-y-6 md:space-y-8">
-      {/* ————————————— Top: Image + Overview + Form ————————————— */}
+      {/* Top: Image + Overview (desktop) */}
       <div className="flex flex-col gap-6 md:flex-row md:gap-8">
-        {/* LEFT: Image + desktop-only Overview */}
         <div className="md:w-1/2 space-y-4">
           <Image
             src={product.image}
@@ -55,7 +54,7 @@ export default function ProductPage({ params: { slug } }) {
             height={600}
             className="rounded-lg object-cover w-full"
           />
-          {/* Desktop Overview */}
+          {/* Desktop-only Overview */}
           <div className="hidden md:block mt-6 bg-gray-100 rounded-lg p-6">
             <h2 className="text-2xl font-semibold mb-3">Overview</h2>
             <p className="text-gray-700 mb-2">{product.desc}</p>
@@ -76,7 +75,6 @@ export default function ProductPage({ params: { slug } }) {
 
         {/* RIGHT: Form + panels + mobile Overview */}
         <div className="md:w-1/2 space-y-4">
-          {/* Title & Price */}
           <h1 className="text-2xl md:text-4xl font-bold">{product.name}</h1>
           <p className="text-gray-600 text-sm md:text-base">{product.desc}</p>
           <p className="text-lg md:text-xl font-semibold">
@@ -149,7 +147,7 @@ export default function ProductPage({ params: { slug } }) {
                 Number(qty) < 500 ||
                 (designType === "Custom" && !designFile)
               }
-              className={`w-full py-2 md:py-3 rounded-lg font-semibold text-sm ${
+              className={`no-close w-full py-2 md:py-3 rounded-lg font-semibold text-sm ${
                 qty &&
                 Number(qty) >= 500 &&
                 (designType !== "Custom" || designFile)
@@ -201,7 +199,7 @@ export default function ProductPage({ params: { slug } }) {
             ))}
           </div>
 
-          {/* Mobile Overview (below panels) */}
+          {/* Mobile Overview */}
           <div className="md:hidden mt-6 bg-gray-100 rounded-lg p-4">
             <h2 className="text-xl font-semibold mb-2">Overview</h2>
             <p className="text-gray-700 mb-2">{product.desc}</p>
@@ -221,7 +219,7 @@ export default function ProductPage({ params: { slug } }) {
         </div>
       </div>
 
-      {/* ————————————— Bottom: Other Products Carousel ————————————— */}
+      {/* Other Products Carousel */}
       <div>
         <h2 className="text-xl md:text-2xl font-bold mb-4">
           Other Products
@@ -235,7 +233,6 @@ export default function ProductPage({ params: { slug } }) {
                 href={`/products/${p.slug}`}
                 className="flex flex-col bg-blue-50 rounded-xl shadow-md flex-shrink-0 w-60 hover:shadow-lg transition-shadow"
               >
-                {/* image */}
                 <div className="w-full h-[180px] cursor-pointer">
                   <Image
                     src={p.image}
@@ -245,7 +242,6 @@ export default function ProductPage({ params: { slug } }) {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                {/* text */}
                 <div className="p-4 flex flex-col flex-1 justify-between">
                   <h3 className="text-lg font-bold">{p.name}</h3>
                   <p className="text-sm font-semibold mt-2">
