@@ -82,9 +82,9 @@ export default function Navbar() {
     setUserMenuOpen((prev) => !prev);
   };
 
-  // Font choices for nav links
-  const navFontClass = "font-medium tracking-tight text-[1.05rem] sm:text-[1.08rem]";
-  const navBtnClass = "px-2.5 py-2 rounded hover:bg-gray-100 transition";
+  // Font choices for nav links (no vertical padding!)
+  const navFontClass = "font-medium tracking-tight text-[1.08rem] flex items-center"; // flex+items-center for vertical align
+  const navBtnClass = "px-2 rounded hover:bg-gray-100 transition"; // remove py-2
 
   return (
     <header className="bg-white shadow-md relative" style={{ fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
@@ -97,13 +97,13 @@ export default function Navbar() {
           </Link>
           {/* Right section: nav links + cart + user */}
           <div className="flex items-center space-x-8">
-            {/* Nav links next to cart and user */}
+            {/* Nav links next to cart and user, use flex for each */}
             <Link href="/products" className={`${navFontClass} ${navBtnClass}`}>Products</Link>
             <Link href="/about" className={`${navFontClass} ${navBtnClass}`}>About</Link>
             <Link href="/contact" className={`${navFontClass} ${navBtnClass}`}>Contact</Link>
             <button
               onClick={openCart}
-              className="text-allpac hover:text-red-600 cursor-pointer flex items-center"
+              className="text-allpac hover:text-red-600 cursor-pointer flex items-center" // flex for icon vertical align
               aria-label="View cart"
               type="button"
             >
@@ -113,7 +113,7 @@ export default function Navbar() {
               <button
                 ref={desktopUserButtonRef}
                 onClick={toggleUserMenu}
-                className="text-allpac hover:text-red-600 cursor-pointer flex items-center"
+                className="text-allpac hover:text-red-600 cursor-pointer flex items-center" // flex for icon vertical align
                 aria-label="Account"
                 type="button"
               >
