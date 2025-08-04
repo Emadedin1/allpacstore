@@ -89,20 +89,18 @@ export default function Navbar() {
   return (
     <header className="bg-white shadow-md relative" style={{ fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
       <div className="max-w-7xl mx-auto px-4 py-4">
-        {/* Desktop navbar - all in one row */}
+        {/* Desktop navbar - logo, then right section */}
         <div className="hidden sm:flex items-center justify-between w-full relative">
           {/* Left: logo */}
           <Link href="/">
             <img src="/images/allpac-logo.png" alt="Allpac Logo" className="h-12 w-auto" />
           </Link>
-          {/* Center: nav links */}
+          {/* Right section: nav links + cart + user */}
           <div className="flex items-center space-x-8">
+            {/* Nav links next to cart and user */}
             <Link href="/products" className={`${navFontClass} ${navBtnClass}`}>Products</Link>
             <Link href="/about" className={`${navFontClass} ${navBtnClass}`}>About</Link>
             <Link href="/contact" className={`${navFontClass} ${navBtnClass}`}>Contact</Link>
-          </div>
-          {/* Right: cart and user */}
-          <div className="flex items-center space-x-6">
             <button onClick={openCart} className="text-allpac hover:text-red-600 cursor-pointer flex items-center" aria-label="View cart" type="button">
               <ShoppingCart size={24} />
             </button>
