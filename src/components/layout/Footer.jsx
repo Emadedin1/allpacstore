@@ -4,10 +4,13 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300 pt-10 pb-6 mt-0">
-      <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-3 gap-10">
-
+      <div className="
+        max-w-7xl mx-auto px-4
+        flex flex-col sm:flex-row justify-between items-start
+        gap-10
+      ">
         {/* Logo & Tagline */}
-        <div>
+        <div className="flex-1 min-w-[200px] pt-2 pb-6">
           <h3 className="text-xl font-bold text-white mb-2">Allpac</h3>
           <p className="text-sm leading-relaxed">
             Custom-printed paper cups delivered fast. <br />
@@ -16,7 +19,7 @@ export default function Footer() {
         </div>
 
         {/* Navigation Links */}
-        <div>
+        <div className="flex-1 min-w-[200px] pt-2 pb-6">
           <h4 className="text-lg font-semibold text-white mb-3">Quick Links</h4>
           <ul className="space-y-2 text-sm">
             <li><Link href="/" className="hover:text-white">Home</Link></li>
@@ -27,7 +30,7 @@ export default function Footer() {
         </div>
 
         {/* Contact Info */}
-        <div>
+        <div className="flex-1 min-w-[200px] pt-2 pb-6">
           <h4 className="text-lg font-semibold text-white mb-3">Contact</h4>
           <p className="text-sm mb-1">📍 Windsor, Ontario, Canada</p>
           <p className="text-sm">✉️ <a href="mailto:info@allpacgroup.com" className="hover:text-white">info@allpacgroup.com</a></p>
