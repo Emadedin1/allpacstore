@@ -10,7 +10,7 @@ export default function ContactPage() {
       </div>
 
       {/* Hero */}
-      <section className="text-center mb-8">
+      <section className="mb-8">
         <p className="text-lg text-gray-700">
           Questions about custom orders, pricing, or just want to say hi? Our Allpac team is here to help.
         </p>
