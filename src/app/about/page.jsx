@@ -9,7 +9,6 @@ export default function AboutPage() {
         <h1 className="text-4xl font-bold mb-2">About Allpac</h1>
       </div>
       {/* Hero */}
-      <section className="text-center">
         <p className="text-lg text-gray-700">
           Based in Windsor, Ontario, Allpac is Canada’s trusted partner for custom-printed paper cups. 
           From single cafés to major events, we help brands stand out—one sustainable cup at a time.
