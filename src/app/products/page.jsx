@@ -10,9 +10,6 @@ export default function ProductsPage() {
         {/* Heading Row */}
         <div className="max-w-4xl mx-auto flex justify-between items-center mb-4">
           <h1 className="text-4xl font-bold mb-2">Our Cup Selection</h1>
-          <Link href="/" className="text-blue-600 hover:underline whitespace-nowrap">
-            &larr; Back to Home
-          </Link>
         </div>
         {/* Intro Paragraph */}
         <section className="max-w-4xl mx-auto text-center mb-8">
