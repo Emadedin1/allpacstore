@@ -13,7 +13,6 @@ export default function AboutPage() {
           Based in Windsor, Ontario, Allpac is Canada’s trusted partner for custom-printed paper cups. 
           From single cafés to major events, we help brands stand out—one sustainable cup at a time.
         </p>
-      </section>
 
       {/* Our Mission */}
       <section>
