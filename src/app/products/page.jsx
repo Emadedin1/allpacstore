@@ -12,7 +12,7 @@ export default function ProductsPage() {
           <h1 className="text-4xl font-bold mb-2">Our Cup Selection</h1>
         </div>
         {/* Intro Paragraph */}
-        <section className="max-w-4xl mx-auto text-center mb-8">
+        <section className="max-w-4xl mx-auto mb-8">
           <p className="text-lg text-gray-700">
             Discover our full range of sustainable, custom-printed cups. Whether you need hot or cold cups, we have the perfect size and style to make your brand stand out.
           </p>
