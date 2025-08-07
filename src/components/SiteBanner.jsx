@@ -41,7 +41,6 @@ export default function SiteBanner() {
         fontSize: '15px',
         letterSpacing: '0.02em',
         boxShadow: '0 2px 8px 0 rgba(0,0,0,0.04)',
-        borderBottom: '1px solid #f5e89e',
         transition: 'top 0.3s',
         lineHeight: 1.5,
       }}

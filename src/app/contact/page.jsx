@@ -7,13 +7,10 @@ export default function ContactPage() {
       {/* Top row with Back to Home */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-4xl font-bold mb-2">Get in Touch</h1>
-        <Link href="/" className="text-blue-600 hover:underline whitespace-nowrap">
-          &larr; Back to Home
-        </Link>
       </div>
 
       {/* Hero */}
-      <section className="text-center mb-8">
+      <section className="mb-8">
         <p className="text-lg text-gray-700">
           Questions about custom orders, pricing, or just want to say hi? Our Allpac team is here to help.
         </p>

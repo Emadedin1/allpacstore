@@ -12,20 +12,15 @@ export default function Navbar() {
   const menuRef = useRef(null);
   const { openCart } = useCart();
 
-  // Fetch user name from localStorage on mount and when storage changes
   useEffect(() => {
     function updateUserName() {
       const name = localStorage.getItem("name");
       setUserName(name || "");
     }
     updateUserName();
-
-    // Listen for changes to localStorage from other tabs/windows
     window.addEventListener("storage", updateUserName);
     window.addEventListener("focus", updateUserName);
-    // Listen for our custom event for instant update after login
     window.addEventListener("userNameChanged", updateUserName);
-
     return () => {
       window.removeEventListener("storage", updateUserName);
       window.removeEventListener("focus", updateUserName);
@@ -33,24 +28,16 @@ export default function Navbar() {
     };
   }, []);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     if (!userMenuOpen) return;
-
     function handleClickOutside(e) {
-      const isInMenu =
-        menuRef.current && menuRef.current.contains(e.target);
-      const isInDesktopBtn =
-        desktopUserButtonRef.current &&
-        desktopUserButtonRef.current.contains(e.target);
-      const isInMobileBtn =
-        mobileUserButtonRef.current &&
-        mobileUserButtonRef.current.contains(e.target);
+      const isInMenu = menuRef.current && menuRef.current.contains(e.target);
+      const isInDesktopBtn = desktopUserButtonRef.current && desktopUserButtonRef.current.contains(e.target);
+      const isInMobileBtn = mobileUserButtonRef.current && mobileUserButtonRef.current.contains(e.target);
       if (!isInMenu && !isInDesktopBtn && !isInMobileBtn) {
         setUserMenuOpen(false);
       }
     }
-
     document.addEventListener("click", handleClickOutside);
     return () => {
       document.removeEventListener("click", handleClickOutside);
@@ -68,20 +55,8 @@ export default function Navbar() {
         <div className="py-1 flex flex-col">
           {!userName && (
             <>
-              <Link
-                href="/login"
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                onClick={() => setUserMenuOpen(false)}
-              >
-                Login
-              </Link>
-              <Link
-                href="/register"
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                onClick={() => setUserMenuOpen(false)}
-              >
-                Create Account
-              </Link>
+              <Link href="/login" className="block px-4 py-2 text-gray-700 hover:bg-gray-100" onClick={() => setUserMenuOpen(false)}>Login</Link>
+              <Link href="/register" className="block px-4 py-2 text-gray-700 hover:bg-gray-100" onClick={() => setUserMenuOpen(false)}>Create Account</Link>
             </>
           )}
           {userName && (
@@ -92,20 +67,11 @@ export default function Navbar() {
                 localStorage.removeItem("name");
                 setUserMenuOpen(false);
                 setUserName("");
-                // Optionally, window.location.reload();
                 window.dispatchEvent(new Event("userNameChanged"));
               }}
-            >
-              Logout
-            </button>
+            >Logout</button>
           )}
-          <Link
-            href="/order-history"
-            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-            onClick={() => setUserMenuOpen(false)}
-          >
-            Order History
-          </Link>
+          <Link href="/order-history" className="block px-4 py-2 text-gray-700 hover:bg-gray-100" onClick={() => setUserMenuOpen(false)}>Order History</Link>
         </div>
       </div>
     );
@@ -116,44 +82,25 @@ export default function Navbar() {
     setUserMenuOpen((prev) => !prev);
   };
 
+  // Small vertical adjustment for nav links (push down by 2px)
+  const navFontClass = "font-medium tracking-tight text-[1.08rem]";
+  const navBtnClass = "px-2 flex items-center hover:bg-gray-100 transition";
+  const navLinkStyle = { position: "relative", top: "2px" }; // pushes links down by 2px
+
   return (
-    <header
-      className="bg-white shadow-md relative"
-      style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
-    >
+    <header className="bg-white shadow-md relative" style={{ fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
       <div className="max-w-7xl mx-auto px-4 py-4">
-        {/* Desktop navbar */}
+        {/* Desktop navbar - logo, then right section */}
         <div className="hidden sm:flex items-center justify-between w-full relative">
-          {/* Logo */}
+          {/* Left: logo */}
           <Link href="/">
-            <img
-              src="/images/allpac-logo.png"
-              alt="Allpac Logo"
-              className="h-12 w-auto"
-            />
+            <img src="/images/allpac-logo.png" alt="Allpac Logo" className="h-12 w-auto" />
           </Link>
-          <div className="flex items-center space-x-6">
-            <Link
-              href="/products"
-              className="px-3 py-2 rounded-lg hover:bg-gray-100 transition text-base font-semibold"
-              style={{ letterSpacing: "0.01em" }}
-            >
-              Products
-            </Link>
-            <Link
-              href="/about"
-              className="px-3 py-2 rounded-lg hover:bg-gray-100 transition text-base font-semibold"
-              style={{ letterSpacing: "0.01em" }}
-            >
-              About
-            </Link>
-            <Link
-              href="/contact"
-              className="px-3 py-2 rounded-lg hover:bg-gray-100 transition text-base font-semibold"
-              style={{ letterSpacing: "0.01em" }}
-            >
-              Contact
-            </Link>
+          {/* Right: nav links, cart, user - all in one flex container for vertical alignment */}
+          <div className="flex items-center gap-x-8">
+            <Link href="/products" className={`${navFontClass} ${navBtnClass}`} style={navLinkStyle}>Products</Link>
+            <Link href="/about" className={`${navFontClass} ${navBtnClass}`} style={navLinkStyle}>About</Link>
+            <Link href="/contact" className={`${navFontClass} ${navBtnClass}`} style={navLinkStyle}>Contact</Link>
             <button
               onClick={openCart}
               className="text-allpac hover:text-red-600 cursor-pointer flex items-center"
@@ -166,7 +113,7 @@ export default function Navbar() {
               <button
                 ref={desktopUserButtonRef}
                 onClick={toggleUserMenu}
-                className="text-allpac hover:text-red-600 cursor-pointer flex items-center mt-[2px]"
+                className="text-allpac hover:text-red-600 cursor-pointer flex items-center"
                 aria-label="Account"
                 type="button"
               >
@@ -184,31 +131,17 @@ export default function Navbar() {
 
         {/* Mobile navbar */}
         <div className="flex flex-col sm:hidden w-full relative">
+          {/* Top row: logo, cart, user */}
           <div className="flex items-center justify-between w-full">
             <Link href="/">
-              <img
-                src="/images/allpac-logo.png"
-                alt="Allpac Logo"
-                className="h-12 w-auto"
-              />
+              <img src="/images/allpac-logo.png" alt="Allpac Logo" className="h-12 w-auto" />
             </Link>
             <div className="flex items-center space-x-4">
-              <button
-                onClick={openCart}
-                className="text-allpac hover:text-red-600 cursor-pointer flex items-center"
-                aria-label="View cart"
-                type="button"
-              >
+              <button onClick={openCart} className="text-allpac hover:text-red-600 cursor-pointer flex items-center" aria-label="View cart" type="button">
                 <ShoppingCart size={24} />
               </button>
               <div className="relative flex items-center">
-                <button
-                  ref={mobileUserButtonRef}
-                  onClick={toggleUserMenu}
-                  className="text-allpac hover:text-red-600 cursor-pointer flex items-center mt-[2px]"
-                  aria-label="Account"
-                  type="button"
-                >
+                <button ref={mobileUserButtonRef} onClick={toggleUserMenu} className="text-allpac hover:text-red-600 cursor-pointer flex items-center" aria-label="Account" type="button">
                   <User size={24} />
                   {userName && (
                     <span className="ml-2 font-semibold text-gray-800 max-w-[80px] truncate" title={userName}>
@@ -220,29 +153,13 @@ export default function Navbar() {
               </div>
             </div>
           </div>
-          {/* Second row: centered nav links */}
-          <nav className="flex justify-center space-x-6 mt-2 text-allpac text-base font-semibold w-full">
-            <Link
-              href="/products"
-              className="px-3 py-2 rounded-lg hover:bg-gray-100 transition text-base"
-              style={{ letterSpacing: "0.01em" }}
-            >
-              Products
-            </Link>
-            <Link
-              href="/about"
-              className="px-3 py-2 rounded-lg hover:bg-gray-100 transition text-base"
-              style={{ letterSpacing: "0.01em" }}
-            >
-              About
-            </Link>
-            <Link
-              href="/contact"
-              className="px-3 py-2 rounded-lg hover:bg-gray-100 transition text-base"
-              style={{ letterSpacing: "0.01em" }}
-            >
-              Contact
-            </Link>
+          {/* Thin horizontal line for mobile only */}
+          <hr className="border-t border-gray-300 mt-4 mb-0" />
+          {/* Second row: main nav links */}
+          <nav className="flex justify-center space-x-7 mt-2 text-allpac w-full">
+            <Link href="/products" className={`${navFontClass} ${navBtnClass}`}>Products</Link>
+            <Link href="/about" className={`${navFontClass} ${navBtnClass}`}>About</Link>
+            <Link href="/contact" className={`${navFontClass} ${navBtnClass}`}>Contact</Link>
           </nav>
         </div>
       </div>
