@@ -17,7 +17,7 @@ export default function CupCard({ cup }) {
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    // Pass pricePerCup as the 6th argument so totals aren't $0.00
+    // IMPORTANT: pass pricePerCup as the 6th argument
     addItem(cup, MIN_QTY, null, "", "Plain White", pricePerCup);
     openCart();
   };
@@ -57,7 +57,7 @@ export default function CupCard({ cup }) {
           <h3 className="text-sm font-semibold text-gray-900">
             {cup.size} Cup
           </h3>
-          {/* Intentionally removed Hot/Cold text for a cleaner look */}
+          {/* Keep removed: any extra type text for a cleaner look */}
         </button>
 
         {/* Price with MOQ stacked underneath */}
@@ -68,7 +68,6 @@ export default function CupCard({ cup }) {
           <span className="text-xs text-gray-500">MOQ {MIN_QTY}</span>
         </div>
 
-        {/* No quantity controls or subtotal on the card */}
         <button
           type="button"
           onClick={handleAddToCart}
