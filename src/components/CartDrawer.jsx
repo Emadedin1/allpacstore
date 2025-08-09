@@ -5,211 +5,204 @@ import Link from "next/link";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 export default function CartDrawer() {
-    const {
-        cartItems,
-        updateItemQty,
-        removeItem,
-        isOpen,
-        closeCart,
-    } = useCart();
+  const {
+    cartItems,
+    updateItemQty,
+    removeItem,
+    isOpen,
+    closeCart,
+  } = useCart();
 
-    const drawerRef = useRef(null);
-    const [isMobile, setIsMobile] = useState(null);
-    const [editingKey, setEditingKey] = useState(null);
-    const [editedQty, setEditedQty] = useState({});
-    const [originalQty, setOriginalQty] = useState({});
+  const drawerRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(null);
+  const [editingKey, setEditingKey] = useState(null);
 
-    useLayoutEffect(() => {
-        if (typeof window !== "undefined") {
-            setIsMobile(window.innerWidth < 640);
-        }
-    }, []);
+  const MIN_QTY = 500;
+  const STEP = 100;
 
-    useEffect(() => {
-        function handleClickOutside(e) {
-            if (
-                isOpen &&
-                drawerRef.current &&
-                !drawerRef.current.contains(e.target) &&
-                !e.target.closest(".no-close")
-            ) {
-                // 👇 Reset any in-progress edits
-                setEditingKey(null);
-                setEditedQty({});
-                setOriginalQty({});
-                closeCart();
-            }
-        }
+  useLayoutEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsMobile(window.innerWidth < 640);
+    }
+  }, []);
 
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (
+        isOpen &&
+        drawerRef.current &&
+        !drawerRef.current.contains(e.target) &&
+        !e.target.closest(".no-close")
+      ) {
+        setEditingKey(null);
+        closeCart();
+      }
+    }
 
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [isOpen, closeCart]);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen, closeCart]);
 
-    const total = cartItems
-        .reduce((sum, item) => {
-            // fallback to old priceCase/qtyCase if pricePerCup is missing
-            const ppc = item.pricePerCup ?? (item.priceCase / item.qtyCase);
-            return sum + ppc * item.quantity;
-        }, 0)
-        .toFixed(2);
-    if (isMobile === null) return null;
+  const total = cartItems
+    .reduce((sum, item) => {
+      // fallback to old priceCase/qtyCase if pricePerCup is missing
+      const ppc = item.pricePerCup ?? (item.priceCase / item.qtyCase);
+      return sum + ppc * item.quantity;
+    }, 0)
+    .toFixed(2);
 
-    return (
-        <div
-            ref={drawerRef}
-            className={`
+  if (isMobile === null) return null;
+
+  return (
+    <div
+      ref={drawerRef}
+      className={`
         fixed z-50 bg-white shadow-xl transform transition-transform duration-300 flex flex-col overflow-x-hidden
         ${isMobile
-                    ? `${isOpen ? "translate-y-0" : "translate-y-full"} bottom-0 w-full h-1/2`
-                    : `${isOpen ? "translate-x-0" : "translate-x-full"} top-[64px] right-0 w-[400px] h-[calc(100%-64px)]`
-                }
+          ? `${isOpen ? "translate-y-0" : "translate-y-full"} bottom-0 w-full h-1/2`
+          : `${isOpen ? "translate-x-0" : "translate-x-full"} top-[64px] right-0 w-[400px] h-[calc(100%-64px)]`
+        }
       `}
+    >
+      {/* Header */}
+      <div className="p-4 flex justify-between items-center">
+        <h2 className="text-lg font-bold">Your Cart</h2>
+        <button
+          onClick={() => {
+            setEditingKey(null);
+            closeCart();
+          }}
+          className="cursor-pointer"
+          aria-label="Close cart"
         >
-            {/* Header */}
-            <div className="p-4 flex justify-between items-center">
-                <h2 className="text-lg font-bold">Your Cart</h2>
-                <button
-                    onClick={() => {
-                        setEditingKey(null);
-                        setEditedQty({});
-                        setOriginalQty({});
-                        closeCart();
-                    }}
-                    className="cursor-pointer"
-                >
-                    <X size={20} />
-                </button>
+          <X size={20} />
+        </button>
+      </div>
 
-            </div>
+      {/* Items */}
+      <div className="p-4 flex-1 overflow-y-auto space-y-4">
+        {cartItems.length === 0 ? (
+          <p className="text-center text-gray-500">Your cart is empty.</p>
+        ) : (
+          cartItems.map((item) => {
+            const pricePerCup = item.pricePerCup ?? (item.priceCase / item.qtyCase);
+            const isEditing = editingKey === item.key;
 
-            {/* Items */}
-            <div className="p-4 flex-1 overflow-y-auto space-y-4">
-                {cartItems.length === 0 ? (
-                    <p className="text-center text-gray-500">Your cart is empty.</p>
-                ) : (
-                    cartItems.map((item) => {
-                        const pricePerCup = item.pricePerCup ?? (item.priceCase / item.qtyCase);
-                        const isEditing = editingKey === item.key;
+            return (
+              <div key={item.key} className="flex items-start space-x-3">
+                <img
+                  src={item.image}
+                  alt={`${item.size} cup`}
+                  className="w-16 h-16 object-cover rounded"
+                />
 
-                        return (
-                            <div key={item.key} className="flex items-start space-x-3">
-                                <img
-                                    src={item.image}
-                                    alt={`${item.size} cup`}
-                                    className="w-16 h-16 object-cover rounded"
-                                />
+                <div className="flex-1">
+                  <h3 className="font-semibold">{item.size} Cup</h3>
+                  <p className="text-sm mb-1">${pricePerCup.toFixed(3)}/cup</p>
 
-                                <div className="flex-1">
-                                    <h3 className="font-semibold">{item.size} Cup</h3>
-                                    <p className="text-sm mb-1">${pricePerCup.toFixed(3)}/cup</p>
+                  <p className="text-xs text-gray-600">
+                    Design: {item.designType === "Custom"
+                      ? item.designName || "Custom"
+                      : item.designType}
+                  </p>
 
-                                    <p className="text-xs text-gray-600">
-                                        Design: {item.designType === "Custom"
-                                            ? item.designName || "Custom"
-                                            : item.designType}
-                                    </p>
+                  {item.previewURL && (
+                    <img
+                      src={item.previewURL}
+                      alt="Design Preview"
+                      className="w-12 h-12 object-contain mt-1 border rounded"
+                    />
+                  )}
 
-                                    {item.previewURL && (
-                                        <img
-                                            src={item.previewURL}
-                                            alt="Design Preview"
-                                            className="w-12 h-12 object-contain mt-1 border rounded"
-                                        />
-                                    )}
+                  {/* Quantity row */}
+                  <div className="mt-2 flex items-center justify-between">
+                    {isEditing ? (
+                      <div className="flex items-center gap-3">
+                        {/* Modern pill stepper */}
+                        <div className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50">
+                          <button
+                            type="button"
+                            aria-label="Decrease quantity"
+                            onClick={() => {
+                              const next = Math.max(MIN_QTY, item.quantity - STEP);
+                              if (next !== item.quantity) updateItemQty(item.key, next);
+                            }}
+                            disabled={item.quantity <= MIN_QTY}
+                            className={`
+                              px-3 py-1.5 text-base font-semibold rounded-l-full
+                              ${item.quantity <= MIN_QTY
+                                ? "text-gray-300 cursor-not-allowed"
+                                : "text-gray-800 hover:bg-gray-100 active:bg-gray-200"}
+                            `}
+                          >
+                            −
+                          </button>
 
-                                    <div className="space-y-1">
-                                        {/* Top row: input + Done + Remove */}
-                                        <div className="flex items-center space-x-2">
-                                            {editingKey === item.key ? (
-                                                <>
-                                                    <input
-                                                        type="number"
-                                                        min="0"
-                                                        step="100"
-                                                        value={editedQty[item.key] ?? item.quantity}
-                                                        onChange={(e) => {
-                                                            const val = e.target.value;
-                                                            if (val === "") {
-                                                                setEditedQty((prev) => ({ ...prev, [item.key]: "" }));
-                                                            } else if (!isNaN(parseInt(val))) {
-                                                                setEditedQty((prev) => ({ ...prev, [item.key]: parseInt(val) }));
-                                                            }
-                                                        }}
-                                                        className="w-20 p-1 border rounded text-sm"
-                                                    />
-                                                    <button
-                                                        onClick={() => {
-                                                            const qty = editedQty[item.key];
-                                                            if (qty >= 500) {
-                                                                updateItemQty(item.key, qty);
-                                                                setEditingKey(null);
-                                                            }
-                                                        }}
-                                                        disabled={!editedQty[item.key] || editedQty[item.key] < 500}
-                                                        className={`text-sm px-2 py-1 rounded ${!editedQty[item.key] || editedQty[item.key] < 500
-                                                            ? "bg-gray-300 cursor-not-allowed"
-                                                            : "bg-black text-white cursor-pointer"
-                                                            }`}
-                                                    >
-                                                        Done
-                                                    </button>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <span>Qty: {item.quantity}</span>
-                                                    <button
-                                                        onClick={() => {
-                                                            setEditingKey(item.key);
-                                                            setOriginalQty((prev) => ({ ...prev, [item.key]: item.quantity }));
-                                                            setEditedQty((prev) => ({ ...prev, [item.key]: item.quantity }));
-                                                        }}
+                          <span className="px-4 py-1.5 text-sm font-medium text-gray-900 select-none">
+                            Qty {item.quantity}
+                          </span>
 
-                                                        className="text-blue-600 text-xs underline cursor-pointer"
-                                                    >
-                                                        Edit
-                                                    </button>
-                                                </>
-                                            )}
+                          <button
+                            type="button"
+                            aria-label="Increase quantity"
+                            onClick={() => updateItemQty(item.key, item.quantity + STEP)}
+                            className="px-3 py-1.5 text-base font-semibold rounded-r-full text-gray-800 hover:bg-gray-100 active:bg-gray-200"
+                          >
+                            +
+                          </button>
+                        </div>
 
-                                            <button
-                                                onClick={() => removeItem(item.key)}
-                                                className="text-red-600 text-xs hover:underline cursor-pointer"
-                                            >
-                                                Remove
-                                            </button>
-                                        </div>
+                        {/* Done link to collapse editor */}
+                        <button
+                          type="button"
+                          onClick={() => setEditingKey(null)}
+                          className="text-xs text-gray-700 hover:text-black underline"
+                        >
+                          Done
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm">Qty: {item.quantity}</span>
+                        <button
+                          onClick={() => setEditingKey(item.key)}
+                          className="text-blue-600 text-xs underline cursor-pointer"
+                        >
+                          Edit
+                        </button>
+                      </div>
+                    )}
 
-
-                                        {/* Bottom row: warning (won't push layout) */}
-                                        {editedQty[item.key] < 500 && (
-                                            <p className="text-xs text-red-600">Minimum quantity is 500 cups.</p>
-                                        )}
-                                    </div>
-
-                                </div>
-
-                                <p className="font-semibold">
-                                    ${(pricePerCup * item.quantity).toFixed(2)}
-                                </p>
-                            </div>
-                        );
-                    })
-                )}
-            </div>
-
-            {/* Footer */}
-            <div className="p-4">
-                <div className="flex justify-between mb-4 font-semibold">
-                    <span>Total:</span>
-                    <span>${total}</span>
-                </div>
-                <Link href="/checkout">
-                    <button className="w-full bg-[#FFD814] py-2 rounded font-semibold cursor-pointer">
-                        Checkout
+                    <button
+                      onClick={() => removeItem(item.key)}
+                      className="text-red-600 text-xs hover:underline cursor-pointer"
+                    >
+                      Remove
                     </button>
-                </Link>
-            </div>
+                  </div>
+                </div>
+
+                <p className="font-semibold">
+                  ${(pricePerCup * item.quantity).toFixed(2)}
+                </p>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="p-4">
+        <div className="flex justify-between mb-4 font-semibold">
+          <span>Total:</span>
+          <span>${total}</span>
         </div>
-    );
+        <Link href="/checkout">
+          <button className="w-full bg-[#FFD814] py-2 rounded font-semibold cursor-pointer">
+            Checkout
+          </button>
+        </Link>
+      </div>
+    </div>
+  );
 }
