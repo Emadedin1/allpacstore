@@ -30,11 +30,11 @@ export default function CupCard({ cup }) {
           type="button"
           onClick={goToDetails}
           className="absolute inset-0 w-full h-full focus:outline-none focus:ring-0"
-          aria-label={`${cup.size} ${cup.type} details`}
+          aria-label={`${cup.size} details`}
         >
           <img
             src={cup.image}
-            alt={`${cup.size} ${cup.type}`}
+            alt={`${cup.size} cup`}
             className="w-full h-full object-cover"
           />
         </button>
@@ -45,24 +45,22 @@ export default function CupCard({ cup }) {
         </div>
       </div>
 
-      {/* Minimal content: label, price, MOQ, Add to Cart */}
+      {/* Minimal content: size label, price, MOQ, Add to Cart */}
       <div className="p-3 flex flex-col gap-3">
-        {/* Product label (clickable) */}
+        {/* Product size (clickable) */}
         <button
           type="button"
           onClick={goToDetails}
           className="text-left focus:outline-none focus:ring-0"
-          aria-label={`${cup.size} ${cup.type} details`}
+          aria-label={`${cup.size} details`}
         >
           <h3 className="text-sm font-semibold text-gray-900">
             {cup.size} Cup
           </h3>
-          {cup.type ? (
-            <p className="text-xs text-gray-500 mt-0.5">{cup.type}</p>
-          ) : null}
+          {/* Removed cup.type (Hot/Cold) for a cleaner, modern look */}
         </button>
 
-        {/* Price with MOQ stacked underneath (clean on mobile) */}
+        {/* Price with MOQ stacked underneath */}
         <div className="space-y-0.5">
           <p className="text-lg font-bold text-gray-900">
             ${pricePerCup.toFixed(3)}/Cup
