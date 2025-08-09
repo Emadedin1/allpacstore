@@ -93,10 +93,7 @@ export default function CartDrawer() {
                       <h3 className="font-semibold">{item.size} Cup</h3>
                       <p className="text-sm mb-1">${pricePerCup.toFixed(3)}/cup</p>
                       <p className="text-xs text-gray-600">
-                        Design:{" "}
-                        {item.designType === "Custom"
-                          ? item.designName || "Custom"
-                          : item.designType}
+                        Design: {item.designType === "Custom" ? item.designName || "Custom" : item.designType}
                       </p>
                       {item.previewURL && (
                         <img
@@ -112,8 +109,8 @@ export default function CartDrawer() {
                     </p>
                   </div>
 
-                  {/* Quantity section */}
-                  <div className="mt-2 space-y-2">
+                  {/* Quantity + actions in one row */}
+                  <div className="mt-2 flex items-center gap-4">
                     {isEditing ? (
                       <>
                         {/* Compact, centered stepper */}
@@ -138,9 +135,7 @@ export default function CartDrawer() {
 
                           <div className="px-3 text-center select-none leading-tight">
                             <div className="text-[10px] text-gray-500">Qty</div>
-                            <div className="text-sm font-medium text-gray-900">
-                              {item.quantity}
-                            </div>
+                            <div className="text-sm font-medium text-gray-900">{item.quantity}</div>
                           </div>
 
                           <button
@@ -153,41 +148,37 @@ export default function CartDrawer() {
                           </button>
                         </div>
 
-                        {/* Actions row with spacing (no clashing) */}
-                        <div className="flex items-center justify-between">
-                          <button
-                            type="button"
-                            onClick={() => setEditingKey(null)}
-                            className="text-xs text-gray-700 hover:text-black underline"
-                          >
-                            Done
-                          </button>
-                          <button
-                            onClick={() => removeItem(item.key)}
-                            className="text-red-600 text-xs hover:underline cursor-pointer"
-                          >
-                            Remove
-                          </button>
-                        </div>
+                        {/* Actions sit to the right of the stepper */}
+                        <button
+                          type="button"
+                          onClick={() => setEditingKey(null)}
+                          className="text-xs text-gray-700 hover:text-black underline"
+                        >
+                          Done
+                        </button>
+                        <button
+                          onClick={() => removeItem(item.key)}
+                          className="text-red-600 text-xs hover:underline cursor-pointer"
+                        >
+                          Remove
+                        </button>
                       </>
                     ) : (
-                      <div className="flex items-center justify-between">
+                      <>
                         <span className="text-sm">Qty: {item.quantity}</span>
-                        <div className="flex items-center gap-4">
-                          <button
-                            onClick={() => setEditingKey(item.key)}
-                            className="text-blue-600 text-xs underline cursor-pointer"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => removeItem(item.key)}
-                            className="text-red-600 text-xs hover:underline cursor-pointer"
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      </div>
+                        <button
+                          onClick={() => setEditingKey(item.key)}
+                          className="text-blue-600 text-xs underline cursor-pointer"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => removeItem(item.key)}
+                          className="text-red-600 text-xs hover:underline cursor-pointer ml-auto"
+                        >
+                          Remove
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>
