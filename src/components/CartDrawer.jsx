@@ -5,13 +5,7 @@ import Link from "next/link";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 export default function CartDrawer() {
-  const {
-    cartItems,
-    updateItemQty,
-    removeItem,
-    isOpen,
-    closeCart,
-  } = useCart();
+  const { cartItems, updateItemQty, removeItem, isOpen, closeCart } = useCart();
 
   const drawerRef = useRef(null);
   const [isMobile, setIsMobile] = useState(null);
@@ -38,15 +32,13 @@ export default function CartDrawer() {
         closeCart();
       }
     }
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen, closeCart]);
 
   const total = cartItems
     .reduce((sum, item) => {
-      // fallback to old priceCase/qtyCase if pricePerCup is missing
-      const ppc = item.pricePerCup ?? (item.priceCase / item.qtyCase);
+      const ppc = item.pricePerCup ?? item.priceCase / item.qtyCase;
       return sum + ppc * item.quantity;
     }, 0)
     .toFixed(2);
@@ -56,13 +48,12 @@ export default function CartDrawer() {
   return (
     <div
       ref={drawerRef}
-      className={`
-        fixed z-50 bg-white shadow-xl transform transition-transform duration-300 flex flex-col overflow-x-hidden
-        ${isMobile
-          ? `${isOpen ? "translate-y-0" : "translate-y-full"} bottom-0 w-full h-1/2`
-          : `${isOpen ? "translate-x-0" : "translate-x-full"} top-[64px] right-0 w-[400px] h-[calc(100%-64px)]`
-        }
-      `}
+      className={`fixed z-50 bg-white shadow-xl transform transition-transform duration-300 flex flex-col overflow-x-hidden
+        ${
+          isMobile
+            ? `${isOpen ? "translate-y-0" : "translate-y-full"} bottom-0 w-full h-1/2`
+            : `${isOpen ? "translate-x-0" : "translate-x-full"} top-[64px] right-0 w-[400px] h-[calc(100%-64px)]`
+        }`}
     >
       {/* Header */}
       <div className="p-4 flex justify-between items-center">
@@ -85,11 +76,11 @@ export default function CartDrawer() {
           <p className="text-center text-gray-500">Your cart is empty.</p>
         ) : (
           cartItems.map((item) => {
-            const pricePerCup = item.pricePerCup ?? (item.priceCase / item.qtyCase);
+            const pricePerCup = item.pricePerCup ?? item.priceCase / item.qtyCase;
             const isEditing = editingKey === item.key;
 
             return (
-              <div key={item.key} className="flex items-start space-x-3">
+              <div key={item.key} className="flex items-start gap-3">
                 <img
                   src={item.image}
                   alt={`${item.size} cup`}
@@ -97,29 +88,36 @@ export default function CartDrawer() {
                 />
 
                 <div className="flex-1">
-                  <h3 className="font-semibold">{item.size} Cup</h3>
-                  <p className="text-sm mb-1">${pricePerCup.toFixed(3)}/cup</p>
+                  <div className="flex justify-between">
+                    <div>
+                      <h3 className="font-semibold">{item.size} Cup</h3>
+                      <p className="text-sm mb-1">${pricePerCup.toFixed(3)}/cup</p>
+                      <p className="text-xs text-gray-600">
+                        Design:{" "}
+                        {item.designType === "Custom"
+                          ? item.designName || "Custom"
+                          : item.designType}
+                      </p>
+                      {item.previewURL && (
+                        <img
+                          src={item.previewURL}
+                          alt="Design Preview"
+                          className="w-12 h-12 object-contain mt-1 border rounded"
+                        />
+                      )}
+                    </div>
 
-                  <p className="text-xs text-gray-600">
-                    Design: {item.designType === "Custom"
-                      ? item.designName || "Custom"
-                      : item.designType}
-                  </p>
+                    <p className="font-semibold whitespace-nowrap">
+                      ${(pricePerCup * item.quantity).toFixed(2)}
+                    </p>
+                  </div>
 
-                  {item.previewURL && (
-                    <img
-                      src={item.previewURL}
-                      alt="Design Preview"
-                      className="w-12 h-12 object-contain mt-1 border rounded"
-                    />
-                  )}
-
-                  {/* Quantity row */}
-                  <div className="mt-2 flex items-center justify-between">
+                  {/* Quantity section */}
+                  <div className="mt-2 space-y-2">
                     {isEditing ? (
-                      <div className="flex items-center gap-3">
-                        {/* Modern pill stepper */}
-                        <div className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50">
+                      <>
+                        {/* Compact, centered stepper */}
+                        <div className="inline-flex items-center rounded-full border border-gray-200 bg-white shadow-sm h-9">
                           <button
                             type="button"
                             aria-label="Decrease quantity"
@@ -128,63 +126,71 @@ export default function CartDrawer() {
                               if (next !== item.quantity) updateItemQty(item.key, next);
                             }}
                             disabled={item.quantity <= MIN_QTY}
-                            className={`
-                              px-3 py-1.5 text-base font-semibold rounded-l-full
-                              ${item.quantity <= MIN_QTY
-                                ? "text-gray-300 cursor-not-allowed"
-                                : "text-gray-800 hover:bg-gray-100 active:bg-gray-200"}
-                            `}
+                            className={`w-9 h-9 rounded-l-full text-base font-semibold
+                              ${
+                                item.quantity <= MIN_QTY
+                                  ? "text-gray-300 cursor-not-allowed"
+                                  : "text-gray-800 hover:bg-gray-100 active:bg-gray-200"
+                              }`}
                           >
                             −
                           </button>
 
-                          <span className="px-4 py-1.5 text-sm font-medium text-gray-900 select-none">
-                            Qty {item.quantity}
-                          </span>
+                          <div className="px-3 text-center select-none leading-tight">
+                            <div className="text-[10px] text-gray-500">Qty</div>
+                            <div className="text-sm font-medium text-gray-900">
+                              {item.quantity}
+                            </div>
+                          </div>
 
                           <button
                             type="button"
                             aria-label="Increase quantity"
                             onClick={() => updateItemQty(item.key, item.quantity + STEP)}
-                            className="px-3 py-1.5 text-base font-semibold rounded-r-full text-gray-800 hover:bg-gray-100 active:bg-gray-200"
+                            className="w-9 h-9 rounded-r-full text-base font-semibold text-gray-800 hover:bg-gray-100 active:bg-gray-200"
                           >
                             +
                           </button>
                         </div>
 
-                        {/* Done link to collapse editor */}
-                        <button
-                          type="button"
-                          onClick={() => setEditingKey(null)}
-                          className="text-xs text-gray-700 hover:text-black underline"
-                        >
-                          Done
-                        </button>
-                      </div>
+                        {/* Actions row with spacing (no clashing) */}
+                        <div className="flex items-center justify-between">
+                          <button
+                            type="button"
+                            onClick={() => setEditingKey(null)}
+                            className="text-xs text-gray-700 hover:text-black underline"
+                          >
+                            Done
+                          </button>
+                          <button
+                            onClick={() => removeItem(item.key)}
+                            className="text-red-600 text-xs hover:underline cursor-pointer"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </>
                     ) : (
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-between">
                         <span className="text-sm">Qty: {item.quantity}</span>
-                        <button
-                          onClick={() => setEditingKey(item.key)}
-                          className="text-blue-600 text-xs underline cursor-pointer"
-                        >
-                          Edit
-                        </button>
+                        <div className="flex items-center gap-4">
+                          <button
+                            onClick={() => setEditingKey(item.key)}
+                            className="text-blue-600 text-xs underline cursor-pointer"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => removeItem(item.key)}
+                            className="text-red-600 text-xs hover:underline cursor-pointer"
+                          >
+                            Remove
+                          </button>
+                        </div>
                       </div>
                     )}
-
-                    <button
-                      onClick={() => removeItem(item.key)}
-                      className="text-red-600 text-xs hover:underline cursor-pointer"
-                    >
-                      Remove
-                    </button>
                   </div>
                 </div>
-
-                <p className="font-semibold">
-                  ${(pricePerCup * item.quantity).toFixed(2)}
-                </p>
               </div>
             );
           })
