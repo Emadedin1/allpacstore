@@ -1,4 +1,3 @@
-// src/components/ProductSections.jsx
 "use client";
 
 import CupCard from "./CupCard";
@@ -11,7 +10,7 @@ const cups = [
     desc: "Hot Cup, ideal for small beverages.",
     image: "/cups/10oz.png",
     qtyCase: 1000,
-    priceCase: 92,       // total $/case
+    priceCase: 92,
   },
   {
     slug: "12oz",
@@ -55,16 +54,14 @@ export default function ProductSections() {
   return (
     <div
       className="
-    grid
-    grid-cols-1         /* 1 col on all small/mobile widths */
-    md:grid-cols-2      /* 2 cols once viewport ≥768px */
-    xl:grid-cols-3      /* 3 cols once viewport ≥1024px */
-    gap-x-6 gap-y-8
-    max-w-7xl mx-auto px-4
-    place-items-start
-  "
+        grid
+        grid-cols-2          /* 2 cols on mobile */
+        lg:grid-cols-4       /* 4 cols on desktop */
+        gap-3 lg:gap-6
+        max-w-7xl mx-auto px-4
+        auto-rows-fr
+      "
     >
-
       {cups.map((cup) => (
         <CupCard key={cup.slug} cup={cup} />
       ))}
