@@ -9,7 +9,7 @@ export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
 
-  // New: which item should be in "edit" mode in the cart drawer
+  // Which item should be in "edit" mode in the cart drawer
   const [activeEditKey, setActiveEditKey] = useState(null);
 
   // load from localStorage on mount
@@ -24,12 +24,12 @@ export function CartProvider({ children }) {
   }, [cartItems]);
 
   /**
-   * @param {Object} item           - product object (must have slug, size, image, etc.)
-   * @param {number} qty            - number of cups to add
+   * @param {Object} item           - product object (must have slug, size, image, priceCase, qtyCase)
+   * @param {number} qty            - number of cups to add (MOQ on first add)
    * @param {File|null} uploadedDesign
    * @param {string} previewURL
    * @param {string} designType     - "Plain White" or custom preset name
-   * @param {number} pricePerCup    - price per cup based on designType
+   * @param {number|undefined} pricePerCup    - price per cup (pass when you know it)
    */
   function addItem(
     item,
@@ -37,21 +37,35 @@ export function CartProvider({ children }) {
     uploadedDesign = null,
     previewURL = "",
     designType = "Plain White",
-    pricePerCup = 0
+    pricePerCup = undefined
   ) {
+    // Safe price-per-cup fallback from the item itself
+    const computedPpc =
+      pricePerCup ??
+      (item?.priceCase && item?.qtyCase ? item.priceCase / item.qtyCase : undefined);
+
     const designName = uploadedDesign?.name || designType;
     const uniqueKey = `${item.slug}-${designType}-${designName}`;
 
     setCartItems((cur) => {
-      const exists = cur.find((c) => c.key === uniqueKey);
+      const idx = cur.findIndex((c) => c.key === uniqueKey);
 
-      if (exists) {
-        // Still set this item to be edited if it already exists
-        return cur.map((c) =>
-          c.key === uniqueKey ? { ...c, quantity: c.quantity + qty } : c
-        );
+      if (idx !== -1) {
+        // Item already in cart: keep existing quantity (do NOT add qty again)
+        const updated = [...cur];
+        const exists = updated[idx];
+
+        // If existing item had no pricePerCup but we computed one now, fill it in
+        const maybeUpdate =
+          exists.pricePerCup == null && computedPpc != null
+            ? { pricePerCup: computedPpc }
+            : {};
+
+        updated[idx] = { ...exists, ...maybeUpdate };
+        return updated;
       }
 
+      // First time adding this unique item: add with provided qty (e.g., MOQ)
       return [
         ...cur,
         {
@@ -64,15 +78,15 @@ export function CartProvider({ children }) {
           previewURL,
           designType,
           designName: uploadedDesign?.name || "",
-          pricePerCup,
-          // Optional: include case info if available for fallback pricing
+          pricePerCup: computedPpc,
+          // Store case info for reliable fallback in UI
           priceCase: item.priceCase,
           qtyCase: item.qtyCase,
         },
       ];
     });
 
-    // Make the newly added (or updated) item enter "Edit" mode in the drawer
+    // Always open the cart with this item in edit mode
     setActiveEditKey(uniqueKey);
   }
 
@@ -84,7 +98,7 @@ export function CartProvider({ children }) {
 
   const removeItem = (key) => {
     setCartItems((prevItems) => prevItems.filter((item) => item.key !== key));
-    // If you remove the item currently being edited, clear the edit key
+    // Clear edit if you removed the actively edited item
     setActiveEditKey((curr) => (curr === key ? null : curr));
   };
 
