@@ -17,8 +17,8 @@ export default function CupCard({ cup }) {
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    // Add default MOQ; quantity adjustments happen in the cart
-    addItem(cup, MIN_QTY, null, "", "Plain White");
+    // Pass pricePerCup as the 6th argument so totals aren't $0.00
+    addItem(cup, MIN_QTY, null, "", "Plain White", pricePerCup);
     openCart();
   };
 
@@ -57,7 +57,7 @@ export default function CupCard({ cup }) {
           <h3 className="text-sm font-semibold text-gray-900">
             {cup.size} Cup
           </h3>
-          {/* Removed cup.type (Hot/Cold) for a cleaner, modern look */}
+          {/* Intentionally removed Hot/Cold text for a cleaner look */}
         </button>
 
         {/* Price with MOQ stacked underneath */}
