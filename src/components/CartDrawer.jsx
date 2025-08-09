@@ -5,11 +5,18 @@ import Link from "next/link";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 export default function CartDrawer() {
-  const { cartItems, updateItemQty, removeItem, isOpen, closeCart } = useCart();
+  const {
+    cartItems,
+    updateItemQty,
+    removeItem,
+    isOpen,
+    closeCart,
+    activeEditKey,
+    setActiveEditKey,
+  } = useCart();
 
   const drawerRef = useRef(null);
   const [isMobile, setIsMobile] = useState(null);
-  const [editingKey, setEditingKey] = useState(null);
 
   const MIN_QTY = 500;
   const STEP = 100;
@@ -28,13 +35,13 @@ export default function CartDrawer() {
         !drawerRef.current.contains(e.target) &&
         !e.target.closest(".no-close")
       ) {
-        setEditingKey(null);
+        setActiveEditKey(null);
         closeCart();
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isOpen, closeCart]);
+  }, [isOpen, closeCart, setActiveEditKey]);
 
   const total = cartItems
     .reduce((sum, item) => {
@@ -60,7 +67,7 @@ export default function CartDrawer() {
         <h2 className="text-lg font-bold">Your Cart</h2>
         <button
           onClick={() => {
-            setEditingKey(null);
+            setActiveEditKey(null);
             closeCart();
           }}
           className="cursor-pointer"
@@ -77,7 +84,7 @@ export default function CartDrawer() {
         ) : (
           cartItems.map((item) => {
             const pricePerCup = item.pricePerCup ?? item.priceCase / item.qtyCase;
-            const isEditing = editingKey === item.key;
+            const isEditing = activeEditKey === item.key;
 
             return (
               <div key={item.key} className="flex items-start gap-3">
@@ -148,10 +155,10 @@ export default function CartDrawer() {
                           </button>
                         </div>
 
-                        {/* Actions sit to the right of the stepper */}
+                        {/* Actions to the right of the stepper */}
                         <button
                           type="button"
-                          onClick={() => setEditingKey(null)}
+                          onClick={() => setActiveEditKey(null)}
                           className="text-xs text-gray-700 hover:text-black underline"
                         >
                           Done
@@ -167,7 +174,7 @@ export default function CartDrawer() {
                       <>
                         <span className="text-sm">Qty: {item.quantity}</span>
                         <button
-                          onClick={() => setEditingKey(item.key)}
+                          onClick={() => setActiveEditKey(item.key)}
                           className="text-blue-600 text-xs underline cursor-pointer"
                         >
                           Edit
