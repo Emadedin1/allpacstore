@@ -1,54 +1,7 @@
 "use client";
 
 import CupCard from "./CupCard";
-
-const cups = [
-  {
-    slug: "10oz",
-    size: "10 oz",
-    type: "Hot Cup",
-    desc: "Hot Cup, ideal for small beverages.",
-    image: "/cups/10oz.png",
-    qtyCase: 1000,
-    priceCase: 92,
-  },
-  {
-    slug: "12oz",
-    size: "12 oz",
-    type: "Hot Cup",
-    desc: "Most popular size for cafes. Perfect for coffee and tea.",
-    image: "/cups/12oz.png",
-    qtyCase: 1000,
-    priceCase: 94,
-  },
-  {
-    slug: "16oz",
-    size: "16 oz",
-    type: "Hot Cup",
-    desc: "Larger size for lattes and premium hot beverages.",
-    image: "/cups/16oz.png",
-    qtyCase: 1000,
-    priceCase: 96,
-  },
-  {
-    slug: "22oz",
-    size: "22 oz",
-    type: "Cold Cup",
-    desc: "Perfect for soft drinks, smoothies, and cold beverages.",
-    image: "/cups/22oz.png",
-    qtyCase: 1000,
-    priceCase: 88,
-  },
-  {
-    slug: "32oz",
-    size: "32 oz",
-    type: "Cold Cup",
-    desc: "Extra large cold cup, great for events or promotions.",
-    image: "/cups/32oz.png",
-    qtyCase: 1000,
-    priceCase: 90,
-  },
-];
+import { cups } from "../data/cups";
 
 export default function ProductSections() {
   return (
