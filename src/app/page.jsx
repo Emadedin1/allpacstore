@@ -24,7 +24,11 @@ export default function Home() {
           {/* Link directly to the paper cups product grid */}
           <Link
             href="/products/cups"
-            className="inline-block bg-[#FFD814] text-black px-6 py-3 rounded-md font-semibold hover:bg-yellow-400 transition"
+            className="inline-flex items-center justify-center bg-[#FFD814] text-black px-6 py-3 rounded-md
+                       text-[15px] font-medium tracking-[0.01em] leading-none
+                       hover:bg-[#F7C600] active:bg-[#E6B800]
+                       focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2
+                       transition-colors"
           >
             Browse Products
           </Link>
@@ -44,7 +48,7 @@ export default function Home() {
               <div
                 aria-hidden
                 className="mt-1 h-px w-20 sm:w-24 rounded-full
-                           bg-gradient-to-r from-[#FFD814]/60 via-[#FFD814]/30 to-transparent"
+                           bg-gradient-to-r from-[#FFD814]/40 via-[#FFD814]/20 to-transparent"
               />
             </div>
           </div>
