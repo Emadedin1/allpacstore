@@ -5,7 +5,7 @@ import ProductSections from "../../../components/ProductSections";
 export default function PaperCupsPage() {
   return (
     <main className="bg-white">
-      {/* Header + intro — aligned like Contact, with tighter spacing */}
+      {/* Header + intro — same container as Contact, tighter spacing */}
       <div className="p-6 max-w-4xl mx-auto space-y-3">
         <div className="flex justify-between items-center">
           <h1 className="text-4xl font-bold tracking-tight mb-1 sm:mb-2">Paper Cups</h1>
@@ -18,12 +18,12 @@ export default function PaperCupsPage() {
         </section>
       </div>
 
-      {/* Product grid — wider, but with consistent gutters */}
+      {/* Product grid — wider, consistent gutters */}
       <section id="product-sections" className="max-w-7xl mx-auto px-6 pb-12">
         <ProductSections />
       </section>
 
-      {/* Steps section — same gutters as grid for visual consistency */}
+      {/* Steps section — same gutters as grid */}
       <section className="bg-gray-100 text-black py-16">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between gap-12 text-left">
           <div className="flex gap-4 items-start">
