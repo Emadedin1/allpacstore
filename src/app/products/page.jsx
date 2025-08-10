@@ -8,16 +8,13 @@ export default function ProductsCategoriesPage() {
     {
       slug: "cups",
       title: "Paper Cups",
-      image: "/cups/12oz.png", // existing image from your repo
+      image: "/cups/12oz.png", // existing image in your repo
       badge: "Hot & Cold",
     },
-    // Add more categories here later if needed:
-    // { slug: "lids", title: "Cup Lids", image: "/images/lids.jpg", badge: "Compatible" },
   ];
 
   return (
     <main className="p-6 space-y-8">
-      {/* Heading */}
       <div className="max-w-4xl mx-auto text-center">
         <h1 className="text-4xl font-bold mb-2">Shop by Category</h1>
         <p className="text-lg text-gray-700">
@@ -25,7 +22,6 @@ export default function ProductsCategoriesPage() {
         </p>
       </div>
 
-      {/* Categories Grid */}
       <section className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 place-items-center">
           {categories.map((cat) => (
