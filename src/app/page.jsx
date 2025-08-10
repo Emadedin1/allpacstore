@@ -36,7 +36,8 @@ export default function Home() {
 
       {/* Paper Cups Section */}
       <section id="product-sections" className="py-12">
-        <div className="max-w-7xl mx-auto px-4 mb-6 sm:mb-8">
+        {/* Header */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-6 sm:mb-8">
           <div className="flex items-end justify-between">
             <div>
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-black">
@@ -51,7 +52,10 @@ export default function Home() {
           </div>
         </div>
 
-        <HomeProductPreview />
+        {/* Home preview grid wrapped with the same gutters */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <HomeProductPreview />
+        </div>
       </section>
     </main>
   )
