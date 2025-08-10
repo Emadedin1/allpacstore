@@ -51,10 +51,13 @@ export default function CupCard({ cup }) {
 
       {/* Content — compact, title removed; price moved up */}
       <div className="p-3 sm:p-4 flex flex-col gap-2">
-        {/* Price copy updated */}
-        <p className="text-xl sm:text-2xl font-semibold leading-tight tracking-[-0.01em] text-gray-900">
-          From ${pricePerCup.toFixed(3)}/cup
-        </p>
+        {/* Price: small on mobile, larger on sm+, keep on one line */}
+        <div className="flex items-baseline gap-1 whitespace-nowrap">
+          <span className="text-xs text-gray-700 font-medium sm:text-base">From</span>
+          <span className="text-[15px] sm:text-2xl font-semibold leading-tight tracking-[-0.01em] text-gray-900">
+            ${pricePerCup.toFixed(3)}/cup
+          </span>
+        </div>
 
         {/* MOQ (secondary) */}
         <span className="text-xs sm:text-sm text-gray-500">MOQ {MIN_QTY}</span>
