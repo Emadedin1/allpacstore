@@ -10,6 +10,7 @@ export default function ProductsCategoriesPage() {
       title: "Paper Cups",
       image: "/cups/12oz.png",
     },
+    // Add more categories here when ready...
   ];
 
   return (
@@ -22,27 +23,30 @@ export default function ProductsCategoriesPage() {
         </p>
       </div>
 
-      {/* Categories Grid */}
+      {/* Categories Grid: 2 cols on mobile, 4 on desktop */}
       <section className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 place-items-center">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {categories.map((cat) => (
             <Link
               key={cat.slug}
               href={`/products/${cat.slug}`}
               aria-label={`Browse ${cat.title}`}
-              className="group relative w-full max-w-md aspect-[16/9] rounded-2xl overflow-hidden bg-gray-50 shadow-sm ring-1 ring-black/5 hover:shadow-md hover:ring-black/10 transition"
+              className="group relative block w-full overflow-hidden rounded-2xl bg-gray-50 shadow-sm ring-1 ring-black/5 hover:shadow-md hover:ring-black/10 transition"
             >
-              <Image
-                src={cat.image}
-                alt={cat.title}
-                fill
-                sizes="(max-width: 768px) 100vw, 600px"
-                className="object-cover object-center transition-transform duration-300 group-hover:scale-[1.02]"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
+              {/* Slightly taller on small screens for better readability */}
+              <div className="relative aspect-[4/5] sm:aspect-[16/9]">
+                <Image
+                  src={cat.image}
+                  alt={cat.title}
+                  fill
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  className="object-cover object-center transition-transform duration-300 group-hover:scale-[1.02]"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
+              </div>
               <div className="absolute bottom-4 left-4">
-                <h2 className="text-white text-2xl sm:text-3xl font-bold drop-shadow-md">
+                <h2 className="text-white text-lg sm:text-xl lg:text-2xl font-bold drop-shadow-md">
                   {cat.title}
                 </h2>
               </div>
