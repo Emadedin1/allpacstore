@@ -18,8 +18,8 @@ export default function PaperCupsPage() {
         </section>
       </div>
 
-      {/* Product grid — wider, consistent gutters */}
-      <section id="product-sections" className="max-w-7xl mx-auto px-6 pb-12">
+      {/* Product grid — unified gutters */}
+      <section id="product-sections" className="max-w-7xl mx-auto px-4 sm:px-6 pb-12">
         <ProductSections />
       </section>
 
