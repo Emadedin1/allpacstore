@@ -8,9 +8,11 @@ export default function ProductsCategoriesPage() {
     {
       slug: "cups",
       title: "Paper Cups",
-      image: "/cups/12oz.png", // uses an existing image in your repo
+      image: "/cups/12oz.png", // uses an existing image from your repo
       badge: "Hot & Cold",
     },
+    // Add more categories later as needed:
+    // { slug: "lids", title: "Cup Lids", image: "/images/lids.jpg", badge: "Compatible" },
   ];
 
   return (
