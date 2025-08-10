@@ -4,25 +4,26 @@ import ProductSections from "../../../components/ProductSections";
 
 export default function PaperCupsPage() {
   return (
-    <>
-      <div className="p-6 space-y-8">
-        <div className="max-w-4xl mx-auto flex justify-between items-center mb-4">
-          <h1 className="text-4xl font-bold mb-2">Paper Cups</h1>
+    <main className="bg-white">
+      {/* Header + intro with consistent gutters */}
+      <section className="max-w-7xl mx-auto px-6 lg:px-8 pt-8 pb-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-4xl font-bold">Paper Cups</h1>
         </div>
+        <p className="mt-3 text-lg text-gray-700 max-w-3xl">
+          Discover our full range of sustainable, custom-printed paper cups. Whether you need hot or cold cups, we have the perfect size and style to make your brand stand out.
+        </p>
+      </section>
 
-        <section className="max-w-4xl mx-auto mb-8">
-          <p className="text-lg text-gray-700">
-            Discover our full range of sustainable, custom-printed paper cups. Whether you need hot or cold cups, we have the perfect size and style to make your brand stand out.
-          </p>
-        </section>
+      {/* Product grid — uses same container so left edge aligns with header */}
+      <section id="product-sections" className="max-w-7xl mx-auto px-6 lg:px-8 pb-12">
+        {/* If ProductSections already adds its own max-w/px, remove px here or inside the component to avoid double padding. */}
+        <ProductSections />
+      </section>
 
-        <section id="product-sections" className="max-w-7xl mx-auto">
-          <ProductSections />
-        </section>
-      </div>
-
-      <section className="bg-gray-100 text-black py-16 px-4">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between gap-12 text-left">
+      {/* Steps section with the same gutters for alignment */}
+      <section className="bg-gray-100 text-black py-16">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row justify-between gap-12 text-left">
           <div className="flex gap-4 items-start">
             <span className="text-7xl font-bold leading-none">1</span>
             <div>
@@ -46,6 +47,6 @@ export default function PaperCupsPage() {
           </div>
         </div>
       </section>
-    </>
+    </main>
   );
 }
