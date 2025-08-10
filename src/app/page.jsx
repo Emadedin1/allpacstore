@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import ProductSections from '../components/ProductSections'
+import HomeProductPreview from '../components/HomeProductPreview'
 
 export default function Home() {
   return (
@@ -29,9 +29,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Product Sections */}
-      <section id="product-sections" className="py-12 px-4">
-        <ProductSections />
+      {/* Home preview grid: 3 products + modern See More tile */}
+      <section id="product-sections" className="py-12">
+        <HomeProductPreview />
       </section>
     </main>
   )
