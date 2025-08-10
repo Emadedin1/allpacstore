@@ -40,12 +40,11 @@ export default function Home() {
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-black">
                 Paper Cups
               </h2>
-              {/* More pronounced yellow underline accent */}
+              {/* Subtle yellow hairline accent */}
               <div
                 aria-hidden
-                className="mt-3 h-1.5 sm:h-2 w-24 sm:w-40 rounded-full
-                           bg-gradient-to-r from-[#FFD814] via-[#FFD814] to-transparent
-                           shadow-[0_1px_0_rgba(0,0,0,0.08)]"
+                className="mt-1 h-px w-20 sm:w-24 rounded-full
+                           bg-gradient-to-r from-[#FFD814]/60 via-[#FFD814]/30 to-transparent"
               />
             </div>
           </div>
