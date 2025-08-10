@@ -8,13 +8,13 @@ export default function ProductsCategoriesPage() {
     {
       slug: "cups",
       title: "Paper Cups",
-      image: "/cups/12oz.png", // existing image in your repo
-      badge: "",
+      image: "/cups/12oz.png",
     },
   ];
 
   return (
     <main className="p-6 space-y-8">
+      {/* Heading */}
       <div className="max-w-4xl mx-auto text-center">
         <h1 className="text-4xl font-bold mb-2">Shop by Category</h1>
         <p className="text-lg text-gray-700">
@@ -22,6 +22,7 @@ export default function ProductsCategoriesPage() {
         </p>
       </div>
 
+      {/* Categories Grid */}
       <section className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 place-items-center">
           {categories.map((cat) => (
@@ -40,11 +41,6 @@ export default function ProductsCategoriesPage() {
                 priority
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
-              <div className="absolute top-3 left-3">
-                <span className="inline-block text-[11px] font-semibold tracking-wide text-white/90 bg-black/30 backdrop-blur-sm px-2 py-1 rounded-md">
-                  {cat.badge}
-                </span>
-              </div>
               <div className="absolute bottom-4 left-4">
                 <h2 className="text-white text-2xl sm:text-3xl font-bold drop-shadow-md">
                   {cat.title}
