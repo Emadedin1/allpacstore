@@ -13,7 +13,7 @@ export default function PaperCupsPage() {
 
         <section>
           <p className="text-lg text-gray-700 leading-relaxed">
-            Discover our full range of sustainable, Canadian-made paper cups. From small to large, we have the perfect size and style to make your brand stand out.
+            Discover our full range of sustainable, Canadian-made paper cups. From small to large, we have the perfect size and style.
           </p>
         </section>
       </div>
