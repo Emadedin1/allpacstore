@@ -4,6 +4,28 @@ import { X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
+// Helper: decide whether to show a design label
+const resolveDesignLabel = (item) => {
+  // Prefer explicit fields if present
+  let candidate =
+    item?.designType === "Custom"
+      ? (item?.designName && String(item.designName)) || "Custom"
+      : item?.designType;
+
+  if (typeof candidate !== "string") return null;
+
+  const d = candidate.trim();
+  if (!d) return null;
+
+  const lowered = d.toLowerCase();
+  // Hide default/empty-like values
+  if (["plain white", "plain", "none", "n/a", "default"].includes(lowered)) {
+    return null;
+  }
+
+  return d;
+};
+
 export default function CartDrawer() {
   const {
     cartItems,
@@ -85,6 +107,7 @@ export default function CartDrawer() {
           cartItems.map((item) => {
             const pricePerCup = item.pricePerCup ?? item.priceCase / item.qtyCase;
             const isEditing = activeEditKey === item.key;
+            const designLabel = resolveDesignLabel(item);
 
             return (
               <div key={item.key} className="flex items-start gap-3">
@@ -99,9 +122,12 @@ export default function CartDrawer() {
                     <div>
                       <h3 className="font-semibold">{item.size} Cup</h3>
                       <p className="text-sm mb-1">${pricePerCup.toFixed(3)}/cup</p>
-                      <p className="text-xs text-gray-600">
-                        Design: {item.designType === "Custom" ? item.designName || "Custom" : item.designType}
-                      </p>
+
+                      {/* Only render Design line when we have a meaningful value */}
+                      {designLabel && (
+                        <p className="text-xs text-gray-600">Design: {designLabel}</p>
+                      )}
+
                       {item.previewURL && (
                         <img
                           src={item.previewURL}
