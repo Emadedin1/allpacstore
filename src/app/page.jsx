@@ -31,7 +31,7 @@ export default function Home() {
 
       {/* Paper Cups Section */}
       <section id="product-sections" className="py-12">
-        {/* Header (Featured pill removed) */}
+        {/* Header */}
         <div className="max-w-7xl mx-auto px-4 mb-6 sm:mb-8">
           <div className="flex items-end justify-between">
             <div>
@@ -40,18 +40,10 @@ export default function Home() {
               </h2>
               <div aria-hidden className="mt-2 h-px w-16 rounded bg-gradient-to-r from-[#FFD814] to-transparent" />
             </div>
-
-            {/* Optional "See all" link */}
-            <a
-              href="/products/cups"
-              className="hidden sm:inline-flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-black"
-            >
-              See all <span className="text-base">→</span>
-            </a>
           </div>
         </div>
 
-        {/* Home preview grid: 3 products + modern See More tile */}
+        {/* Home preview grid: first 3 products + blurred "See More" tile */}
         <HomeProductPreview />
       </section>
     </main>
