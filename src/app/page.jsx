@@ -21,10 +21,10 @@ export default function Home() {
             Based in Canada 🇨🇦 — Paper cups delivered fast, with low minimums and premium quality.
           </p>
 
-          {/* Link to the paper cups product grid (no more scrolling) */}
+          {/* Link directly to the paper cups product grid */}
           <Link
-            href="/products/cups" /* change to /products if your cups grid is there */
-            className="inline-block bg-[#FFD814] text-black px-6 py-3 rounded-md font-semibold hover:bg-Yellow-700 transition"
+            href="/products/cups"
+            className="inline-block bg-[#FFD814] text-black px-6 py-3 rounded-md font-semibold hover:bg-yellow-400 transition"
           >
             Browse Products
           </Link>
@@ -40,7 +40,13 @@ export default function Home() {
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-black">
                 Paper Cups
               </h2>
-              <div aria-hidden className="mt-2 h-px w-16 rounded bg-gradient-to-r from-[#FFD814] to-transparent" />
+              {/* More pronounced yellow underline accent */}
+              <div
+                aria-hidden
+                className="mt-3 h-1.5 sm:h-2 w-24 sm:w-40 rounded-full
+                           bg-gradient-to-r from-[#FFD814] via-[#FFD814] to-transparent
+                           shadow-[0_1px_0_rgba(0,0,0,0.08)]"
+              />
             </div>
           </div>
         </div>
