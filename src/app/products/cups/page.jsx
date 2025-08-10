@@ -5,15 +5,15 @@ import ProductSections from "../../../components/ProductSections";
 export default function PaperCupsPage() {
   return (
     <main className="bg-white">
-      {/* Header + intro — identical container pattern as Contact */}
-      <div className="p-6 max-w-4xl mx-auto space-y-8">
+      {/* Header + intro — aligned like Contact, with tighter spacing */}
+      <div className="p-6 max-w-4xl mx-auto space-y-3">
         <div className="flex justify-between items-center">
-          <h1 className="text-4xl font-bold mb-2">Paper Cups</h1>
+          <h1 className="text-4xl font-bold tracking-tight mb-1 sm:mb-2">Paper Cups</h1>
         </div>
 
         <section>
-          <p className="text-lg text-gray-700">
-            Discover our full range of sustainable, custom-printed paper cups. Whether you need hot or cold cups, we have the perfect size and style to make your brand stand out.
+          <p className="text-lg text-gray-700 leading-relaxed">
+            Discover our full range of sustainable, Canadian-made paper cups. From small to large, we have the perfect size and style to make your brand stand out.
           </p>
         </section>
       </div>
