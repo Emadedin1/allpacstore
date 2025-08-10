@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Link from 'next/link'
 import HomeProductPreview from '../components/HomeProductPreview'
 
 export default function Home() {
@@ -20,12 +21,13 @@ export default function Home() {
             Based in Canada 🇨🇦 — Paper cups delivered fast, with low minimums and premium quality.
           </p>
 
-          <a
-            href="#product-sections"
+          {/* Link to the paper cups product grid (no more scrolling) */}
+          <Link
+            href="/products/cups" /* change to /products if your cups grid is there */
             className="inline-block bg-[#FFD814] text-black px-6 py-3 rounded-md font-semibold hover:bg-Yellow-700 transition"
           >
             Browse Products
-          </a>
+          </Link>
         </div>
       </section>
 
