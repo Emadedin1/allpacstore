@@ -31,21 +31,17 @@ export default function Home() {
 
       {/* Paper Cups Section */}
       <section id="product-sections" className="py-12">
-        {/* Modern header above the row */}
+        {/* Header (Featured pill removed) */}
         <div className="max-w-7xl mx-auto px-4 mb-6 sm:mb-8">
           <div className="flex items-end justify-between">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 ring-1 ring-black/5">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#FFD814]" />
-                <span className="text-xs font-medium text-gray-800">Featured</span>
-              </div>
-              <h2 className="mt-3 text-2xl sm:text-3xl font-bold tracking-tight text-black">
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-black">
                 Paper Cups
               </h2>
               <div aria-hidden className="mt-2 h-px w-16 rounded bg-gradient-to-r from-[#FFD814] to-transparent" />
             </div>
 
-            {/* Optional "See all" link (desktop only) */}
+            {/* Optional "See all" link */}
             <a
               href="/products/cups"
               className="hidden sm:inline-flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-black"
@@ -55,7 +51,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Home preview grid: first 3 products + blurred "See More" tile */}
+        {/* Home preview grid: 3 products + modern See More tile */}
         <HomeProductPreview />
       </section>
     </main>
