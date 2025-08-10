@@ -9,7 +9,7 @@ export default function ProductsCategoriesPage() {
       slug: "cups",
       title: "Paper Cups",
       image: "/cups/12oz.png", // existing image in your repo
-      badge: "Hot & Cold",
+      badge: "",
     },
   ];
 
