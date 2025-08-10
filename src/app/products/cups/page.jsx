@@ -27,21 +27,21 @@ export default function PaperCupsPage() {
             <span className="text-7xl font-bold leading-none">1</span>
             <div>
               <h3 className="text-xl font-semibold mb-1">Choose Cup Size</h3>
-              <p className="text-sm">Pick from hot or cold cups in 5 size options.</p>
+              <p className="text-sm">Pick from 5 available sizes.</p>
             </div>
           </div>
           <div className="flex gap-4 items-start">
             <span className="text-7xl font-bold leading-none">2</span>
             <div>
-              <h3 className="text-xl font-semibold mb-1">Upload Your Design</h3>
-              <p className="text-sm">Easily upload your logo or artwork — we’ll take care of the rest.</p>
+              <h3 className="text-xl font-semibold mb-1">Choose Quantity</h3>
+              <p className="text-sm">Select how many cups you need.</p>
             </div>
           </div>
           <div className="flex gap-4 items-start">
             <span className="text-7xl font-bold leading-none">3</span>
             <div>
               <h3 className="text-xl font-semibold mb-1">Add to Cart</h3>
-              <p className="text-sm">Select your quantity and checkout — we print & deliver.</p>
+              <p className="text-sm">Review your selection and add to your order.</p>
             </div>
           </div>
         </div>
