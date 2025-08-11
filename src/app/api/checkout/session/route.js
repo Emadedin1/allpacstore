@@ -1,3 +1,4 @@
+// src/app/api/checkout/session/route.js
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
@@ -7,22 +8,46 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 export async function POST(req) {
   const { cartItems, shipping } = await req.json();
 
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ["card"],
-    line_items: cartItems.map((item) => ({
+  // Determine the correct origin for redirect URLs
+  const rawOrigin =
+    req.headers.get("origin") ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "http://localhost:3000";
+  const origin = rawOrigin.replace(/\/+$/, ""); // trim trailing slash
+
+  // Build Stripe line items (use dynamic pricePerCup when present)
+  const line_items = cartItems.map((item) => {
+    const pricePerCup =
+      item.pricePerCup ?? (item.priceCase / item.qtyCase); // fallback for old items
+    return {
       price_data: {
         currency: "cad",
-        unit_amount: Math.round((item.priceCase / item.qtyCase) * 100),
-        product_data: { name: `${item.size} oz Cup` },
+        unit_amount: Math.round(pricePerCup * 100), // cents per cup
+        product_data: {
+          name: `${item.size} oz Cup`,
+          // optional metadata you may want on the Stripe side
+          metadata: {
+            slug: item.slug ?? "",
+            designType: item.designType ?? "",
+            designName: item.designName ?? "",
+          },
+        },
       },
-      quantity: item.quantity,
-    })),
+      quantity: Number(item.quantity) || 0,
+    };
+  });
+
+  const session = await stripe.checkout.sessions.create({
     mode: "payment",
+    payment_method_types: ["card"],
+    line_items,
     shipping_address_collection: {
       allowed_countries: ["CA"],
     },
-    success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success`,
-    cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout`,
+    // These are where Stripe redirects AFTER payment/cancel,
+    // the Back button still goes to the referrer (your site).
+    success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${origin}/checkout`,
   });
 
   return new Response(JSON.stringify({ sessionId: session.id }), {
