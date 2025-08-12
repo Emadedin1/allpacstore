@@ -4,6 +4,9 @@ import { X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
+// Default descriptor if none is stored on the item
+const DEFAULT_DESCRIPTOR = "Blank Single-Walled Paper Cup";
+
 // Helper: decide whether to show a design label
 const resolveDesignLabel = (item) => {
   let candidate =
@@ -37,6 +40,10 @@ export default function CartDrawer() {
 
   const drawerRef = useRef(null);
   const [isMobile, setIsMobile] = useState(null);
+
+  // Keep your existing MOQ/step if you want to step by cups
+  const MIN_QTY = 500;
+  const STEP = 100;
 
   useLayoutEffect(() => {
     if (typeof window !== "undefined") {
@@ -102,17 +109,16 @@ export default function CartDrawer() {
           cartItems.map((item) => {
             const pricePerCup = item.pricePerCup ?? item.priceCase / item.qtyCase;
             const caseQty = item.qtyCase || 1000;
-            const casePrice =
-              item.priceCase ??
-              (pricePerCup != null && caseQty ? pricePerCup * caseQty : undefined);
-
             const caseCount = caseQty ? item.quantity / caseQty : 0;
             const isWholeCases =
               Number.isInteger(caseCount) &&
-              Math.abs(caseCount - Math.round(caseCount)) < 0.0001;
+              Math.abs(caseCount - Math.round(caseCount)) < 0.0000001;
 
             const isEditing = activeEditKey === item.key;
             const designLabel = resolveDesignLabel(item);
+
+            // Title parts
+            const descriptor = item.description || DEFAULT_DESCRIPTOR;
 
             return (
               <div key={item.key} className="flex items-start gap-3">
@@ -125,20 +131,20 @@ export default function CartDrawer() {
                 <div className="flex-1">
                   <div className="flex justify-between">
                     <div>
-                      {/* Title shows cases when applicable */}
+                      {/* Product Title: "1000pcs | 10 oz Blank Single-Walled Paper Cup" */}
                       <h3 className="font-semibold">
-                        {isWholeCases
-                          ? `${Math.round(caseCount)} ${
-                              Math.round(caseCount) === 1 ? "Case" : "Cases"
-                            }`
-                          : `${item.quantity} cups`}{" "}
-                        | {item.size}
+                        {caseQty}pcs | {item.size}{" "}
+                        <span className="font-normal text-gray-800">
+                          {descriptor}
+                        </span>
                       </h3>
 
-                      {/* Replaced per-cup subtitle with case info */}
-                      <p className="text-sm mb-1 text-gray-700"> {caseQty} cups per case </p>
+                      {/* Subtitle: only cups-per-case, no per-cup or per-case price */}
+                      <p className="text-sm mb-1 text-gray-700">
+                        {caseQty} cups per case
+                      </p>
 
-                      {/* Only render Design line when meaningful */}
+                      {/* Design line if meaningful */}
                       {designLabel && (
                         <p className="text-xs text-gray-600">Design: {designLabel}</p>
                       )}
@@ -152,7 +158,7 @@ export default function CartDrawer() {
                       )}
                     </div>
 
-                    {/* Line total (ppc * cups) — equals case price when quantity is 1 full case */}
+                    {/* Line total (per-cup * cups) */}
                     <p className="font-semibold whitespace-nowrap">
                       ${(pricePerCup * item.quantity).toFixed(2)}
                     </p>
@@ -162,19 +168,20 @@ export default function CartDrawer() {
                   <div className="mt-2 flex items-center gap-4">
                     {isEditing ? (
                       <>
-                        {/* Step by FULL CASES */}
+                        {/* Existing stepper behavior (steps by STEP cups).
+                            If you prefer stepping by full cases, I can switch this to +/- caseQty. */}
                         <div className="inline-flex items-center rounded-full border border-gray-200 bg-white shadow-sm h-9">
                           <button
                             type="button"
                             aria-label="Decrease quantity"
                             onClick={() => {
-                              const next = Math.max(caseQty, item.quantity - caseQty);
+                              const next = Math.max(MIN_QTY, item.quantity - STEP);
                               if (next !== item.quantity) updateItemQty(item.key, next);
                             }}
-                            disabled={item.quantity <= caseQty}
+                            disabled={item.quantity <= MIN_QTY}
                             className={`w-9 h-9 rounded-l-full text-base font-semibold
                               ${
-                                item.quantity <= caseQty
+                                item.quantity <= MIN_QTY
                                   ? "text-gray-300 cursor-not-allowed"
                                   : "text-gray-800 hover:bg-gray-100 active:bg-gray-200"
                               }`}
@@ -196,7 +203,7 @@ export default function CartDrawer() {
                           <button
                             type="button"
                             aria-label="Increase quantity"
-                            onClick={() => updateItemQty(item.key, item.quantity + caseQty)}
+                            onClick={() => updateItemQty(item.key, item.quantity + STEP)}
                             className="w-9 h-9 rounded-r-full text-base font-semibold text-gray-800 hover:bg-gray-100 active:bg-gray-200"
                           >
                             +
@@ -219,6 +226,7 @@ export default function CartDrawer() {
                       </>
                     ) : (
                       <>
+                        {/* Show Qty line; cases if whole, else cups */}
                         <span className="text-sm">
                           Qty:{" "}
                           {isWholeCases
