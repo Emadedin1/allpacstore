@@ -32,7 +32,7 @@ export default function Footer() {
         {/* Contact Info */}
         <div className="flex-1 min-w-[200px] pt-2 pb-6">
           <h4 className="text-lg font-semibold text-white mb-3">Contact</h4>
-          <p className="text-sm mb-1">📍 Windsor, Ontario, Canada</p>
+          <p className="text-sm mb-1">📍 3324 Marentette Ave, Windsor, ON N8X 4G4</p>
           <p className="text-sm">✉️ <a href="mailto:info@allpacgroup.com" className="hover:text-white">info@allpacgroup.com</a></p>
         </div>
       </div>
