@@ -6,9 +6,9 @@ export default function PaperCupsPage() {
   return (
     <main className="bg-white">
       {/* Header */}
-      <div className="max-w-4xl mx-auto text-center py-6">
+      <div className="max-w-4xl mx-auto text-center py-6 px-4 sm:px-6">
         <h1 className="text-4xl font-bold mb-2">Paper Cups</h1>
-        <p className="text-lg text-gray-700">
+        <p className="mx-auto max-w-[30ch] sm:max-w-[52ch] text-base sm:text-lg text-gray-700 leading-relaxed [text-wrap:balance]">
           Discover our full range of sustainable, Canadian-made paper cups.
         </p>
       </div>
