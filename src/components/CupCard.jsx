@@ -100,7 +100,7 @@ export default function CupCard({ cup }) {
           "
           aria-label={`Add 1 case of ${cup.size} cups to cart`}
         >
-          Add Case
+          Add To Cart
         </button>
       </div>
     </div>
