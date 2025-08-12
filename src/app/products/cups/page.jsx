@@ -4,18 +4,20 @@ import ProductSections from "../../../components/ProductSections";
 
 export default function PaperCupsPage() {
   return (
-    <main className="bg-white py-6 space-y-8">{/* remove horizontal padding here */}
-      {/* Header — match homepage style */}
-      <div className="max-w-4xl mx-auto text-center">
+    <main className="bg-white">
+      {/* Header */}
+      <div className="max-w-4xl mx-auto text-center py-6">
         <h1 className="text-4xl font-bold mb-2">Paper Cups</h1>
         <p className="text-lg text-gray-700">
           Discover our full range of sustainable, Canadian-made paper cups.
         </p>
       </div>
 
-      {/* Product grid — same container/gutters as homepage */}
-      <section id="product-sections" className="max-w-7xl mx-auto px-4 sm:px-6 pb-12">
-        <ProductSections />
+      {/* Product grid — identical wrapping to homepage */}
+      <section className="py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <ProductSections />
+        </div>
       </section>
 
       {/* Steps section */}
