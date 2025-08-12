@@ -3,10 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useCart } from "../context/CartContext";
 
-// Optional: centralize descriptor if not in data
 const DEFAULT_DESCRIPTOR = "Blank Single-Walled Paper Cup";
 
-// Override map (keys should match how cup.size is stored)
+// Override map (use your case prices here)
 const CASE_PRICE_BY_SIZE = {
   "10 oz": 92,
   "12 oz": 94,
@@ -19,19 +18,14 @@ export default function CupCard({ cup }) {
   const router = useRouter();
   const { addItem, openCart } = useCart();
 
-  // Derive effective case price (override if size known)
+  // Case price + case qty
   const effectiveCasePrice =
     CASE_PRICE_BY_SIZE[cup.size] !== undefined
       ? CASE_PRICE_BY_SIZE[cup.size]
       : cup.priceCase;
 
-  // Quantity per case (fallback if not provided)
   const qtyPerCase = cup.qtyCase || 1000;
-
-  // Compute per-cup price (still used for cart math if needed)
   const pricePerCup = effectiveCasePrice / qtyPerCase;
-
-  const MIN_QTY = 500;
 
   const goToDetails = () => {
     router.push(`/products/${cup.slug}`);
@@ -46,12 +40,13 @@ export default function CupCard({ cup }) {
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
+    // Add ONE FULL CASE so the cart shows the case total (e.g., $92)
     addItem(
       { ...cup, priceCase: effectiveCasePrice, qtyCase: qtyPerCase },
-      MIN_QTY,
+      qtyPerCase,           // quantity in cups = 1 case
       null,
       "",
-      null,
+      undefined,            // let designType default internally
       pricePerCup
     );
     openCart();
@@ -78,19 +73,19 @@ export default function CupCard({ cup }) {
       {/* Content */}
       <div className="p-3 sm:p-4 flex flex-col gap-2">
         {/* Spec line */}
-        <p className="text-sm font-medium text-gray-900 leading-snug">
-          {qtyPerCase}pcs | {cup.size}.{" "}
-          <span className="font-normal text-gray-700">
+        <p className="text-sm font-medium text-gray-900 leading-snug text-center">
+          {qtyPerCase}pcs | {cup.size}{" "}
+          <span className="font-normal text-gray-700 block sm:inline">
             {cup.description || DEFAULT_DESCRIPTOR}
           </span>
         </p>
 
-        {/* Price (centered, no / case, no subline) */}
+        {/* Centered Case Price (no "/case") */}
         <p className="text-lg font-semibold text-gray-900 text-center">
           ${effectiveCasePrice.toFixed(2)}
         </p>
 
-        {/* Add to Cart */}
+        {/* Add Case Button */}
         <button
           type="button"
           onClick={handleAddToCart}
@@ -103,9 +98,9 @@ export default function CupCard({ cup }) {
             focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
             transition-colors
           "
-          aria-label={`Add ${cup.size} case to cart`}
+          aria-label={`Add 1 case of ${cup.size} cups to cart`}
         >
-          Add to Cart
+          Add Case
         </button>
       </div>
     </div>
