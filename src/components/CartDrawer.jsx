@@ -96,6 +96,20 @@ export default function CartDrawer() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // ✅ Freeze banner hook moved above the early return
+  useEffect(() => {
+    const root = document.documentElement;
+    const shouldFreeze = isOpen || isClosing;
+    if (shouldFreeze) {
+      root.setAttribute("data-freeze-banner", "1");
+    } else {
+      root.removeAttribute("data-freeze-banner");
+    }
+    return () => {
+      root.removeAttribute("data-freeze-banner");
+    };
+  }, [isOpen, isClosing]);
+
   const closeWithShield = () => {
     setIsClosing(true);
     setActiveEditKey(null);
@@ -115,20 +129,6 @@ export default function CartDrawer() {
     .toFixed(2);
 
   if (isMobile === null) return null;
-
-  // NEW: Freeze banner during open and the close animation window
-  useEffect(() => {
-    const root = document.documentElement;
-    const shouldFreeze = isOpen || isClosing;
-    if (shouldFreeze) {
-      root.setAttribute("data-freeze-banner", "1");
-    } else {
-      root.removeAttribute("data-freeze-banner");
-    }
-    return () => {
-      root.removeAttribute("data-freeze-banner");
-    };
-  }, [isOpen, isClosing]);
 
   return (
     <>
@@ -156,7 +156,7 @@ export default function CartDrawer() {
             isMobile
               ? `inset-x-0 bottom-0 w-full rounded-t-2xl border-t border-gray-100
                  ${isOpen ? "translate-y-0" : "translate-y-full"}`
-              : `top-[64px] right-0 w=[400px] h-[calc(100%-64px)]
+              : `top-[64px] right-0 w-[400px] h-[calc(100%-64px)]
                  ${isOpen ? "translate-x-0" : "translate-x-full"}`
           }
         `}
