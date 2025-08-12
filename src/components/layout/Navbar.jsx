@@ -48,7 +48,14 @@ export default function Navbar() {
     };
   }, [userMenuOpen]);
 
+  const toggleUserMenu = (e) => {
+    e.stopPropagation();
+    setUserMenuOpen((prev) => !prev);
+  };
+
   function UserDropdown() {
+    const dropdownItemClass =
+      "block px-4 py-2 text-gray-700 hover:bg-gray-100 cursor-pointer rounded-md focus:outline-none focus-visible:bg-gray-100";
     return (
       <div
         ref={menuRef}
@@ -56,20 +63,22 @@ export default function Navbar() {
         className="absolute z-50 right-0 mt-2 w-48 rounded-md shadow-lg bg-white"
         style={{ top: "100%" }}
       >
-        <div className="py-1 flex flex-col">
+        <div className="py-1 flex flex-col" role="menu" aria-label="User menu">
           {!userName && (
             <>
               <Link
                 href="/login"
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                className={dropdownItemClass}
                 onClick={() => setUserMenuOpen(false)}
+                role="menuitem"
               >
                 Login
               </Link>
               <Link
                 href="/register"
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                className={dropdownItemClass}
                 onClick={() => setUserMenuOpen(false)}
+                role="menuitem"
               >
                 Create Account
               </Link>
@@ -77,7 +86,7 @@ export default function Navbar() {
           )}
           {userName && (
             <button
-              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-left"
+              className={`${dropdownItemClass} text-left w-full`}
               onClick={() => {
                 localStorage.removeItem("token");
                 localStorage.removeItem("name");
@@ -85,14 +94,17 @@ export default function Navbar() {
                 setUserName("");
                 window.dispatchEvent(new Event("userNameChanged"));
               }}
+              role="menuitem"
+              type="button"
             >
               Logout
             </button>
           )}
           <Link
             href="/order-history"
-            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+            className={dropdownItemClass}
             onClick={() => setUserMenuOpen(false)}
+            role="menuitem"
           >
             Order History
           </Link>
@@ -101,14 +113,9 @@ export default function Navbar() {
     );
   }
 
-  const toggleUserMenu = (e) => {
-    e.stopPropagation();
-    setUserMenuOpen((prev) => !prev);
-  };
-
   // Small vertical adjustment for nav links (push down by 2px)
   const navFontClass = "font-medium tracking-tight text-[1.08rem]";
-  // Updated: light brand green hover with rounded background
+  // Light brand-green hover with rounded background
   const navBtnClass =
     "px-3 py-1 rounded-lg flex items-center transition-colors hover:bg-[#1F8248]/10 hover:text-[#1F8248] focus-visible:bg-[#1F8248]/15 focus-visible:text-[#1F8248] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F8248]/40";
   const navLinkStyle = { position: "relative", top: "2px" }; // pushes links down by 2px
