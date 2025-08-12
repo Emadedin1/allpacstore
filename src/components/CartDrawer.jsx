@@ -13,15 +13,11 @@ const resolveDesignLabel = (item) => {
     item?.designType === "Custom"
       ? (item?.designName && String(item.designName)) || "Custom"
       : item?.designType;
-
   if (typeof candidate !== "string") return null;
   const d = candidate.trim();
   if (!d) return null;
-
   const lowered = d.toLowerCase();
-  if (["plain white", "plain", "none", "n/a", "default"].includes(lowered)) {
-    return null;
-  }
+  if (["plain white", "plain", "none", "n/a", "default"].includes(lowered)) return null;
   return d;
 };
 
@@ -38,7 +34,7 @@ export default function CartDrawer() {
 
   const drawerRef = useRef(null);
   const [isMobile, setIsMobile] = useState(null);
-  const [isClosing, setIsClosing] = useState(false); // keep overlay as a shield briefly
+  const [isClosing, setIsClosing] = useState(false); // overlay shield timing
 
   useLayoutEffect(() => {
     if (typeof window !== "undefined") {
@@ -58,7 +54,6 @@ export default function CartDrawer() {
 
     if (isOpen) {
       const previousScrollY = window.scrollY || 0;
-      // Lock body (iOS-friendly)
       body.style.position = "fixed";
       body.style.top = `-${previousScrollY}px`;
       body.style.left = "0";
@@ -66,27 +61,18 @@ export default function CartDrawer() {
       body.style.width = "100%";
       body.style.overscrollBehavior = "none";
 
-      // Cleanup when closing
       return () => {
         const y = -parseInt(body.style.top || "0", 10) || 0;
-
-        // Temporarily disable smooth scroll to avoid visible animation
         const root = document.documentElement;
-        const prevInlineBehavior = root.style.scrollBehavior; // usually ""
+        const prevInlineBehavior = root.style.scrollBehavior;
         root.style.scrollBehavior = "auto";
-
-        // Unlock body
         body.style.position = "";
         body.style.top = "";
         body.style.left = "";
         body.style.right = "";
         body.style.width = "";
         body.style.overscrollBehavior = "";
-
-        // Restore scroll instantly
         window.scrollTo(0, y);
-
-        // Restore inline scroll-behavior on next frame
         requestAnimationFrame(() => {
           root.style.scrollBehavior = prevInlineBehavior;
         });
@@ -94,7 +80,6 @@ export default function CartDrawer() {
     }
   }, [isOpen, isMobile]);
 
-  // Click outside to close (desktop); mobile uses overlay
   useEffect(() => {
     function handleClickOutside(e) {
       if (
@@ -112,12 +97,10 @@ export default function CartDrawer() {
   }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const closeWithShield = () => {
-    // Activate shield to swallow the remaining click/tap
     setIsClosing(true);
     setActiveEditKey(null);
     closeCart();
-    // Keep the overlay intercepting clicks until transition completes
-    window.setTimeout(() => setIsClosing(false), 320); // slightly > transition duration
+    window.setTimeout(() => setIsClosing(false), 320);
   };
 
   const total = cartItems
@@ -133,19 +116,30 @@ export default function CartDrawer() {
 
   if (isMobile === null) return null;
 
+  // NEW: Freeze banner during open and the close animation window
+  useEffect(() => {
+    const root = document.documentElement;
+    const shouldFreeze = isOpen || isClosing;
+    if (shouldFreeze) {
+      root.setAttribute("data-freeze-banner", "1");
+    } else {
+      root.removeAttribute("data-freeze-banner");
+    }
+    return () => {
+      root.removeAttribute("data-freeze-banner");
+    };
+  }, [isOpen, isClosing]);
+
   return (
     <>
-      {/* Backdrop overlay (also acts as a click shield during closing) */}
+      {/* Backdrop (also shields ghost clicks during closing) */}
       <div
         aria-hidden="true"
         className={`
           fixed inset-0 z-40 transition-opacity duration-200
-          ${isOpen ? "opacity-100" : "opacity-0"}
-          ${isOpen || isClosing ? "bg-black/30" : "bg-transparent"}
+          ${isOpen ? "opacity-100 bg-black/30" : "opacity-0 bg-transparent"}
         `}
-        style={{
-          pointerEvents: isOpen || isClosing ? "auto" : "none", // keep intercepting clicks while closing
-        }}
+        style={{ pointerEvents: isOpen || isClosing ? "auto" : "none" }}
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -160,35 +154,23 @@ export default function CartDrawer() {
           flex flex-col overflow-x-hidden
           ${
             isMobile
-              ? `
-                inset-x-0 bottom-0 w-full rounded-t-2xl border-t border-gray-100
-                ${isOpen ? "translate-y-0" : "translate-y-full"}
-              `
-              : `
-                top-[64px] right-0 w-[400px] h-[calc(100%-64px)]
-                ${isOpen ? "translate-x-0" : "translate-x-full"}
-              `
+              ? `inset-x-0 bottom-0 w-full rounded-t-2xl border-t border-gray-100
+                 ${isOpen ? "translate-y-0" : "translate-y-full"}`
+              : `top-[64px] right-0 w=[400px] h-[calc(100%-64px)]
+                 ${isOpen ? "translate-x-0" : "translate-x-full"}`
           }
         `}
         style={{
           willChange: "transform",
-          ...(isMobile
-            ? {
-                maxHeight: "80vh",
-                // Modern browsers: stable viewport height to avoid jumps
-                maxHeight: "80svh",
-              }
-            : {}),
+          ...(isMobile ? { maxHeight: "80vh", maxHeight: "80svh" } : {}),
           scrollbarGutter: "stable",
           touchAction: "pan-y",
         }}
       >
-        {/* Header */}
         <div className="p-4 flex justify-between items-center">
           <h2 className="text-lg font-bold">Your Cart</h2>
           <button
             onMouseDown={(e) => {
-              // Prevent ghost click from leaking to underlying UI
               e.preventDefault();
               e.stopPropagation();
             }}
@@ -204,12 +186,8 @@ export default function CartDrawer() {
           </button>
         </div>
 
-        {/* Items */}
         <div
-          className="
-            px-4 pb-4 flex-1 overflow-y-auto space-y-4
-            overscroll-contain
-          "
+          className="px-4 pb-4 flex-1 overflow-y-auto space-y-4 overscroll-contain"
           style={{ overscrollBehavior: "contain" }}
         >
           {cartItems.length === 0 ? (
@@ -236,24 +214,20 @@ export default function CartDrawer() {
                     alt={`${item.size} cup`}
                     className="w-16 h-16 object-cover rounded"
                   />
-
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between gap-2">
                       <div className="min-w-0 pr-1">
                         <h3 className="font-semibold text-gray-900">
                           {fmt(caseQty)} cups | {item.size} {descriptor}
                         </h3>
-
                         <p className="text-sm mb-2 text-gray-700">
                           Quantity: {fmt(caseQty)} cups/case
                         </p>
-
                         {designLabel && (
                           <p className="text-xs text-gray-600 -mt-1 mb-1">
                             Design: {designLabel}
                           </p>
                         )}
-
                         {item.previewURL && (
                           <img
                             src={item.previewURL}
@@ -262,15 +236,8 @@ export default function CartDrawer() {
                           />
                         )}
                       </div>
-
                       <div
-                        className="
-                          ml-2 shrink-0
-                          w-[9ch] sm:w-[10ch]
-                          text-right font-semibold
-                          font-mono tabular-nums
-                          whitespace-nowrap
-                        "
+                        className="ml-2 shrink-0 w-[9ch] sm:w-[10ch] text-right font-semibold font-mono tabular-nums whitespace-nowrap"
                         aria-label="Line item total"
                       >
                         ${(pricePerCup * normalizedQty).toFixed(2)}
@@ -279,10 +246,7 @@ export default function CartDrawer() {
 
                     <div className="mt-2 flex items-center gap-3">
                       <div
-                        className="
-                          inline-flex items-center overflow-hidden rounded-full
-                          shadow-sm
-                        "
+                        className="inline-flex items-center overflow-hidden rounded-full shadow-sm"
                         role="group"
                         aria-label="Change quantity in cases"
                       >
@@ -290,49 +254,32 @@ export default function CartDrawer() {
                           type="button"
                           aria-label="Decrease quantity (one case)"
                           onClick={() => {
-                            const nextCases = Math.max(1, currentCases - 1);
-                            updateItemQty(item.key, nextCases * caseQty);
+                            const next = Math.max(1, currentCases - 1);
+                            updateItemQty(item.key, next * caseQty);
                           }}
                           disabled={currentCases <= 1}
-                          className={`
-                            w-10 h-10 grid place-items-center
-                            text-white text-lg select-none
-                            ${
-                              currentCases <= 1
-                                ? "bg-[#1F8248]/60 cursor-not-allowed"
-                                : "bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer"
-                            }
-                            focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
-                          `}
+                          className={`w-10 h-10 grid place-items-center text-white text-lg select-none ${
+                            currentCases <= 1
+                              ? "bg-[#1F8248]/60 cursor-not-allowed"
+                              : "bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer"
+                          } focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1`}
                         >
                           −
                         </button>
-
                         <div
                           aria-live="polite"
-                          className="
-                            w-12 h-10 grid place-items-center
-                            bg-white text-[#1F8248] font-semibold
-                            font-mono tabular-nums select-none
-                          "
+                          className="w-12 h-10 grid place-items-center bg-white text-[#1F8248] font-semibold font-mono tabular-nums select-none"
                         >
                           {currentCases}
                         </div>
-
                         <button
                           type="button"
                           aria-label="Increase quantity (one case)"
                           onClick={() => {
-                            const nextCases = currentCases + 1;
-                            updateItemQty(item.key, nextCases * caseQty);
+                            const next = currentCases + 1;
+                            updateItemQty(item.key, next * caseQty);
                           }}
-                          className="
-                            w-10 h-10 grid place-items-center
-                            bg-[#1F8248] text-white text-lg select-none
-                            hover:bg-[#196D3D] active:bg-[#145633]
-                            cursor-pointer
-                            focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
-                          "
+                          className="w-10 h-10 grid place-items-center bg-[#1F8248] text-white text-lg select-none hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1"
                         >
                           +
                         </button>
@@ -354,24 +301,18 @@ export default function CartDrawer() {
           )}
         </div>
 
-        {/* Footer */}
         <div className="p-4 pb-[max(env(safe-area-inset-bottom),1rem)]">
           <div className="flex justify-between mb-4 font-semibold">
             <span>Total:</span>
             <span className="font-mono tabular-nums">${total}</span>
           </div>
-
           <Link
             href="/checkout"
             onClick={() => {
               setActiveEditKey(null);
               closeWithShield();
             }}
-            className="no-close w-full inline-flex items-center justify-center h-11 rounded-full bg-[#1F8248] text-white font-semibold shadow-sm
-                       hover:bg-[#196D3D] active:bg-[#145633]
-                       cursor-pointer
-                       focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
-                       transition-colors"
+            className="no-close w-full inline-flex items-center justify-center h-11 rounded-full bg-[#1F8248] text-white font-semibold shadow-sm hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1 transition-colors"
             aria-label="Go to checkout"
           >
             Checkout
