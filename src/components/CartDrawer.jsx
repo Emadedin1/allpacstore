@@ -6,7 +6,6 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 // Helper: decide whether to show a design label
 const resolveDesignLabel = (item) => {
-  // Prefer explicit fields if present
   let candidate =
     item?.designType === "Custom"
       ? (item?.designName && String(item.designName)) || "Custom"
@@ -18,7 +17,6 @@ const resolveDesignLabel = (item) => {
   if (!d) return null;
 
   const lowered = d.toLowerCase();
-  // Hide default/empty-like values
   if (["plain white", "plain", "none", "n/a", "default"].includes(lowered)) {
     return null;
   }
@@ -39,9 +37,6 @@ export default function CartDrawer() {
 
   const drawerRef = useRef(null);
   const [isMobile, setIsMobile] = useState(null);
-
-  const MIN_QTY = 500;
-  const STEP = 100;
 
   useLayoutEffect(() => {
     if (typeof window !== "undefined") {
@@ -106,6 +101,16 @@ export default function CartDrawer() {
         ) : (
           cartItems.map((item) => {
             const pricePerCup = item.pricePerCup ?? item.priceCase / item.qtyCase;
+            const caseQty = item.qtyCase || 1000;
+            const casePrice =
+              item.priceCase ??
+              (pricePerCup != null && caseQty ? pricePerCup * caseQty : undefined);
+
+            const caseCount = caseQty ? item.quantity / caseQty : 0;
+            const isWholeCases =
+              Number.isInteger(caseCount) &&
+              Math.abs(caseCount - Math.round(caseCount)) < 0.0001;
+
             const isEditing = activeEditKey === item.key;
             const designLabel = resolveDesignLabel(item);
 
@@ -120,10 +125,23 @@ export default function CartDrawer() {
                 <div className="flex-1">
                   <div className="flex justify-between">
                     <div>
-                      <h3 className="font-semibold">{item.size} Cup</h3>
-                      <p className="text-sm mb-1">${pricePerCup.toFixed(3)}/cup</p>
+                      {/* Title shows cases when applicable */}
+                      <h3 className="font-semibold">
+                        {isWholeCases
+                          ? `${Math.round(caseCount)} ${
+                              Math.round(caseCount) === 1 ? "Case" : "Cases"
+                            }`
+                          : `${item.quantity} cups`}{" "}
+                        | {item.size}
+                      </h3>
 
-                      {/* Only render Design line when we have a meaningful value */}
+                      {/* Replaced per-cup subtitle with case info */}
+                      <p className="text-sm mb-1 text-gray-700">
+                        {caseQty} cups per case
+                        {casePrice ? ` • $${casePrice.toFixed(2)} per case` : ""}
+                      </p>
+
+                      {/* Only render Design line when meaningful */}
                       {designLabel && (
                         <p className="text-xs text-gray-600">Design: {designLabel}</p>
                       )}
@@ -137,28 +155,29 @@ export default function CartDrawer() {
                       )}
                     </div>
 
+                    {/* Line total (ppc * cups) — equals case price when quantity is 1 full case */}
                     <p className="font-semibold whitespace-nowrap">
                       ${(pricePerCup * item.quantity).toFixed(2)}
                     </p>
                   </div>
 
-                  {/* Quantity + actions in one row */}
+                  {/* Quantity + actions */}
                   <div className="mt-2 flex items-center gap-4">
                     {isEditing ? (
                       <>
-                        {/* Compact, centered stepper */}
+                        {/* Step by FULL CASES */}
                         <div className="inline-flex items-center rounded-full border border-gray-200 bg-white shadow-sm h-9">
                           <button
                             type="button"
                             aria-label="Decrease quantity"
                             onClick={() => {
-                              const next = Math.max(MIN_QTY, item.quantity - STEP);
+                              const next = Math.max(caseQty, item.quantity - caseQty);
                               if (next !== item.quantity) updateItemQty(item.key, next);
                             }}
-                            disabled={item.quantity <= MIN_QTY}
+                            disabled={item.quantity <= caseQty}
                             className={`w-9 h-9 rounded-l-full text-base font-semibold
                               ${
-                                item.quantity <= MIN_QTY
+                                item.quantity <= caseQty
                                   ? "text-gray-300 cursor-not-allowed"
                                   : "text-gray-800 hover:bg-gray-100 active:bg-gray-200"
                               }`}
@@ -168,20 +187,25 @@ export default function CartDrawer() {
 
                           <div className="px-3 text-center select-none leading-tight">
                             <div className="text-[10px] text-gray-500">Qty</div>
-                            <div className="text-sm font-medium text-gray-900">{item.quantity}</div>
+                            <div className="text-sm font-medium text-gray-900">
+                              {isWholeCases
+                                ? `${Math.round(caseCount)} ${
+                                    Math.round(caseCount) === 1 ? "case" : "cases"
+                                  }`
+                                : item.quantity}
+                            </div>
                           </div>
 
                           <button
                             type="button"
                             aria-label="Increase quantity"
-                            onClick={() => updateItemQty(item.key, item.quantity + STEP)}
+                            onClick={() => updateItemQty(item.key, item.quantity + caseQty)}
                             className="w-9 h-9 rounded-r-full text-base font-semibold text-gray-800 hover:bg-gray-100 active:bg-gray-200"
                           >
                             +
                           </button>
                         </div>
 
-                        {/* Actions to the right of the stepper */}
                         <button
                           type="button"
                           onClick={() => setActiveEditKey(null)}
@@ -198,7 +222,14 @@ export default function CartDrawer() {
                       </>
                     ) : (
                       <>
-                        <span className="text-sm">Qty: {item.quantity}</span>
+                        <span className="text-sm">
+                          Qty:{" "}
+                          {isWholeCases
+                            ? `${Math.round(caseCount)} ${
+                                Math.round(caseCount) === 1 ? "case" : "cases"
+                              }`
+                            : item.quantity}
+                        </span>
                         <button
                           onClick={() => setActiveEditKey(item.key)}
                           className="text-blue-600 text-xs underline cursor-pointer"
