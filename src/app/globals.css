@@ -22,3 +22,21 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* ==== Paper Cups page grid: match homepage density exactly ==== */
+/* Ensure your cups page section uses: <section id="cups-grid"> ... </section> */
+#cups-grid {
+  font-size: 1rem; /* normalize base font in case a parent sets text-sm */
+}
+
+#cups-grid .grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem; /* Tailwind gap-3 */
+}
+
+@media (min-width: 1024px) {
+  #cups-grid .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem; /* Tailwind gap-6 */
+  }
+}
