@@ -18,7 +18,7 @@ export default function Home() {
             Wholesale Paper Cups Delivered&nbsp;Fast
           </h1>
           <p className="text-lg mb-6 max-w-xl mx-auto text-black">
-            Based in Canada 🇨🇦 — Paper cups delivered fast, with low minimums and premium quality.
+            Based in Windsor, ON 🇨🇦 — Paper cups delivered fast, with low minimums and premium quality.
           </p>
 
           {/* Flat, modern CTA (now bold) */}
