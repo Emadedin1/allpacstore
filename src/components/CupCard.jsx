@@ -95,6 +95,7 @@ export default function CupCard({ cup }) {
             bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633]
             text-white text-base font-medium
             hover:shadow-sm
+            cursor-pointer
             focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
             transition-colors
           "
