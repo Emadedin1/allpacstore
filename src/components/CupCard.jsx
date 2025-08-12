@@ -74,7 +74,7 @@ export default function CupCard({ cup }) {
       <div className="p-3 sm:p-4 flex flex-col gap-2">
         {/* Spec line */}
         <p className="text-sm font-medium text-gray-900 leading-snug text-center">
-          {qtyPerCase}pcs | {cup.size}{" "}
+          {qtyPerCase} cups | {cup.size}{" "}
           <span className="font-normal text-gray-700 block sm:inline">
             {cup.description || DEFAULT_DESCRIPTOR}
           </span>
