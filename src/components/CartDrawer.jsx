@@ -56,31 +56,48 @@ export default function CartDrawer() {
     if (typeof window === "undefined") return;
     if (!isMobile) return;
 
-    let previousScrollY = 0;
+    const body = document.body;
+
     if (isOpen) {
-      previousScrollY = window.scrollY || 0;
-      // Robust iOS-friendly body lock
-      const body = document.body;
+      const previousScrollY = window.scrollY || 0;
+
+      // Lock body (iOS-friendly)
       body.style.position = "fixed";
       body.style.top = `-${previousScrollY}px`;
       body.style.left = "0";
       body.style.right = "0";
       body.style.width = "100%";
-      body.style.overscrollBehavior = "none"; // prevent rubber-band behind
+      body.style.overscrollBehavior = "none";
+
+      // Cleanup when closing
       return () => {
         const y = -parseInt(body.style.top || "0", 10) || 0;
+
+        // Temporarily disable smooth scroll to avoid visible animation
+        const root = document.documentElement;
+        const prevInlineBehavior = root.style.scrollBehavior; // usually ""
+        root.style.scrollBehavior = "auto";
+
+        // Unlock body
         body.style.position = "";
         body.style.top = "";
         body.style.left = "";
         body.style.right = "";
         body.style.width = "";
         body.style.overscrollBehavior = "";
+
+        // Restore scroll instantly
         window.scrollTo(0, y);
+
+        // Restore whatever inline scroll-behavior was set before
+        requestAnimationFrame(() => {
+          root.style.scrollBehavior = prevInlineBehavior;
+        });
       };
     }
   }, [isOpen, isMobile]);
 
-  // Click outside to close (desktop); on mobile we use the overlay for this
+  // Click outside to close (desktop)
   useEffect(() => {
     function handleClickOutside(e) {
       if (
@@ -97,7 +114,6 @@ export default function CartDrawer() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen, closeCart, setActiveEditKey]);
 
-  // Cart total
   const total = cartItems
     .reduce((sum, item) => {
       const caseQty = item.qtyCase || 1000;
@@ -113,7 +129,7 @@ export default function CartDrawer() {
 
   return (
     <>
-      {/* Backdrop overlay (helps prevent background scroll and provides touch target to close) */}
+      {/* Backdrop */}
       <div
         aria-hidden="true"
         className={`
@@ -131,31 +147,26 @@ export default function CartDrawer() {
         className={`
           fixed z-50 bg-white shadow-xl transform transition-transform duration-300 ease-out
           flex flex-col overflow-x-hidden
-          ${isMobile
-            ? `
-              inset-x-0 bottom-0 w-full rounded-t-2xl border-t border-gray-100
-              ${isOpen ? "translate-y-0" : "translate-y-full"}
-            `
-            : `
-              top-[64px] right-0 w-[400px] h-[calc(100%-64px)]
-              ${isOpen ? "translate-x-0" : "translate-x-full"}
-            `
+          ${
+            isMobile
+              ? `
+                inset-x-0 bottom-0 w-full rounded-t-2xl border-t border-gray-100
+                ${isOpen ? "translate-y-0" : "translate-y-full"}
+              `
+              : `
+                top-[64px] right-0 w-[400px] h-[calc(100%-64px)]
+                ${isOpen ? "translate-x-0" : "translate-x-full"}
+              `
           }
         `}
         style={{
           willChange: "transform",
-          // Bottom sheet sizing on mobile: stable min/max using svh with vh fallback
           ...(isMobile
             ? {
-                // Use max height; let content define min height
                 maxHeight: "80vh",
-                // svh overrides in modern browsers to avoid sudden jumps
-                // (later declaration wins)
-                // @ts-ignore
                 maxHeight: "80svh",
               }
             : {}),
-          // Improve scrollbars to avoid layout shift when they appear
           scrollbarGutter: "stable",
           touchAction: "pan-y",
         }}
@@ -175,13 +186,12 @@ export default function CartDrawer() {
           </button>
         </div>
 
-        {/* Items (scroll container) */}
+        {/* Items */}
         <div
           className="
             px-4 pb-4 flex-1 overflow-y-auto space-y-4
             overscroll-contain
           "
-          // Prevent scroll chaining on some browsers
           style={{ overscrollBehavior: "contain" }}
         >
           {cartItems.length === 0 ? (
@@ -326,7 +336,7 @@ export default function CartDrawer() {
           )}
         </div>
 
-        {/* Footer (safe-area padding to avoid home indicator overlap) */}
+        {/* Footer */}
         <div className="p-4 pb-[max(env(safe-area-inset-bottom),1rem)]">
           <div className="flex justify-between mb-4 font-semibold">
             <span>Total:</span>
