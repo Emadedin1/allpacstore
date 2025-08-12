@@ -21,13 +21,13 @@ export default function Home() {
             Based in Canada 🇨🇦 — Paper cups delivered fast, with low minimums and premium quality.
           </p>
 
-          {/* Flat, modern CTA */}
+          {/* Flat, modern CTA (font updated to match Add to Cart) */}
           <Link
-             href="/products/cups"
-             className="inline-flex h-11 px-6 items-center justify-center rounded-md
-             bg-[#27AE60] text-white text-base font-semibold tracking-[0.005em]
-             hover:bg-[#219150] active:bg-[#1A7A3C]
-             focus:outline-none transition-colors"
+            href="/products/cups"
+            className="inline-flex h-11 px-6 items-center justify-center rounded-md
+                       bg-[#27AE60] text-white text-base font-medium
+                       hover:bg-[#219150] active:bg-[#1A7A3C]
+                       focus:outline-none transition-colors"
           >
             Browse Products
           </Link>
