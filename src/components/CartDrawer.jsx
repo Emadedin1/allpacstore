@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 const DEFAULT_DESCRIPTOR = "Blank Single-Walled Paper Cup";
-
 const nf = new Intl.NumberFormat("en-US", { useGrouping: false });
 const fmt = (n) => nf.format(Number(n || 0));
 
@@ -16,7 +15,6 @@ const resolveDesignLabel = (item) => {
       : item?.designType;
 
   if (typeof candidate !== "string") return null;
-
   const d = candidate.trim();
   if (!d) return null;
 
@@ -24,7 +22,6 @@ const resolveDesignLabel = (item) => {
   if (["plain white", "plain", "none", "n/a", "default"].includes(lowered)) {
     return null;
   }
-
   return d;
 };
 
@@ -41,6 +38,7 @@ export default function CartDrawer() {
 
   const drawerRef = useRef(null);
   const [isMobile, setIsMobile] = useState(null);
+  const [isClosing, setIsClosing] = useState(false); // keep overlay as a shield briefly
 
   useLayoutEffect(() => {
     if (typeof window !== "undefined") {
@@ -60,7 +58,6 @@ export default function CartDrawer() {
 
     if (isOpen) {
       const previousScrollY = window.scrollY || 0;
-
       // Lock body (iOS-friendly)
       body.style.position = "fixed";
       body.style.top = `-${previousScrollY}px`;
@@ -89,7 +86,7 @@ export default function CartDrawer() {
         // Restore scroll instantly
         window.scrollTo(0, y);
 
-        // Restore whatever inline scroll-behavior was set before
+        // Restore inline scroll-behavior on next frame
         requestAnimationFrame(() => {
           root.style.scrollBehavior = prevInlineBehavior;
         });
@@ -97,7 +94,7 @@ export default function CartDrawer() {
     }
   }, [isOpen, isMobile]);
 
-  // Click outside to close (desktop)
+  // Click outside to close (desktop); mobile uses overlay
   useEffect(() => {
     function handleClickOutside(e) {
       if (
@@ -107,12 +104,21 @@ export default function CartDrawer() {
         !e.target.closest(".no-close")
       ) {
         setActiveEditKey(null);
-        closeCart();
+        closeWithShield();
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isOpen, closeCart, setActiveEditKey]);
+  }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const closeWithShield = () => {
+    // Activate shield to swallow the remaining click/tap
+    setIsClosing(true);
+    setActiveEditKey(null);
+    closeCart();
+    // Keep the overlay intercepting clicks until transition completes
+    window.setTimeout(() => setIsClosing(false), 320); // slightly > transition duration
+  };
 
   const total = cartItems
     .reduce((sum, item) => {
@@ -129,16 +135,21 @@ export default function CartDrawer() {
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Backdrop overlay (also acts as a click shield during closing) */}
       <div
         aria-hidden="true"
         className={`
           fixed inset-0 z-40 transition-opacity duration-200
-          ${isOpen ? "bg-black/30 opacity-100" : "bg-transparent opacity-0 pointer-events-none"}
+          ${isOpen ? "opacity-100" : "opacity-0"}
+          ${isOpen || isClosing ? "bg-black/30" : "bg-transparent"}
         `}
-        onClick={() => {
-          setActiveEditKey(null);
-          closeCart();
+        style={{
+          pointerEvents: isOpen || isClosing ? "auto" : "none", // keep intercepting clicks while closing
+        }}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          closeWithShield();
         }}
       />
 
@@ -164,6 +175,7 @@ export default function CartDrawer() {
           ...(isMobile
             ? {
                 maxHeight: "80vh",
+                // Modern browsers: stable viewport height to avoid jumps
                 maxHeight: "80svh",
               }
             : {}),
@@ -175,9 +187,15 @@ export default function CartDrawer() {
         <div className="p-4 flex justify-between items-center">
           <h2 className="text-lg font-bold">Your Cart</h2>
           <button
-            onClick={() => {
-              setActiveEditKey(null);
-              closeCart();
+            onMouseDown={(e) => {
+              // Prevent ghost click from leaking to underlying UI
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              closeWithShield();
             }}
             className="cursor-pointer"
             aria-label="Close cart"
@@ -347,7 +365,7 @@ export default function CartDrawer() {
             href="/checkout"
             onClick={() => {
               setActiveEditKey(null);
-              closeCart();
+              closeWithShield();
             }}
             className="no-close w-full inline-flex items-center justify-center h-11 rounded-full bg-[#1F8248] text-white font-semibold shadow-sm
                        hover:bg-[#196D3D] active:bg-[#145633]
