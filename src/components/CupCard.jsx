@@ -23,7 +23,6 @@ export default function CupCard({ cup }) {
 
   const handleAddToCart = (e) => {
     e.stopPropagation(); // prevent card click navigation
-    // no default design; let it be null/empty
     addItem(cup, MIN_QTY, null, "", null, pricePerCup);
     openCart();
   };
@@ -49,31 +48,33 @@ export default function CupCard({ cup }) {
         </div>
       </div>
 
-      {/* Content — compact, title removed; price moved up */}
+      {/* Content */}
       <div className="p-3 sm:p-4 flex flex-col gap-2">
-        {/* Price: small on mobile, larger on sm+, keep on one line */}
+        {/* Price (single line on mobile) */}
         <div className="flex items-baseline gap-1 whitespace-nowrap">
-          <span className="text-xs text-gray-700 font-medium sm:text-base">From</span>
-          <span className="text-[15px] sm:text-2xl font-semibold leading-tight tracking-[-0.01em] text-gray-900">
-            ${pricePerCup.toFixed(3)}/cup
-          </span>
+            <span className="text-xs text-gray-700 font-medium sm:text-base">From</span>
+            <span className="text-[15px] sm:text-2xl font-semibold leading-tight tracking-[-0.01em] text-gray-900">
+              ${pricePerCup.toFixed(3)}/cup
+            </span>
         </div>
 
-        {/* MOQ (secondary) */}
+        {/* MOQ */}
         <span className="text-xs sm:text-sm text-gray-500">MOQ {MIN_QTY}</span>
 
-        {/* CTA */}
+        {/* CTA (Green variant replacing previous yellow) */}
         <button
           type="button"
           onClick={handleAddToCart}
           className="inline-flex h-10 w-full items-center justify-center rounded-md font-semibold
-                     bg-[#FFD814] hover:bg-[#F7C600] active:bg-[#E6B800]
-                     text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-black/10 transition-colors mt-1"
+                     bg-[#1A7A3C] text-white
+                     hover:bg-[#219150] active:bg-[#176835]
+                     focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1A7A3C]/50
+                     transition-colors mt-1"
         >
           Add to Cart
         </button>
 
-        {/* Keep size for accessibility but don’t show visually */}
+        {/* Hidden accessible text */}
         <span className="sr-only">{cup.size} Cup</span>
       </div>
     </div>
