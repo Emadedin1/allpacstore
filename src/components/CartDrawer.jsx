@@ -136,10 +136,7 @@ export default function CartDrawer() {
                       </h3>
 
                       {/* Replaced per-cup subtitle with case info */}
-                      <p className="text-sm mb-1 text-gray-700">
-                        {caseQty} cups per case
-                        {casePrice ? ` • $${casePrice.toFixed(2)} per case` : ""}
-                      </p>
+                      <p className="text-sm mb-1 text-gray-700"> {caseQty} cups per case </p>
 
                       {/* Only render Design line when meaningful */}
                       {designLabel && (
