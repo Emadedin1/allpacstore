@@ -51,7 +51,7 @@ export default function CupCard({ cup }) {
         {/* Price */}
         <div className="flex items-baseline gap-1 whitespace-nowrap">
           <span className="text-xs text-gray-700 font-medium sm:text-sm">From</span>
-            <span className="text-[15px] sm:text-xl font-semibold leading-tight tracking-tight text-gray-900">
+          <span className="text-[15px] sm:text-xl font-semibold leading-tight tracking-tight text-gray-900">
             ${pricePerCup.toFixed(3)}/cup
           </span>
         </div>
@@ -59,22 +59,22 @@ export default function CupCard({ cup }) {
         {/* MOQ */}
         <span className="text-xs sm:text-sm text-gray-500">MOQ {MIN_QTY}</span>
 
-        {/* Add to Cart */}
+        {/* Add to Cart (narrower, larger than previous tiny font, no full width) */}
         <button
           type="button"
-          onClick={handleAddToCart}
-          className="
-            inline-flex items-center justify-center
-            rounded-md
-            bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633]
-            text-white
-            text-[13px] font-medium tracking-tight
-            px-4 py-2 sm:px-5 sm:py-2.5
-            w-full xs:w-auto sm:self-start
-            shadow-sm hover:shadow
-            focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
-            transition-colors
-          "
+            onClick={handleAddToCart}
+            className="
+              inline-flex items-center justify-center
+              rounded-md
+              bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633]
+              text-white text-sm font-medium tracking-tight
+              px-4 py-2
+              shadow-sm hover:shadow
+              focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
+              transition-colors
+              self-start
+              max-w-[140px]
+            "
           aria-label={`Add ${cup.size} cup to cart`}
         >
           Add to Cart
