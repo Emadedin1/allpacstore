@@ -252,9 +252,14 @@ export default function CartDrawer() {
           <span>${total}</span>
         </div>
         <Link href="/checkout">
-          <button className="w-full bg-[#FFD814] py-2 rounded font-semibold cursor-pointer">
-            Checkout
-          </button>
+          <button
+    className="w-full h-11 rounded-full bg-[#1F8248] text-white font-semibold shadow-sm
+               hover:bg-[#196D3D] active:bg-[#145633]
+               focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
+               transition-colors"
+    >
+              Checkout
+              </button>
         </Link>
       </div>
     </div>
