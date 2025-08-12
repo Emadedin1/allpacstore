@@ -17,7 +17,6 @@ export default function HomeProductPreview() {
           grid-cols-2
           lg:grid-cols-4
           gap-3 lg:gap-6
-          /* Only force equal heights on large screens to avoid mobile weirdness */
           lg:auto-rows-fr
         "
       >
@@ -26,7 +25,7 @@ export default function HomeProductPreview() {
             return <CupCard key={cup.slug} cup={cup} />;
           }
 
-          // 4th tile: brand-tinted "See more" card with clearer subheader
+          // 4th tile: subtle brand-tinted "See more" card with mobile-first vertical layout
           return (
             <Link
               key="see-more"
@@ -45,9 +44,11 @@ export default function HomeProductPreview() {
             >
               {/* Keep a sensible minimum height so it doesn't feel cramped on phones */}
               <div className="relative flex h-full min-h-[140px] sm:min-h-[160px] items-center justify-center p-5 sm:p-6">
-                <div className="flex flex-col items-center gap-2 text-center">
-                  <div className="inline-flex items-center gap-3">
-                    <span className="text-sm sm:text-base font-medium text-gray-900">
+                <div className="flex flex-col items-center text-center gap-2">
+                  {/* On mobile: 'See more' on one line, arrow underneath.
+                      On large screens: place arrow to the right of the text. */}
+                  <div className="flex flex-col items-center gap-2 lg:flex-row lg:gap-3">
+                    <span className="text-lg font-semibold text-gray-900">
                       See more
                     </span>
 
@@ -76,7 +77,7 @@ export default function HomeProductPreview() {
                     </span>
                   </div>
 
-                  {/* Clearer subheader */}
+                  {/* Subheader clarifying destination */}
                   <span className="text-xs sm:text-[13px] text-gray-700">
                     See all paper cup sizes
                   </span>
