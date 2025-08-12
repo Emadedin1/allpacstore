@@ -7,6 +7,10 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 // Default descriptor if none is stored on the item
 const DEFAULT_DESCRIPTOR = "Blank Single-Walled Paper Cup";
 
+// Number formatter for consistent thousands separators
+const nf = new Intl.NumberFormat("en-US");
+const fmt = (n) => nf.format(Number(n || 0));
+
 // Helper: decide whether to show a design label
 const resolveDesignLabel = (item) => {
   let candidate =
@@ -131,17 +135,18 @@ export default function CartDrawer() {
                   className="w-16 h-16 object-cover rounded"
                 />
 
-                <div className="flex-1">
-                  <div className="flex justify-between">
-                    <div>
+                <div className="flex-1 min-w-0">
+                  {/* Top row with fixed-width price to prevent layout shift */}
+                  <div className="flex justify-between gap-2">
+                    <div className="min-w-0 pr-1">
                       {/* Bold product title */}
                       <h3 className="font-semibold text-gray-900">
-                        {caseQty} cups | {item.size} {descriptor}
+                        {fmt(caseQty)} cups | {item.size} {descriptor}
                       </h3>
 
-                      {/* Subheader: Quantity per case */}
+                      {/* Subheader: helpful microcopy */}
                       <p className="text-sm mb-2 text-gray-700">
-                        Quantity: {caseQty} cups/case
+                        Sold by the case • 1 case = {fmt(caseQty)} cups
                       </p>
 
                       {/* Design line if meaningful */}
@@ -158,10 +163,19 @@ export default function CartDrawer() {
                       )}
                     </div>
 
-                    {/* Line total based on normalized cases */}
-                    <p className="font-semibold whitespace-nowrap">
+                    {/* Fixed-width price column to avoid reflow on quantity changes */}
+                    <div
+                      className="
+                        ml-2 shrink-0
+                        w-[9ch] sm:w-[10ch]
+                        text-right font-semibold
+                        font-mono tabular-nums
+                        whitespace-nowrap
+                      "
+                      aria-label="Line item total"
+                    >
                       ${(pricePerCup * normalizedQty).toFixed(2)}
-                    </p>
+                    </div>
                   </div>
 
                   {/* Quantity controls — modern pill, fixed size, stable on change */}
@@ -250,7 +264,7 @@ export default function CartDrawer() {
       <div className="p-4">
         <div className="flex justify-between mb-4 font-semibold">
           <span>Total:</span>
-          <span>${total}</span>
+          <span className="font-mono tabular-nums">${total}</span>
         </div>
         <Link href="/checkout" className="no-close w-full">
           <button
