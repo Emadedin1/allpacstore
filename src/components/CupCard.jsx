@@ -3,12 +3,35 @@
 import { useRouter } from "next/navigation";
 import { useCart } from "../context/CartContext";
 
+// Optional: centralize descriptor if not in data
+const DEFAULT_DESCRIPTOR = "Blank Single-Walled Paper Cup";
+
+// Override map (keys should match how cup.size is stored, adjust if needed)
+const CASE_PRICE_BY_SIZE = {
+  "10 oz": 92,
+  "12 oz": 94,
+  "16 oz": 96,
+  "22 oz": 88,
+  "32 oz": 90,
+};
+
 export default function CupCard({ cup }) {
   const router = useRouter();
   const { addItem, openCart } = useCart();
 
-  const MIN_QTY = 500; // MOQ
-  const pricePerCup = cup.priceCase / cup.qtyCase;
+  // Derive effective case price (override if size known)
+  const effectiveCasePrice =
+    CASE_PRICE_BY_SIZE[cup.size] !== undefined
+      ? CASE_PRICE_BY_SIZE[cup.size]
+      : cup.priceCase;
+
+  // Quantity per case (fallback to 1000 if not provided)
+  const qtyPerCase = cup.qtyCase || 1000;
+
+  // Compute per-cup price from effective case price
+  const pricePerCup = effectiveCasePrice / qtyPerCase;
+
+  const MIN_QTY = 500; // Still your MOQ (could also show "MOQ 1 case" if you switch)
 
   const goToDetails = () => {
     router.push(`/products/${cup.slug}`);
@@ -22,8 +45,18 @@ export default function CupCard({ cup }) {
   };
 
   const handleAddToCart = (e) => {
-    e.stopPropagation(); // prevent card navigation
-    addItem(cup, MIN_QTY, null, "", null, pricePerCup);
+    e.stopPropagation();
+    // IMPORTANT: pass effectiveCasePrice instead of original
+    // If addItem expects the product object to already contain priceCase, you could
+    // clone & inject it. For now we keep your signature and just send the per-cup price.
+    addItem(
+      { ...cup, priceCase: effectiveCasePrice, qtyCase: qtyPerCase },
+      MIN_QTY,
+      null,
+      "",
+      null,
+      pricePerCup
+    );
     openCart();
   };
 
@@ -36,32 +69,37 @@ export default function CupCard({ cup }) {
       className="group bg-white rounded-2xl shadow-sm hover:shadow-md transition h-full flex flex-col cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-black/10"
       aria-label={`${cup.size} details`}
     >
-      {/* Image with size badge */}
+      {/* Image */}
       <div className="relative w-full h-36 sm:h-44 md:h-48 bg-gray-50 rounded-t-2xl overflow-hidden">
         <img
           src={cup.image}
           alt={`${cup.size} cup`}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
         />
-        <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-gray-900 text-xs font-semibold px-2 py-1 rounded-md shadow-sm">
-          {cup.size}
-        </div>
       </div>
 
       {/* Content */}
       <div className="p-3 sm:p-4 flex flex-col gap-2">
-        {/* Price line */}
-        <div className="flex items-baseline gap-1 whitespace-nowrap">
-          <span className="text-xs text-gray-700 font-medium sm:text-base">From</span>
-          <span className="text-[15px] sm:text-2xl font-semibold leading-tight tracking-[-0.01em] text-gray-900">
-            ${pricePerCup.toFixed(3)}/cup
+        {/* Spec line */}
+        <p className="text-sm font-medium text-gray-900 leading-snug">
+          {qtyPerCase}pcs | {cup.size}.{" "}
+          <span className="font-normal text-gray-700">
+            {cup.description || DEFAULT_DESCRIPTOR}
           </span>
+        </p>
+
+        {/* Price per case */}
+        <div>
+          <p className="text-lg font-semibold text-gray-900">
+            ${effectiveCasePrice.toFixed(2)} <span className="text-sm font-medium text-gray-600">/ case</span>
+          </p>
+          {/* Optional per-cup subline */}
+          <p className="text-xs text-gray-500">
+            ${pricePerCup.toFixed(3)} each • MOQ {MIN_QTY}
+          </p>
         </div>
 
-        {/* MOQ */}
-        <span className="text-xs sm:text-sm text-gray-500">MOQ {MIN_QTY}</span>
-
-        {/* Add to Cart button (full width, normal font) */}
+        {/* Add to Cart */}
         <button
           type="button"
           onClick={handleAddToCart}
@@ -72,15 +110,12 @@ export default function CupCard({ cup }) {
             text-white text-base font-medium
             hover:shadow-sm
             focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
-            transition-colors cursor-pointer
+            transition-colors
           "
-          aria-label={`Add ${cup.size} cup to cart`}
+          aria-label={`Add ${cup.size} case to cart`}
         >
           Add to Cart
         </button>
-
-        {/* Hidden accessible size text */}
-        <span className="sr-only">{cup.size} Cup</span>
       </div>
     </div>
   );
