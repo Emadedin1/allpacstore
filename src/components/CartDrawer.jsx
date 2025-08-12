@@ -1,6 +1,6 @@
 "use client";
 import { useCart } from "../context/CartContext";
-import { X } from "lucide-react";
+import { X, Trash } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
@@ -67,7 +67,9 @@ export default function CartDrawer() {
   const total = cartItems
     .reduce((sum, item) => {
       const caseQty = item.qtyCase || 1000;
-      const ppc = item.pricePerCup ?? item.priceCase / caseQty;
+      const ppc =
+        item.pricePerCup ??
+        (item.priceCase && caseQty ? item.priceCase / caseQty : 0);
       const cases = Math.max(1, Math.round((item.quantity || caseQty) / caseQty));
       return sum + ppc * (cases * caseQty);
     }, 0)
@@ -108,9 +110,8 @@ export default function CartDrawer() {
           cartItems.map((item) => {
             const caseQty = item.qtyCase || 1000;
             const pricePerCup =
-              item.pricePerCup ?? (item.priceCase && caseQty ? item.priceCase / caseQty : 0);
-            const casePrice =
-              item.priceCase ?? (pricePerCup && caseQty ? pricePerCup * caseQty : 0);
+              item.pricePerCup ??
+              (item.priceCase && caseQty ? item.priceCase / caseQty : 0);
 
             // Normalize quantity to whole cases for display and math
             const currentCases = Math.max(
@@ -119,10 +120,8 @@ export default function CartDrawer() {
             );
             const normalizedQty = currentCases * caseQty;
 
-            const isEditing = activeEditKey === item.key;
             const designLabel = resolveDesignLabel(item);
-
-            const descriptor = item.description || DEFAULT_DESCRIPTOR;
+            const descriptor = item.description || item.desc || DEFAULT_DESCRIPTOR;
 
             return (
               <div key={item.key} className="flex items-start gap-3">
@@ -140,9 +139,9 @@ export default function CartDrawer() {
                         {caseQty}pcs | {item.size} {descriptor}
                       </h3>
 
-                      {/* Subtitle: only cups-per-case */}
+                      {/* Subheader: Quantity per case */}
                       <p className="text-sm mb-1 text-gray-700">
-                        {caseQty} cups per case
+                        Quantity: {caseQty} pcs/case
                       </p>
 
                       {/* Design line if meaningful */}
@@ -165,84 +164,57 @@ export default function CartDrawer() {
                     </p>
                   </div>
 
-                  {/* Quantity + actions */}
+                  {/* Quantity controls and actions — always visible (no Edit/Done) */}
                   <div className="mt-2 flex items-center gap-4">
-                    {isEditing ? (
-                      <>
-                        {/* Step by FULL CASES (cannot go below 1 case) */}
-                        <div className="inline-flex items-center rounded-full border border-gray-200 bg-white shadow-sm h-9">
-                          <button
-                            type="button"
-                            aria-label="Decrease quantity"
-                            onClick={() => {
-                              const nextCases = Math.max(1, currentCases - 1);
-                              updateItemQty(item.key, nextCases * caseQty);
-                            }}
-                            disabled={currentCases <= 1}
-                            className={`w-9 h-9 rounded-l-full text-base font-semibold
-                              ${
-                                currentCases <= 1
-                                  ? "text-gray-300 cursor-not-allowed"
-                                  : "text-gray-800 hover:bg-gray-100 active:bg-gray-200"
-                              }`}
-                          >
-                            −
-                          </button>
+                    {/* Step by FULL CASES (cannot go below 1 case) */}
+                    <div className="inline-flex items-center rounded-full border border-gray-200 bg-white shadow-sm h-9">
+                      <button
+                        type="button"
+                        aria-label="Decrease quantity"
+                        onClick={() => {
+                          const nextCases = Math.max(1, currentCases - 1);
+                          updateItemQty(item.key, nextCases * caseQty);
+                        }}
+                        disabled={currentCases <= 1}
+                        className={`w-9 h-9 rounded-l-full text-base font-semibold
+                          ${
+                            currentCases <= 1
+                              ? "text-gray-300 cursor-not-allowed"
+                              : "text-gray-800 hover:bg-gray-100 active:bg-gray-200"
+                          }`}
+                      >
+                        −
+                      </button>
 
-                          <div className="px-3 text-center select-none leading-tight">
-                            <div className="text-[10px] text-gray-500">Qty</div>
-                            <div className="text-sm font-medium text-gray-900">
-                              {currentCases} {currentCases === 1 ? "case" : "cases"}
-                            </div>
-                          </div>
-
-                          <button
-                            type="button"
-                            aria-label="Increase quantity"
-                            onClick={() => {
-                              const nextCases = currentCases + 1;
-                              updateItemQty(item.key, nextCases * caseQty);
-                            }}
-                            className="w-9 h-9 rounded-r-full text-base font-semibold text-gray-800 hover:bg-gray-100 active:bg-gray-200"
-                          >
-                            +
-                          </button>
+                      <div className="px-3 text-center select-none leading-tight">
+                        <div className="text-[10px] text-gray-500">Qty</div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {currentCases} {currentCases === 1 ? "case" : "cases"}
                         </div>
+                      </div>
 
-                        <button
-                          type="button"
-                          onClick={() => setActiveEditKey(null)}
-                          className="text-xs text-gray-700 hover:text-black underline"
-                        >
-                          Done
-                        </button>
-                        <button
-                          onClick={() => removeItem(item.key)}
-                          className="text-red-600 text-xs hover:underline cursor-pointer"
-                        >
-                          Remove
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        {/* Show cases only (no raw cup counts) */}
-                        <span className="text-sm">
-                          Qty: {currentCases} {currentCases === 1 ? "case" : "cases"}
-                        </span>
-                        <button
-                          onClick={() => setActiveEditKey(item.key)}
-                          className="text-blue-600 text-xs underline cursor-pointer"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => removeItem(item.key)}
-                          className="text-red-600 text-xs hover:underline cursor-pointer ml-auto"
-                        >
-                          Remove
-                        </button>
-                      </>
-                    )}
+                      <button
+                        type="button"
+                        aria-label="Increase quantity"
+                        onClick={() => {
+                          const nextCases = currentCases + 1;
+                          updateItemQty(item.key, nextCases * caseQty);
+                        }}
+                        className="w-9 h-9 rounded-r-full text-base font-semibold text-gray-800 hover:bg-gray-100 active:bg-gray-200"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    {/* Trash icon to remove item */}
+                    <button
+                      onClick={() => removeItem(item.key)}
+                      aria-label="Remove item"
+                      title="Remove"
+                      className="ml-auto p-2 rounded hover:bg-red-50 text-red-600 hover:text-red-700"
+                    >
+                      <Trash size={18} />
+                    </button>
                   </div>
                 </div>
               </div>
