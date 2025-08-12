@@ -141,7 +141,7 @@ export default function CartDrawer() {
 
                       {/* Subheader: Quantity per case */}
                       <p className="text-sm mb-2 text-gray-700">
-                        Quantity: {caseQty} pcs/case
+                        Quantity: {caseQty} cups/case
                       </p>
 
                       {/* Design line if meaningful */}
