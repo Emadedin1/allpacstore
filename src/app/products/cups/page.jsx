@@ -9,7 +9,7 @@ export default function PaperCupsPage() {
       <div className="max-w-4xl mx-auto text-center">
         <h1 className="text-4xl font-bold mb-2">Paper Cups</h1>
         <p className="text-lg text-gray-700">
-          Discover our full range of sustainable, Canadian-made paper cups. From small to large, we have the perfect size and style.
+          Discover our full range of sustainable, Canadian-made paper cups.
         </p>
       </div>
 
