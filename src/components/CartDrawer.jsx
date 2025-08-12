@@ -146,7 +146,7 @@ export default function CartDrawer() {
 
                       {/* Subheader: helpful microcopy */}
                       <p className="text-sm mb-2 text-gray-700">
-                        Sold by the case • 1 case = {fmt(caseQty)} cups
+                        Quantity: {fmt(caseQty)} cups/case
                       </p>
 
                       {/* Design line if meaningful */}
