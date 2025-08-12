@@ -80,6 +80,7 @@ export default function CartDrawer() {
     }
   }, [isOpen, isMobile]);
 
+  // Click outside to close (desktop); mobile uses overlay
   useEffect(() => {
     function handleClickOutside(e) {
       if (
@@ -96,8 +97,8 @@ export default function CartDrawer() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ✅ Freeze banner hook moved above the early return
-  useEffect(() => {
+  // Freeze banner state during open and while closing (runs before paint)
+  useLayoutEffect(() => {
     const root = document.documentElement;
     const shouldFreeze = isOpen || isClosing;
     if (shouldFreeze) {
@@ -114,7 +115,7 @@ export default function CartDrawer() {
     setIsClosing(true);
     setActiveEditKey(null);
     closeCart();
-    window.setTimeout(() => setIsClosing(false), 320);
+    window.setTimeout(() => setIsClosing(false), 320); // keep overlay catching ghost clicks
   };
 
   const total = cartItems
