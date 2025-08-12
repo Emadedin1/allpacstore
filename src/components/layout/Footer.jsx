@@ -35,16 +35,16 @@ export default function Footer() {
         <div className="flex-1 min-w-[200px] pt-2 pb-6">
           <h4 className="text-lg font-semibold text-white mb-3">Contact</h4>
 
-          {/* Two-line address with map link and proper semantics */}
+          {/* Two-line address with tighter spacing to the emoji */}
           <address className="not-italic text-sm mb-1">
             <a
               href="https://maps.google.com/?q=3324%20Marentette%20Ave%2C%20Windsor%2C%20ON%20N8X%204G4"
               className="hover:text-white cursor-pointer"
               aria-label="Open address in Google Maps"
             >
-              <div className="flex items-start gap-2">
-                <span aria-hidden="true">📍</span>
-                <div>
+              <div className="flex items-start gap-1">
+                <span aria-hidden="true" className="leading-none mt-[1px]">📍</span>
+                <div className="-ml-0.5">
                   <span className="block">3324 Marentette Ave</span>
                   <span className="block">Windsor, ON N8X 4G4</span>
                 </div>
