@@ -22,7 +22,7 @@ export default function CupCard({ cup }) {
   };
 
   const handleAddToCart = (e) => {
-    e.stopPropagation(); // prevent card click navigation
+    e.stopPropagation(); // prevent card navigation
     addItem(cup, MIN_QTY, null, "", null, pricePerCup);
     openCart();
   };
@@ -50,7 +50,7 @@ export default function CupCard({ cup }) {
 
       {/* Content */}
       <div className="p-3 sm:p-4 flex flex-col gap-2">
-        {/* Price */}
+        {/* Price line */}
         <div className="flex items-baseline gap-1 whitespace-nowrap">
           <span className="text-xs text-gray-700 font-medium sm:text-base">From</span>
           <span className="text-[15px] sm:text-2xl font-semibold leading-tight tracking-[-0.01em] text-gray-900">
@@ -61,19 +61,20 @@ export default function CupCard({ cup }) {
         {/* MOQ */}
         <span className="text-xs sm:text-sm text-gray-500">MOQ {MIN_QTY}</span>
 
-        {/* CTA - matches homepage Browse Products button behavior */}
+        {/* CTA (matches homepage Browse Products) */}
         <button
           type="button"
           onClick={handleAddToCart}
           className="inline-flex h-10 w-full items-center justify-center rounded-md
-                     bg-[#27AE60] text-white text-sm font-semibold tracking-[0.005em]
+                     bg-[#27AE60] text-white text-base font-semibold tracking-[0.005em]
                      hover:bg-[#219150] active:bg-[#1A7A3C]
-                     focus:outline-none transition-colors"
+                     focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1A7A3C]/50
+                     transition-colors cursor-pointer"
         >
           Add to Cart
         </button>
 
-        {/* Hidden accessible text */}
+        {/* Hidden accessible size text */}
         <span className="sr-only">{cup.size} Cup</span>
       </div>
     </div>
