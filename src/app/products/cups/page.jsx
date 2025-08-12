@@ -5,7 +5,7 @@ import ProductSections from "../../../components/ProductSections";
 export default function PaperCupsPage() {
   return (
     <main className="bg-white p-6 space-y-8">
-      {/* Header — match ProductsCategoriesPage header style */}
+      {/* Header — match ProductsCategoriesPage/homepage style */}
       <div className="max-w-4xl mx-auto text-center">
         <h1 className="text-4xl font-bold mb-2">Paper Cups</h1>
         <p className="text-lg text-gray-700">
@@ -13,9 +13,9 @@ export default function PaperCupsPage() {
         </p>
       </div>
 
-      {/* Product grid */}
-      <section id="product-sections" className="compact-cards max-w-7xl mx-auto px-4 sm:px-6 pb-12">
-        <ProductSections compact />
+      {/* Product grid — match homepage spacing/density */}
+      <section id="product-sections" className="max-w-7xl mx-auto px-4 sm:px-6 pb-12">
+        <ProductSections />
       </section>
 
       {/* Steps section */}
