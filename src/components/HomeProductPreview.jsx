@@ -14,41 +14,37 @@ export default function HomeProductPreview() {
       <div
         className="
           grid
-          grid-cols-1
-          sm:grid-cols-2
+          grid-cols-2
           lg:grid-cols-4
           gap-3 lg:gap-6
-          /* Avoid forced equal row heights on mobile where it can look odd */
-          /* Only make rows equal height on large screens */
+          /* Only force equal heights on large screens to avoid mobile weirdness */
           lg:auto-rows-fr
         "
       >
         {preview.map((cup, i) => {
           if (i < 3) {
-            // Same card as products grid, retains Add to Cart, etc.
             return <CupCard key={cup.slug} cup={cup} />;
           }
 
-          // 4th tile: subtle brand-tinted "See more" card with clear subheader
+          // 4th tile: brand-tinted "See more" card with clearer subheader
           return (
             <Link
               key="see-more"
-              href="/products/cups" // change to "/products" if you want to link to the full grid
-              aria-label="See more paper cups"
+              href="/products/cups" // change to "/products" for the full catalog
+              aria-label="See all paper cup sizes"
               className="
-                group relative block
+                group relative block h-full
                 rounded-2xl border border-[#1F8248]/20
                 bg-[#1F8248]/10
                 shadow-sm hover:shadow-md
-                transition-all duration-200
-                hover:-translate-y-0.5
+                transition-all duration-200 hover:-translate-y-0.5
                 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1F8248]/30
                 cursor-pointer
               "
               style={{ touchAction: "manipulation" }}
             >
-              {/* Keep a sensible minimum height on smaller screens so the tile doesn't collapse */}
-              <div className="relative flex h-full min-h-[120px] sm:min-h-[160px] lg:min-h-0 items-center justify-center p-5 sm:p-6">
+              {/* Keep a sensible minimum height so it doesn't feel cramped on phones */}
+              <div className="relative flex h-full min-h-[140px] sm:min-h-[160px] items-center justify-center p-5 sm:p-6">
                 <div className="flex flex-col items-center gap-2 text-center">
                   <div className="inline-flex items-center gap-3">
                     <span className="text-sm sm:text-base font-medium text-gray-900">
@@ -80,9 +76,9 @@ export default function HomeProductPreview() {
                     </span>
                   </div>
 
-                  {/* Subheader to clarify category */}
+                  {/* Clearer subheader */}
                   <span className="text-xs sm:text-[13px] text-gray-700">
-                    Paper cups
+                    See all paper cup sizes
                   </span>
                 </div>
               </div>
