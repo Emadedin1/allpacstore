@@ -139,6 +139,7 @@ export default function CartDrawer() {
         className={`
           fixed inset-0 z-40 transition-opacity duration-200
           ${isOpen ? "opacity-100 bg-black/30" : "opacity-0 bg-transparent"}
+          sm:backdrop-blur-[2px]
         `}
         style={{ pointerEvents: isOpen || isClosing ? "auto" : "none" }}
         onClick={(e) => {
@@ -151,14 +152,20 @@ export default function CartDrawer() {
       <div
         ref={drawerRef}
         className={`
-          fixed z-50 bg-white shadow-xl transform transition-transform duration-300 ease-out
+          fixed z-50 bg-white transform transition-transform duration-300 ease-out
           flex flex-col overflow-x-hidden
           ${
             isMobile
-              ? `inset-x-0 bottom-0 w-full rounded-t-2xl border-t border-gray-100
-                 ${isOpen ? "translate-y-0" : "translate-y-full"}`
-              : `top-[64px] right-0 w-[400px] h-[calc(100%-64px)]
-                 ${isOpen ? "translate-x-0" : "translate-x-full"}`
+              ? `
+                inset-x-0 bottom-0 w-full rounded-t-2xl border-t border-gray-100 shadow-xl
+                ${isOpen ? "translate-y-0" : "translate-y-full"}
+              `
+              : `
+                top-[64px] right-0 h-[calc(100%-64px)]
+                w-[420px] md:w-[440px]
+                rounded-l-2xl border-l border-gray-200 shadow-2xl
+                ${isOpen ? "translate-x-0" : "translate-x-full"}
+              `
           }
         `}
         style={{
@@ -166,10 +173,13 @@ export default function CartDrawer() {
           ...(isMobile ? { maxHeight: "80vh", maxHeight: "80svh" } : {}),
           scrollbarGutter: "stable",
           touchAction: "pan-y",
+          // Slight translucency feels nicer on desktop without hurting readability
+          ...(isMobile ? {} : { backgroundColor: "rgba(255,255,255,0.98)" }),
         }}
       >
-        <div className="p-4 flex justify-between items-center">
-          <h2 className="text-lg font-bold">Your Cart</h2>
+        {/* Header */}
+        <div className="p-4 md:p-5 flex justify-between items-center border-b border-gray-100">
+          <h2 className="text-lg md:text-xl font-bold">Your Cart</h2>
           <button
             onMouseDown={(e) => {
               e.preventDefault();
@@ -178,17 +188,19 @@ export default function CartDrawer() {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
+              setActiveEditKey(null);
               closeWithShield();
             }}
-            className="cursor-pointer"
+            className="cursor-pointer rounded-md p-2 hover:bg-gray-50 active:bg-gray-100"
             aria-label="Close cart"
           >
             <X size={20} />
           </button>
         </div>
 
+        {/* Items */}
         <div
-          className="px-4 pb-4 flex-1 overflow-y-auto space-y-4 overscroll-contain"
+          className="px-4 md:px-5 pb-4 md:pb-5 flex-1 overflow-y-auto space-y-4 overscroll-contain"
           style={{ overscrollBehavior: "contain" }}
         >
           {cartItems.length === 0 ? (
@@ -238,7 +250,13 @@ export default function CartDrawer() {
                         )}
                       </div>
                       <div
-                        className="ml-2 shrink-0 w-[9ch] sm:w-[10ch] text-right font-semibold font-mono tabular-nums whitespace-nowrap"
+                        className="
+                          ml-2 shrink-0
+                          w-[9ch] sm:w-[10ch]
+                          text-right font-semibold
+                          font-mono tabular-nums
+                          whitespace-nowrap
+                        "
                         aria-label="Line item total"
                       >
                         ${(pricePerCup * normalizedQty).toFixed(2)}
@@ -247,7 +265,10 @@ export default function CartDrawer() {
 
                     <div className="mt-2 flex items-center gap-3">
                       <div
-                        className="inline-flex items-center overflow-hidden rounded-full shadow-sm"
+                        className="
+                          inline-flex items-center overflow-hidden rounded-full
+                          shadow-sm
+                        "
                         role="group"
                         aria-label="Change quantity in cases"
                       >
@@ -259,20 +280,31 @@ export default function CartDrawer() {
                             updateItemQty(item.key, next * caseQty);
                           }}
                           disabled={currentCases <= 1}
-                          className={`w-10 h-10 grid place-items-center text-white text-lg select-none ${
-                            currentCases <= 1
-                              ? "bg-[#1F8248]/60 cursor-not-allowed"
-                              : "bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer"
-                          } focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1`}
+                          className={`
+                            w-10 h-10 grid place-items-center
+                            text-white text-lg select-none
+                            ${
+                              currentCases <= 1
+                                ? "bg-[#1F8248]/60 cursor-not-allowed"
+                                : "bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer"
+                            }
+                            focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
+                          `}
                         >
                           −
                         </button>
+
                         <div
                           aria-live="polite"
-                          className="w-12 h-10 grid place-items-center bg-white text-[#1F8248] font-semibold font-mono tabular-nums select-none"
+                          className="
+                            w-12 h-10 grid place-items-center
+                            bg-white text-[#1F8248] font-semibold
+                            font-mono tabular-nums select-none
+                          "
                         >
                           {currentCases}
                         </div>
+
                         <button
                           type="button"
                           aria-label="Increase quantity (one case)"
@@ -280,7 +312,13 @@ export default function CartDrawer() {
                             const next = currentCases + 1;
                             updateItemQty(item.key, next * caseQty);
                           }}
-                          className="w-10 h-10 grid place-items-center bg-[#1F8248] text-white text-lg select-none hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1"
+                          className="
+                            w-10 h-10 grid place-items-center
+                            bg-[#1F8248] text-white text-lg select-none
+                            hover:bg-[#196D3D] active:bg-[#145633]
+                            cursor-pointer
+                            focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
+                          "
                         >
                           +
                         </button>
@@ -302,18 +340,24 @@ export default function CartDrawer() {
           )}
         </div>
 
-        <div className="p-4 pb-[max(env(safe-area-inset-bottom),1rem)]">
+        {/* Footer */}
+        <div className="p-4 md:p-5 pb-[max(env(safe-area-inset-bottom),1rem)] border-t border-gray-100 bg-white/80 backdrop-blur-[1px]">
           <div className="flex justify-between mb-4 font-semibold">
             <span>Total:</span>
             <span className="font-mono tabular-nums">${total}</span>
           </div>
+
           <Link
             href="/checkout"
             onClick={() => {
               setActiveEditKey(null);
               closeWithShield();
             }}
-            className="no-close w-full inline-flex items-center justify-center h-11 rounded-full bg-[#1F8248] text-white font-semibold shadow-sm hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1 transition-colors"
+            className="no-close w-full inline-flex items-center justify-center h-11 rounded-full bg-[#1F8248] text-white font-semibold shadow-sm
+                       hover:bg-[#196D3D] active:bg-[#145633]
+                       cursor-pointer
+                       focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
+                       transition-colors"
             aria-label="Go to checkout"
           >
             Checkout
