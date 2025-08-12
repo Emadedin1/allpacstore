@@ -34,7 +34,7 @@ export default function CartDrawer() {
     removeItem,
     isOpen,
     closeCart,
-    activeEditKey, // kept though unused, harmless
+    activeEditKey, // harmless if unused
     setActiveEditKey,
   } = useCart();
 
@@ -164,9 +164,17 @@ export default function CartDrawer() {
                     </p>
                   </div>
 
-                  {/* Quantity controls and actions — pill-style, always visible */}
+                  {/* Quantity controls — modern pill, fixed size, stable on change */}
                   <div className="mt-2 flex items-center gap-3">
-                    <div className="inline-flex items-center rounded-lg overflow-hidden shadow-sm border border-transparent">
+                    <div
+                      className="
+                        inline-flex items-center overflow-hidden rounded-full
+                        shadow-sm
+                      "
+                      role="group"
+                      aria-label="Change quantity in cases"
+                    >
+                      {/* minus */}
                       <button
                         type="button"
                         aria-label="Decrease quantity (one case)"
@@ -175,23 +183,33 @@ export default function CartDrawer() {
                           updateItemQty(item.key, nextCases * caseQty);
                         }}
                         disabled={currentCases <= 1}
-                        className={`w-10 h-10 grid place-items-center text-white
+                        className={`
+                          w-10 h-10 grid place-items-center
+                          text-white text-lg select-none
                           ${
                             currentCases <= 1
                               ? "bg-[#1F8248]/60 cursor-not-allowed"
                               : "bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633]"
-                          }`}
+                          }
+                          focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
+                        `}
                       >
                         −
                       </button>
 
+                      {/* fixed-width center, white */}
                       <div
                         aria-live="polite"
-                        className="h-10 min-w-[44px] grid place-items-center bg-white text-[#1F8248] font-semibold px-3 tabular-nums select-none"
+                        className="
+                          w-12 h-10 grid place-items-center
+                          bg-white text-[#1F8248] font-semibold
+                          font-mono tabular-nums select-none
+                        "
                       >
                         {currentCases}
                       </div>
 
+                      {/* plus */}
                       <button
                         type="button"
                         aria-label="Increase quantity (one case)"
@@ -199,7 +217,12 @@ export default function CartDrawer() {
                           const nextCases = currentCases + 1;
                           updateItemQty(item.key, nextCases * caseQty);
                         }}
-                        className="w-10 h-10 grid place-items-center bg-[#1F8248] text-white hover:bg-[#196D3D] active:bg-[#145633]"
+                        className="
+                          w-10 h-10 grid place-items-center
+                          bg-[#1F8248] text-white text-lg select-none
+                          hover:bg-[#196D3D] active:bg-[#145633]
+                          focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
+                        "
                       >
                         +
                       </button>
@@ -210,7 +233,7 @@ export default function CartDrawer() {
                       onClick={() => removeItem(item.key)}
                       aria-label="Remove item"
                       title="Remove"
-                      className="ml-1 p-2 rounded hover:bg-red-50 text-red-600 hover:text-red-700"
+                      className="ml-1 p-2 rounded hover:bg-red-50 text-red-600 hover:text-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
                     >
                       <Trash size={18} />
                     </button>
