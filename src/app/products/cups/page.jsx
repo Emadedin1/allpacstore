@@ -1,11 +1,12 @@
 "use client";
 
-import ProductSections from "../../../components/ProductSections";
+import CupCard from "../../../components/CupCard";
+import { cups } from "../../../data/cups";
 
 export default function PaperCupsPage() {
   return (
     <main className="bg-white p-6 space-y-8">
-      {/* Header — match ProductsCategoriesPage/homepage style */}
+      {/* Header */}
       <div className="max-w-4xl mx-auto text-center">
         <h1 className="text-4xl font-bold mb-2">Paper Cups</h1>
         <p className="text-lg text-gray-700">
@@ -13,9 +14,21 @@ export default function PaperCupsPage() {
         </p>
       </div>
 
-      {/* Product grid — match homepage spacing/density */}
+      {/* Product grid — identical density to homepage */}
       <section id="product-sections" className="max-w-7xl mx-auto px-4 sm:px-6 pb-12">
-        <ProductSections />
+        <div
+          className="
+            grid
+            grid-cols-2
+            lg:grid-cols-4
+            gap-3 lg:gap-6
+            lg:auto-rows-fr
+          "
+        >
+          {cups.map((cup) => (
+            <CupCard key={cup.slug} cup={cup} />
+          ))}
+        </div>
       </section>
 
       {/* Steps section */}
