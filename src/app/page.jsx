@@ -23,11 +23,11 @@ export default function Home() {
 
           {/* Flat, modern CTA */}
           <Link
-            href="/products/cups"
-            className="inline-flex h-11 px-6 items-center justify-center rounded-md
-                       bg-[#FFD814] text-black text-base font-semibold tracking-[0.005em]
-                       hover:bg-[#F7C600] active:bg-[#E6B800]
-                       focus:outline-none transition-colors"
+             href="/products/cups"
+             className="inline-flex h-11 px-6 items-center justify-center rounded-md
+             bg-[#27AE60] text-white text-base font-semibold tracking-[0.005em]
+             hover:bg-[#219150] active:bg-[#1A7A3C]
+             focus:outline-none transition-colors"
           >
             Browse Products
           </Link>
