@@ -8,7 +8,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 const DEFAULT_DESCRIPTOR = "Blank Single-Walled Paper Cup";
 
 // Number formatter for consistent thousands separators
-const nf = new Intl.NumberFormat("en-US");
+const nf = new Intl.NumberFormat("en-US", { useGrouping: false });
 const fmt = (n) => nf.format(Number(n || 0));
 
 // Helper: decide whether to show a design label
