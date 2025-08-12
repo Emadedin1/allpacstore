@@ -6,7 +6,7 @@ import { useCart } from "../context/CartContext";
 // Optional: centralize descriptor if not in data
 const DEFAULT_DESCRIPTOR = "Blank Single-Walled Paper Cup";
 
-// Override map (keys should match how cup.size is stored, adjust if needed)
+// Override map (keys should match how cup.size is stored)
 const CASE_PRICE_BY_SIZE = {
   "10 oz": 92,
   "12 oz": 94,
@@ -25,13 +25,13 @@ export default function CupCard({ cup }) {
       ? CASE_PRICE_BY_SIZE[cup.size]
       : cup.priceCase;
 
-  // Quantity per case (fallback to 1000 if not provided)
+  // Quantity per case (fallback if not provided)
   const qtyPerCase = cup.qtyCase || 1000;
 
-  // Compute per-cup price from effective case price
+  // Compute per-cup price (still used for cart math if needed)
   const pricePerCup = effectiveCasePrice / qtyPerCase;
 
-  const MIN_QTY = 500; // Still your MOQ (could also show "MOQ 1 case" if you switch)
+  const MIN_QTY = 500;
 
   const goToDetails = () => {
     router.push(`/products/${cup.slug}`);
@@ -46,9 +46,6 @@ export default function CupCard({ cup }) {
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    // IMPORTANT: pass effectiveCasePrice instead of original
-    // If addItem expects the product object to already contain priceCase, you could
-    // clone & inject it. For now we keep your signature and just send the per-cup price.
     addItem(
       { ...cup, priceCase: effectiveCasePrice, qtyCase: qtyPerCase },
       MIN_QTY,
@@ -74,7 +71,7 @@ export default function CupCard({ cup }) {
         <img
           src={cup.image}
           alt={`${cup.size} cup`}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
         />
       </div>
 
@@ -88,16 +85,10 @@ export default function CupCard({ cup }) {
           </span>
         </p>
 
-        {/* Price per case */}
-        <div>
-          <p className="text-lg font-semibold text-gray-900">
-            ${effectiveCasePrice.toFixed(2)} <span className="text-sm font-medium text-gray-600">/ case</span>
-          </p>
-          {/* Optional per-cup subline */}
-          <p className="text-xs text-gray-500">
-            ${pricePerCup.toFixed(3)} each • MOQ {MIN_QTY}
-          </p>
-        </div>
+        {/* Price (centered, no / case, no subline) */}
+        <p className="text-lg font-semibold text-gray-900 text-center">
+          ${effectiveCasePrice.toFixed(2)}
+        </p>
 
         {/* Add to Cart */}
         <button
