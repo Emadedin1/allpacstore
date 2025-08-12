@@ -49,7 +49,7 @@ export default function HomeProductPreview() {
                       On large screens: place arrow to the right of the text. */}
                   <div className="flex flex-col items-center gap-2 lg:flex-row lg:gap-3">
                     <span className="text-lg font-semibold text-gray-900">
-                      See more
+                      See More
                     </span>
 
                     {/* Arrow in a white pill for contrast */}
