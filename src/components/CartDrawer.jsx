@@ -7,7 +7,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 // Default descriptor if none is stored on the item
 const DEFAULT_DESCRIPTOR = "Blank Single-Walled Paper Cup";
 
-// Number formatter for consistent thousands separators
+// Number formatter WITHOUT thousands separators (so 1000 instead of 1,000)
 const nf = new Intl.NumberFormat("en-US", { useGrouping: false });
 const fmt = (n) => nf.format(Number(n || 0));
 
@@ -266,16 +266,22 @@ export default function CartDrawer() {
           <span>Total:</span>
           <span className="font-mono tabular-nums">${total}</span>
         </div>
-        <Link href="/checkout" className="no-close w-full">
-          <button
-            className="w-full h-11 rounded-full bg-[#1F8248] text-white font-semibold shadow-sm
-                       hover:bg-[#196D3D] active:bg-[#145633]
-                       cursor-pointer
-                       focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
-                       transition-colors"
-          >
-            Checkout
-          </button>
+
+        {/* Close the cart when navigating to checkout */}
+        <Link
+          href="/checkout"
+          onClick={() => {
+            setActiveEditKey(null);
+            closeCart();
+          }}
+          className="no-close w-full inline-flex items-center justify-center h-11 rounded-full bg-[#1F8248] text-white font-semibold shadow-sm
+                     hover:bg-[#196D3D] active:bg-[#145633]
+                     cursor-pointer
+                     focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
+                     transition-colors"
+          aria-label="Go to checkout"
+        >
+          Checkout
         </Link>
       </div>
     </div>
