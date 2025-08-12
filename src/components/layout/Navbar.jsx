@@ -108,9 +108,9 @@ export default function Navbar() {
 
   // Small vertical adjustment for nav links (push down by 2px)
   const navFontClass = "font-medium tracking-tight text-[1.08rem]";
-  // Rounded dark gray hover block for nav links
+  // Updated: light brand green hover with rounded background
   const navBtnClass =
-    "px-3 py-1 rounded-lg flex items-center transition-colors hover:bg-gray-800 hover:text-white focus-visible:bg-gray-800 focus-visible:text-white";
+    "px-3 py-1 rounded-lg flex items-center transition-colors hover:bg-[#1F8248]/10 hover:text-[#1F8248] focus-visible:bg-[#1F8248]/15 focus-visible:text-[#1F8248] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F8248]/40";
   const navLinkStyle = { position: "relative", top: "2px" }; // pushes links down by 2px
 
   return (
@@ -130,7 +130,7 @@ export default function Navbar() {
             />
           </Link>
 
-          {/* Right: nav links, cart, user - all in one flex container for vertical alignment */}
+          {/* Right: nav links, cart, user */}
           <div className="flex items-center gap-x-8">
             <Link
               href="/products"
