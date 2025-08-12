@@ -22,7 +22,7 @@ export default function CupCard({ cup }) {
   };
 
   const handleAddToCart = (e) => {
-    e.stopPropagation();
+    e.stopPropagation(); // prevent card click navigation
     addItem(cup, MIN_QTY, null, "", null, pricePerCup);
     openCart();
   };
@@ -50,27 +50,25 @@ export default function CupCard({ cup }) {
 
       {/* Content */}
       <div className="p-3 sm:p-4 flex flex-col gap-2">
-        {/* Price (single line on mobile) */}
+        {/* Price */}
         <div className="flex items-baseline gap-1 whitespace-nowrap">
           <span className="text-xs text-gray-700 font-medium sm:text-base">From</span>
-            <span className="text-[15px] sm:text-2xl font-semibold leading-tight tracking-[-0.01em] text-gray-900">
-              ${pricePerCup.toFixed(3)}/cup
-            </span>
+          <span className="text-[15px] sm:text-2xl font-semibold leading-tight tracking-[-0.01em] text-gray-900">
+            ${pricePerCup.toFixed(3)}/cup
+          </span>
         </div>
 
         {/* MOQ */}
         <span className="text-xs sm:text-sm text-gray-500">MOQ {MIN_QTY}</span>
 
-        {/* CTA – fixed color across states */}
+        {/* CTA - matches homepage Browse Products button behavior */}
         <button
           type="button"
           onClick={handleAddToCart}
-          className="inline-flex h-10 w-full items-center justify-center rounded-md font-semibold
-                     bg-[#27AE60] text-white
-                     hover:bg-[#27AE60] active:bg-[#27AE60]
-                     focus:outline-none focus-visible:ring-2 focus-visible:ring-[#27AE60]/50
-                     shadow-sm hover:shadow transition-colors transition-shadow
-                     active:scale-[0.985] mt-1"
+          className="inline-flex h-10 w-full items-center justify-center rounded-md
+                     bg-[#27AE60] text-white text-sm font-semibold tracking-[0.005em]
+                     hover:bg-[#219150] active:bg-[#1A7A3C]
+                     focus:outline-none transition-colors"
         >
           Add to Cart
         </button>
