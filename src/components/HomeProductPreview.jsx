@@ -2,12 +2,11 @@
 
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import CupCard from "./CupCard";
 import { cups } from "../data/cups";
 
 export default function HomeProductPreview() {
-  // First 4 items: 3 real cards + 1 "See More"
+  // First 4 items: 3 real cards + 1 "See more"
   const preview = cups.slice(0, 4);
 
   return (
@@ -27,65 +26,40 @@ export default function HomeProductPreview() {
             return <CupCard key={cup.slug} cup={cup} />;
           }
 
-          // 4th tile: blurred image of the 4th product with "See More"
+          // 4th tile: clean, modern, plain white "See more" card
           return (
             <Link
-              key={`see-more-${cup.slug}`}
-              href="/products/cups"  // change to /products if that's your full grid
+              key="see-more"
+              href="/products/cups" // change to "/products" if that's your full grid
               aria-label="See more products"
               className="
-                group relative block overflow-hidden rounded-2xl
-                ring-1 ring-black/5 border border-white/20
-                bg-gray-100/60 backdrop-blur
-                shadow-sm hover:shadow-md hover:ring-black/10 transition
-                h-full
+                group relative block h-full
+                rounded-2xl border border-gray-200 bg-white
+                shadow-sm hover:shadow-md
+                transition-all duration-200 hover:-translate-y-0.5
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300
+                cursor-pointer
               "
             >
-              {/* Background: 4th product image, blurred and dimmed */}
-              <div className="relative w-full h-full min-h-48">
-                <Image
-                  src={cup.image}
-                  alt={`${cup.size} cup`}
-                  fill
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                  className="object-cover object-center scale-105 blur-sm brightness-75"
-                  priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/20 to-transparent" />
-                {/* subtle texture */}
-                <div
-                  aria-hidden
-                  className="absolute inset-0 opacity-[0.06] mix-blend-multiply"
-                  style={{
-                    backgroundImage:
-                      "radial-gradient(circle at 1px 1px, rgba(0,0,0,0.6) 1px, transparent 0)",
-                    backgroundSize: "24px 24px",
-                  }}
-                />
-              </div>
-
-              {/* Content */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="flex flex-col items-center gap-2 text-center">
-                  <span className="text-sm sm:text-base font-medium text-gray-900">
-                    See More
-                  </span>
-                  <span
-                    className="
-                      inline-flex h-9 w-9 items-center justify-center rounded-full
-                      bg-white/80 text-gray-900 ring-1 ring-black/10 backdrop-blur
-                      group-hover:bg-white transition
-                    "
+              <div className="absolute inset-px rounded-[calc(theme(borderRadius.2xl)-1px)] bg-white" />
+              <div className="relative h-full flex items-center justify-center p-6">
+                <div className="inline-flex items-center gap-2 text-gray-900 font-medium">
+                  <span>See more</span>
+                  <svg
+                    className="h-5 w-5 text-gray-700 transition-transform duration-200 group-hover:translate-x-0.5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
                   >
-                    <span className="text-xl leading-none transform transition-transform duration-200 group-hover:translate-x-0.5">
-                      →
-                    </span>
-                  </span>
-                  <span className="text-[11px] text-gray-700">Browse all paper cups</span>
+                    <path d="M5 12h14" />
+                    <path d="m12 5 7 7-7 7" />
+                  </svg>
                 </div>
               </div>
-
-              <span className="absolute inset-0 rounded-2xl ring-2 ring-transparent group-focus-visible:ring-black/30 pointer-events-none" />
             </Link>
           );
         })}
