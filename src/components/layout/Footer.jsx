@@ -4,11 +4,13 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300 pt-10 pb-6 mt-0">
-      <div className="
-        max-w-7xl mx-auto px-4
-        flex flex-col sm:flex-row justify-between items-start
-        gap-10
-      ">
+      <div
+        className="
+          max-w-7xl mx-auto px-4
+          flex flex-col sm:flex-row justify-between items-start
+          gap-10
+        "
+      >
         {/* Logo & Tagline */}
         <div className="flex-1 min-w-[200px] pt-2 pb-6">
           <h3 className="text-xl font-bold text-white mb-2">Allpac</h3>
@@ -32,8 +34,30 @@ export default function Footer() {
         {/* Contact Info */}
         <div className="flex-1 min-w-[200px] pt-2 pb-6">
           <h4 className="text-lg font-semibold text-white mb-3">Contact</h4>
-          <p className="text-sm mb-1">📍 3324 Marentette Ave, Windsor, ON N8X 4G4</p>
-          <p className="text-sm">✉️ <a href="mailto:info@allpacgroup.com" className="hover:text-white">info@allpacgroup.com</a></p>
+
+          {/* Two-line address with map link and proper semantics */}
+          <address className="not-italic text-sm mb-1">
+            <a
+              href="https://maps.google.com/?q=3324%20Marentette%20Ave%2C%20Windsor%2C%20ON%20N8X%204G4"
+              className="hover:text-white cursor-pointer"
+              aria-label="Open address in Google Maps"
+            >
+              <div className="flex items-start gap-2">
+                <span aria-hidden="true">📍</span>
+                <div>
+                  <span className="block">3324 Marentette Ave</span>
+                  <span className="block">Windsor, ON N8X 4G4</span>
+                </div>
+              </div>
+            </a>
+          </address>
+
+          <p className="text-sm">
+            ✉️{" "}
+            <a href="mailto:info@allpacgroup.com" className="hover:text-white">
+              info@allpacgroup.com
+            </a>
+          </p>
         </div>
       </div>
 
