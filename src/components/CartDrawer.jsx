@@ -6,9 +6,9 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 const DEFAULT_DESCRIPTOR = "Blank Single-Walled Paper Cup";
 const nf = new Intl.NumberFormat("en-US", { useGrouping: false });
-const fmt = (n: number | string) => nf.format(Number(n || 0));
+const fmt = (n) => nf.format(Number(n || 0));
 
-const resolveDesignLabel = (item: any) => {
+const resolveDesignLabel = (item) => {
   let candidate =
     item?.designType === "Custom"
       ? (item?.designName && String(item.designName)) || "Custom"
@@ -32,8 +32,8 @@ export default function CartDrawer() {
     setActiveEditKey,
   } = useCart();
 
-  const drawerRef = useRef<HTMLDivElement | null>(null);
-  const [isMobile, setIsMobile] = useState<boolean | null>(null);
+  const drawerRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(null);
   const [isClosing, setIsClosing] = useState(false); // overlay shield timing
 
   useLayoutEffect(() => {
@@ -45,19 +45,14 @@ export default function CartDrawer() {
     }
   }, []);
 
-  // Body scroll lock on mobile when drawer is open (+ freeze banner during open/close)
+  // Body scroll lock on mobile when drawer is open
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!isMobile) return;
 
     const body = document.body;
-    const root = document.documentElement;
 
     if (isOpen) {
-      // Freeze banner immediately (prevents banner reacting to the lock jump)
-      root.setAttribute("data-freeze-banner", "1");
-
-      // Lock the body
       const previousScrollY = window.scrollY || 0;
       body.style.position = "fixed";
       body.style.top = `-${previousScrollY}px`;
@@ -66,11 +61,10 @@ export default function CartDrawer() {
       body.style.width = "100%";
       body.style.overscrollBehavior = "none";
 
-      // Cleanup: unlock + carefully unfreeze AFTER scroll restore settles
       return () => {
         const y = -parseInt(body.style.top || "0", 10) || 0;
+        const root = document.documentElement;
         const prevInlineBehavior = root.style.scrollBehavior;
-
         root.style.scrollBehavior = "auto";
         body.style.position = "";
         body.style.top = "";
@@ -78,32 +72,21 @@ export default function CartDrawer() {
         body.style.right = "";
         body.style.width = "";
         body.style.overscrollBehavior = "";
-
-        // Restore scroll (this triggers a scroll event)
         window.scrollTo(0, y);
-
-        // Give the browser a frame to settle, then restore behavior…
         requestAnimationFrame(() => {
           root.style.scrollBehavior = prevInlineBehavior;
-
-          // …and only then unfreeze the banner (prevents pop/open/close)
-          // One more RAF to be extra safe across mobile browsers
-          requestAnimationFrame(() => {
-            root.removeAttribute("data-freeze-banner");
-          });
         });
       };
     }
   }, [isOpen, isMobile]);
 
-  // Close when clicking outside
   useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
+    function handleClickOutside(e) {
       if (
         isOpen &&
         drawerRef.current &&
-        !drawerRef.current.contains(e.target as Node) &&
-        !(e.target as HTMLElement)?.closest(".no-close")
+        !drawerRef.current.contains(e.target) &&
+        !e.target.closest(".no-close")
       ) {
         setActiveEditKey(null);
         closeWithShield();
@@ -111,19 +94,31 @@ export default function CartDrawer() {
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
+  }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ✅ Freeze banner hook moved above the early return
+  useEffect(() => {
+    const root = document.documentElement;
+    const shouldFreeze = isOpen || isClosing;
+    if (shouldFreeze) {
+      root.setAttribute("data-freeze-banner", "1");
+    } else {
+      root.removeAttribute("data-freeze-banner");
+    }
+    return () => {
+      root.removeAttribute("data-freeze-banner");
+    };
+  }, [isOpen, isClosing]);
 
   const closeWithShield = () => {
     setIsClosing(true);
     setActiveEditKey(null);
     closeCart();
-    // Keep the backdrop clickable shield active slightly longer than the slide animation
-    window.setTimeout(() => setIsClosing(false), 360);
+    window.setTimeout(() => setIsClosing(false), 320);
   };
 
   const total = cartItems
-    .reduce((sum: number, item: any) => {
+    .reduce((sum, item) => {
       const caseQty = item.qtyCase || 1000;
       const ppc =
         item.pricePerCup ??
@@ -167,7 +162,7 @@ export default function CartDrawer() {
         `}
         style={{
           willChange: "transform",
-          ...(isMobile ? { maxHeight: "80svh" } : {}),
+          ...(isMobile ? { maxHeight: "80vh", maxHeight: "80svh" } : {}),
           scrollbarGutter: "stable",
           touchAction: "pan-y",
         }}
@@ -198,7 +193,7 @@ export default function CartDrawer() {
           {cartItems.length === 0 ? (
             <p className="text-center text-gray-500">Your cart is empty.</p>
           ) : (
-            cartItems.map((item: any) => {
+            cartItems.map((item) => {
               const caseQty = item.qtyCase || 1000;
               const pricePerCup =
                 item.pricePerCup ??
