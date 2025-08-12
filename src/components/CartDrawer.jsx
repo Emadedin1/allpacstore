@@ -132,11 +132,8 @@ export default function CartDrawer() {
                   <div className="flex justify-between">
                     <div>
                       {/* Product Title: "1000pcs | 10 oz Blank Single-Walled Paper Cup" */}
-                      <h3 className="font-semibold">
-                        {caseQty}pcs | {item.size}{" "}
-                        <span className="font-normal text-gray-800">
-                          {descriptor}
-                        </span>
+                      <h3 className="font-semibold text-gray-900">
+                        {caseQty}pcs | {item.size}{descriptor}
                       </h3>
 
                       {/* Subtitle: only cups-per-case, no per-cup or per-case price */}
