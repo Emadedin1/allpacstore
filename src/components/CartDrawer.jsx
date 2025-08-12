@@ -134,7 +134,7 @@ export default function CartDrawer() {
                 <div className="flex-1">
                   <div className="flex justify-between">
                     <div>
-                      {/* Bold product title: "1000pcs | 10 oz Blank Single-Walled Paper Cup" */}
+                      {/* Bold product title */}
                       <h3 className="font-semibold text-gray-900">
                         {caseQty}pcs | {item.size} {descriptor}
                       </h3>
@@ -189,7 +189,7 @@ export default function CartDrawer() {
                           ${
                             currentCases <= 1
                               ? "bg-[#1F8248]/60 cursor-not-allowed"
-                              : "bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633]"
+                              : "bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer"
                           }
                           focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
                         `}
@@ -221,6 +221,7 @@ export default function CartDrawer() {
                           w-10 h-10 grid place-items-center
                           bg-[#1F8248] text-white text-lg select-none
                           hover:bg-[#196D3D] active:bg-[#145633]
+                          cursor-pointer
                           focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
                         "
                       >
@@ -233,7 +234,7 @@ export default function CartDrawer() {
                       onClick={() => removeItem(item.key)}
                       aria-label="Remove item"
                       title="Remove"
-                      className="ml-1 p-2 rounded hover:bg-red-50 text-red-600 hover:text-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+                      className="ml-1 p-2 rounded hover:bg-red-50 text-red-600 hover:text-red-700 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
                     >
                       <Trash size={18} />
                     </button>
@@ -251,15 +252,16 @@ export default function CartDrawer() {
           <span>Total:</span>
           <span>${total}</span>
         </div>
-        <Link href="/checkout">
+        <Link href="/checkout" className="no-close w-full">
           <button
-    className="w-full h-11 rounded-full bg-[#1F8248] text-white font-semibold shadow-sm
-               hover:bg-[#196D3D] active:bg-[#145633]
-               focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
-               transition-colors"
-    >
-              Checkout
-              </button>
+            className="w-full h-11 rounded-full bg-[#1F8248] text-white font-semibold shadow-sm
+                       hover:bg-[#196D3D] active:bg-[#145633]
+                       cursor-pointer
+                       focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
+                       transition-colors"
+          >
+            Checkout
+          </button>
         </Link>
       </div>
     </div>
