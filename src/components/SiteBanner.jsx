@@ -66,7 +66,7 @@ export default function SiteBanner() {
         top: 0,
         zIndex: 9999,
         background: '#30ABD7',
-        color: '#30ABD7',
+        color: '#ffffff',
         padding: '10px 0',
         textAlign: 'center',
         fontFamily: `-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif`,
