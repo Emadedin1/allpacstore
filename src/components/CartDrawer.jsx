@@ -136,7 +136,7 @@ export default function CartDrawer() {
                     <div>
                       {/* Bold product title */}
                       <h3 className="font-semibold text-gray-900">
-                        {caseQty}pcs | {item.size} {descriptor}
+                        {caseQty} cups | {item.size} {descriptor}
                       </h3>
 
                       {/* Subheader: Quantity per case */}
