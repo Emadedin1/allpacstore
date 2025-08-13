@@ -18,12 +18,19 @@ export default function ProductPage({ params: { slug } }) {
   const [designType, setDesignType] = useState("Plain White");
   const [designFile, setDesignFile] = useState(null);
   const [previewURL, setPreviewURL] = useState("");
-  const [qty, setQty] = useState(""); // start empty
+  const [qty, setQty] = useState(""); // quantity in cups
 
   // 3️⃣ Pricing & texture/model URLs
   const { plain, custom } = pricing[slug];
   const pricePerCup = designType === "Plain White" ? plain : custom;
   const subtotal = qty ? (pricePerCup * Number(qty)).toFixed(2) : "0.00";
+
+  // Cases (match cart control behavior)
+  const caseQty = product.qtyCase || 1000; // cups per case
+  const currentCases = Math.max(
+    1,
+    Math.round(((Number(qty) || 0) || 0) / caseQty) || (qty ? 1 : 1)
+  );
 
   const TEXTURES = {
     "Plain White": "/textures/plain-white.png",
@@ -188,15 +195,77 @@ export default function ProductPage({ params: { slug } }) {
           {/* Quantity & Add */}
           <div className="space-y-2">
             <label className="block font-medium text-sm">Quantity</label>
-            <input
-              type="number"
-              min={500}
-              step={100}
-              placeholder="Qty (Min. 500)"
-              value={qty}
-              onChange={(e) => setQty(e.target.value)}
-              className="w-32 border rounded p-2 text-sm"
-            />
+
+            {/* Quantity modifier (exactly like cart: cases +/-) */}
+            <div
+              className="
+                inline-flex items-center overflow-hidden rounded-full
+                shadow-sm
+              "
+              role="group"
+              aria-label="Change quantity in cases"
+            >
+              <button
+                type="button"
+                aria-label="Decrease quantity (one case)"
+                onClick={() => {
+                  const next = Math.max(1, currentCases - 1);
+                  setQty(next * caseQty);
+                }}
+                disabled={currentCases <= 1 || !qty}
+                className={`
+                  w-10 h-10 grid place-items-center
+                  text-white text-lg select-none
+                  ${
+                    currentCases <= 1 || !qty
+                      ? "bg-[#1F8248]/60 cursor-not-allowed"
+                      : "bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer"
+                  }
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
+                `}
+              >
+                −
+              </button>
+
+              <div
+                aria-live="polite"
+                className="
+                  w-12 h-10 grid place-items-center
+                  bg-white text-[#1F8248] font-semibold
+                  font-mono tabular-nums select-none
+                "
+              >
+                {qty ? currentCases : 1}
+              </div>
+
+              <button
+                type="button"
+                aria-label="Increase quantity (one case)"
+                onClick={() => {
+                  if (!qty) {
+                    // first click sets to one case
+                    setQty(caseQty);
+                  } else {
+                    const next = currentCases + 1;
+                    setQty(next * caseQty);
+                  }
+                }}
+                className="
+                  w-10 h-10 grid place-items-center
+                  bg-[#1F8248] text-white text-lg select-none
+                  hover:bg-[#196D3D] active:bg-[#145633]
+                  cursor-pointer
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
+                "
+              >
+                +
+              </button>
+            </div>
+
+            <p className="text-xs text-gray-600">
+              {caseQty.toLocaleString()} cups per case
+            </p>
+
             <p className="font-semibold text-sm">Subtotal: ${subtotal}</p>
             <button
               onClick={handleAdd}
@@ -205,10 +274,13 @@ export default function ProductPage({ params: { slug } }) {
                 Number(qty) < 500 ||
                 (designType === 'Custom' && !designFile)
               }
-              className={`w-full py-2 rounded-lg text-sm font-semibold ${qty && Number(qty) >= 500 && (designType !== 'Custom' || designFile)
-                ? 'bg-yellow-400 text-black hover:bg-yellow-500'
-                : 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                }`}
+              className={`w-full py-2 rounded-lg text-sm font-semibold ${
+                qty &&
+                Number(qty) >= 500 &&
+                (designType !== 'Custom' || designFile)
+                  ? 'bg-[#196D3D] text-white hover:bg-[#145633] active:bg-[#145633]'
+                  : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+              }`}
             >
               Add to Cart
             </button>
