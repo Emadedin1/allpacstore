@@ -13,7 +13,7 @@ export default function ProductPage({ params: { slug } }) {
   const product = getProductBySlug(slug);
   if (!product) return <div className="p-4">Product not found.</div>;
 
-  // Cups per case
+  // Cups per case (used for default qty and the +/- control)
   const caseQty = product.qtyCase || 1000;
 
   // 2️⃣ Cart & UI state
@@ -21,7 +21,7 @@ export default function ProductPage({ params: { slug } }) {
   const [designType, setDesignType] = useState("Plain White");
   const [designFile, setDesignFile] = useState(null);
   const [previewURL, setPreviewURL] = useState("");
-  // Default to 1 full case so the button is clickable immediately
+  // Default quantity to 1 full case so "Add to Cart" is immediately clickable
   const [qty, setQty] = useState(caseQty);
 
   // 3️⃣ Pricing & texture/model URLs
@@ -338,26 +338,35 @@ export default function ProductPage({ params: { slug } }) {
                 href={`/products/${p.slug}`}
                 className="
                   group flex flex-col flex-shrink-0
-                  w-60 rounded-xl overflow-hidden
-                  border border-gray-200 bg-white
-                  shadow-sm hover:shadow-md transition
+                  w-60 rounded-2xl overflow-hidden
+                  bg-white shadow-sm ring-1 ring-black/5
+                  hover:shadow-md hover:ring-black/10 transition
                 "
               >
-                {/* Modern image area with preserved cup, fills card comfortably */}
-                <div className="relative w-full aspect-[4/5] sm:aspect-[3/4] bg-white">
+                {/* Polished hero image area: fills naturally, no harsh edges */}
+                <div className="relative w-full aspect-[4/5] overflow-hidden bg-neutral-100">
                   <Image
                     src={p.image}
                     alt={p.name}
                     fill
                     sizes="240px"
-                    className="object-contain p-2 sm:p-3 transition-transform duration-300 group-hover:scale-[1.02]"
+                    className="
+                      object-contain object-center
+                      transition-transform duration-300
+                      group-hover:scale-[1.03]
+                    "
                     priority={false}
                   />
+                  {/* Subtle top-to-bottom lighting to blend image into card */}
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/[0.02] via-transparent to-black/[0.03]" />
                 </div>
 
-                <div className="p-4 flex flex-col flex-1 justify-between">
-                  <h3 className="text-base font-semibold line-clamp-1">{p.name}</h3>
-                  <p className="text-sm font-semibold mt-1">
+                {/* Clean, seamless body (no separate blue panel) */}
+                <div className="p-3.5">
+                  <h3 className="text-base font-semibold leading-tight line-clamp-1">
+                    {p.name}
+                  </h3>
+                  <p className="text-sm font-medium text-gray-700 mt-1">
                     ${(p.priceCase / p.qtyCase).toFixed(3)}/cup
                   </p>
                 </div>
