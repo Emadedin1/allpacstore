@@ -121,7 +121,7 @@ export default function ProductPage({ params: { slug } }) {
                 {Object.entries(pricing).map(([key, { plain, custom }]) => (
                   <tr key={key}>
                     <td className="border px-3 py-2">
-                      {key.replace(/(\d+)(oz)/, '$1 oz')}
+                      {key.replace(/(\d+)(oz)/, "$1 oz")}
                     </td>
                     <td className="border px-3 py-2">${plain.toFixed(3)}/cup</td>
                     <td className="border px-3 py-2">${custom.toFixed(3)}/cup</td>
@@ -147,7 +147,7 @@ export default function ProductPage({ params: { slug } }) {
           <fieldset className="space-y-2">
             <legend className="font-medium">Design Type</legend>
             <div className="flex gap-6">
-              {['Plain White', 'Preset A', 'Preset B', 'Custom'].map((opt) => (
+              {["Plain White", "Preset A", "Preset B", "Custom"].map((opt) => (
                 <label key={opt} className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="radio"
@@ -166,7 +166,7 @@ export default function ProductPage({ params: { slug } }) {
               ))}
             </div>
 
-            {designType === 'Custom' && (
+            {designType === "Custom" && (
               <div className="mt-2 space-y-2">
                 <label className="inline-block bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 cursor-pointer text-sm">
                   Upload Design
@@ -263,11 +263,11 @@ export default function ProductPage({ params: { slug } }) {
             <button
               onClick={handleAdd}
               // Only block if custom design selected without a file
-              disabled={designType === 'Custom' && !designFile}
+              disabled={designType === "Custom" && !designFile}
               className={`w-full py-2 rounded-lg text-sm font-semibold ${
-                designType !== 'Custom' || designFile
-                  ? 'bg-[#196D3D] text-white hover:bg-[#145633] active:bg-[#145633]'
-                  : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                designType !== "Custom" || designFile
+                  ? "bg-[#196D3D] text-white hover:bg-[#145633] active:bg-[#145633]"
+                  : "bg-gray-300 text-gray-600 cursor-not-allowed"
               }`}
             >
               Add to Cart
@@ -289,17 +289,22 @@ export default function ProductPage({ params: { slug } }) {
                 >
                   <span className="font-medium">{label}</span>
                   <span
-                    className={`transform transition-transform duration-200 ${openSections[label] ? 'rotate-180' : ''}`}
+                    className={`transform transition-transform duration-200 ${
+                      openSections[label] ? "rotate-180" : ""
+                    }`}
                   >
                     ▼
                   </span>
                 </button>
                 <div
-                  className={`px-4 overflow-hidden transition-[max-height] duration-300 ${openSections[label] ? 'max-h-48 py-3' : 'max-h-0 py-0'
-                    }`}
+                  className={`px-4 overflow-hidden transition-[max-height] duration-300 ${
+                    openSections[label] ? "max-h-48 py-3" : "max-h-0 py-0"
+                  }`}
                 >
                   {content.map((line, i) => (
-                    <p key={i} className="text-gray-700 text-sm">{line}</p>
+                    <p key={i} className="text-gray-700 text-sm">
+                      {line}
+                    </p>
                   ))}
                 </div>
               </div>
@@ -319,9 +324,7 @@ export default function ProductPage({ params: { slug } }) {
             <p className="text-gray-700 mb-3">
               <strong>Price / Case:</strong> ${product.priceCase.toFixed(2)}
             </p>
-            <p className="text-sm text-gray-600">
-              Minimum order quantity is 500 cups.
-            </p>
+            <p className="text-sm text-gray-600">Minimum order quantity is 500 cups.</p>
           </div>
         </div>
       </div>
@@ -329,7 +332,7 @@ export default function ProductPage({ params: { slug } }) {
       {/* ── OTHER PRODUCTS CAROUSEL ── */}
       <div>
         <h2 className="text-2xl font-bold mb-4">Other Products</h2>
-        <div className="flex space-x-4 overflow-x-auto pb-2">
+        <div className="flex space-x-3 sm:space-x-4 overflow-x-auto pb-2">
           {products
             .filter((p) => p.slug !== slug)
             .map((p) => (
@@ -338,35 +341,33 @@ export default function ProductPage({ params: { slug } }) {
                 href={`/products/${p.slug}`}
                 className="
                   group flex flex-col flex-shrink-0
-                  w-60 rounded-2xl overflow-hidden
-                  bg-white shadow-sm ring-1 ring-black/5
+                  w-48 sm:w-52 rounded-xl overflow-hidden
+                  bg-white ring-1 ring-black/5 shadow-sm
                   hover:shadow-md hover:ring-black/10 transition
                 "
               >
-                {/* Polished hero image area: fills naturally, no harsh edges */}
-                <div className="relative w-full aspect-[4/5] overflow-hidden bg-neutral-100">
+                {/* Compact image area that blends with page background and shows full cup */}
+                <div className="relative w-full aspect-[3/4] overflow-hidden bg-[#F2EEEB]">
                   <Image
                     src={p.image}
                     alt={p.name}
                     fill
-                    sizes="240px"
+                    sizes="(max-width: 640px) 192px, 208px"
                     className="
                       object-contain object-center
+                      p-2 sm:p-2.5
                       transition-transform duration-300
-                      group-hover:scale-[1.03]
+                      group-hover:scale-[1.02]
                     "
                     priority={false}
                   />
-                  {/* Subtle top-to-bottom lighting to blend image into card */}
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/[0.02] via-transparent to-black/[0.03]" />
                 </div>
 
-                {/* Clean, seamless body (no separate blue panel) */}
-                <div className="p-3.5">
-                  <h3 className="text-base font-semibold leading-tight line-clamp-1">
+                <div className="px-3.5 py-3">
+                  <h3 className="text-sm font-semibold leading-tight line-clamp-1">
                     {p.name}
                   </h3>
-                  <p className="text-sm font-medium text-gray-700 mt-1">
+                  <p className="text-xs font-medium text-gray-700 mt-1">
                     ${(p.priceCase / p.qtyCase).toFixed(3)}/cup
                   </p>
                 </div>
