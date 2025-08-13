@@ -8,6 +8,31 @@ import { useCart } from "../../../context/CartContext";
 import { getProductBySlug, products } from "../../../data/products";
 import Cup3DPreview from "../../../components/Cup3DPreview";
 
+// Match CupCard's behavior for case pricing overrides
+const DEFAULT_DESCRIPTOR = "Blank Single-Walled Paper Cup";
+const CASE_PRICE_BY_SIZE = {
+  "10 oz": 92,
+  "12 oz": 94,
+  "16 oz": 96,
+  "22 oz": 88,
+  "32 oz": 90,
+};
+
+function getSizeText(entity) {
+  // Try explicit size property, then fall back to parsing name/slug
+  const size =
+    entity?.size ||
+    entity?.name?.match(/(\d+)\s*oz/i)?.[1] + " oz" ||
+    (entity?.slug?.match(/(\d+)/)?.[1] ? entity.slug.match(/(\d+)/)[1] + " oz" : "");
+  return size || "";
+}
+
+function buildTitle(entity) {
+  const sizeText = getSizeText(entity);
+  const qtyPerCase = entity?.qtyCase || 1000;
+  return `${qtyPerCase} cups | ${sizeText} ${DEFAULT_DESCRIPTOR}`;
+}
+
 export default function ProductPage({ params: { slug } }) {
   // 1) Lookup product
   const product = getProductBySlug(slug);
@@ -52,12 +77,36 @@ export default function ProductPage({ params: { slug } }) {
     );
     if (!isOpen) openCart();
   };
+
   const handleUpload = (e) => {
     const file = e.target.files[0];
     if (file?.type.startsWith("image/")) {
       setDesignFile(file);
       setPreviewURL(URL.createObjectURL(file));
     }
+  };
+
+  // Helper: add ONE CASE for a given product card (like CupCard)
+  const addCaseToCart = (cup, effectiveCasePriceOverride) => {
+    const sizeText = getSizeText(cup);
+    const effectiveCasePrice =
+      effectiveCasePriceOverride ??
+      (CASE_PRICE_BY_SIZE[sizeText] !== undefined
+        ? CASE_PRICE_BY_SIZE[sizeText]
+        : cup.priceCase);
+
+    const qtyPerCase = cup.qtyCase || 1000;
+    const perCup = effectiveCasePrice / qtyPerCase;
+
+    addItem(
+      { ...cup, priceCase: effectiveCasePrice, qtyCase: qtyPerCase },
+      qtyPerCase, // add one full case
+      null,
+      "",
+      undefined,
+      perCup
+    );
+    openCart();
   };
 
   // 5) Specs panels
@@ -72,14 +121,8 @@ export default function ProductPage({ params: { slug } }) {
   const toggle = (label) =>
     setOpenSections((prev) => ({ ...prev, [label]: !prev[label] }));
 
-  // Helper for "Other Products" titles
-  const buildOtherTitle = (p) => {
-    const sizeFromName =
-      p.name?.match(/(\d+)\s*oz/i)?.[1] ||
-      p.slug?.match(/(\d+)/)?.[1] ||
-      "";
-    return `${p.qtyCase || 1000} cups | ${sizeFromName} oz Blank Single-Walled Paper Cup`;
-  };
+  // Build display title in requested format for this product page
+  const pageTitle = buildTitle(product);
 
   return (
     <main className="max-w-6xl mx-auto p-4 md:p-6 space-y-8">
@@ -89,7 +132,7 @@ export default function ProductPage({ params: { slug } }) {
         <div className="md:w-1/2 space-y-4">
           <Image
             src={product.image}
-            alt={product.name}
+            alt={pageTitle}
             width={600}
             height={600}
             className="rounded-lg object-cover w-full"
@@ -142,7 +185,7 @@ export default function ProductPage({ params: { slug } }) {
         <div className="md:w-1/2 space-y-6">
           {/* Title & Price */}
           <div className="space-y-1">
-            <h1 className="text-3xl font-bold">{product.name}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold">{pageTitle}</h1>
             <p className="text-gray-600 text-sm">{product.desc}</p>
             <p className="text-lg font-semibold">
               ${pricePerCup.toFixed(3)}/cup — ${product.priceCase}/case
@@ -189,7 +232,7 @@ export default function ProductPage({ params: { slug } }) {
                 {previewURL && (
                   <div className="flex items-center gap-2">
                     <img src={previewURL} className="w-10 h-10 rounded" />
-                    <span className="text-sm">{designFile.name}</span>
+                    <span className="text-sm">{designFile?.name}</span>
                   </div>
                 )}
               </div>
@@ -317,50 +360,85 @@ export default function ProductPage({ params: { slug } }) {
         </div>
       </div>
 
-      {/* ── OTHER PRODUCTS CAROUSEL (seamless, full cup visible) ── */}
+      {/* ── OTHER PRODUCTS CAROUSEL (reverted look + Add to Cart in each card) ── */}
       <div>
         <h2 className="text-2xl font-bold mb-4">Other Products</h2>
         <div className="flex space-x-4 overflow-x-auto pb-2 snap-x snap-mandatory">
           {products
             .filter((p) => p.slug !== slug)
             .map((p) => {
-              const title = buildOtherTitle(p);
-              const casePrice = p.priceCase ?? 0;
+              const title = buildTitle(p);
+              const sizeText = getSizeText(p);
+              const qtyPerCase = p.qtyCase || 1000;
+              const effectiveCasePrice =
+                CASE_PRICE_BY_SIZE[sizeText] !== undefined
+                  ? CASE_PRICE_BY_SIZE[sizeText]
+                  : p.priceCase;
 
               return (
-                <Link
+                <div
                   key={p.slug}
-                  href={`/products/${p.slug}`}
                   className="
                     snap-start group flex-shrink-0 w-56
                     bg-white rounded-2xl shadow-sm hover:shadow-md transition
                     ring-1 ring-black/5 hover:ring-black/10
-                    focus:outline-none focus-visible:ring-2 focus-visible:ring-black/10
+                    focus-within:ring-2 focus-within:ring-black/10
+                    flex flex-col
                   "
                 >
-                  {/* Image well: use object-contain + padding so the whole cup stays inside.
-                     Use #F2EEEB to blend and rounded top to feel integrated. */}
-                  <div className="relative w-full h-44 sm:h-48 bg-[#F2EEEB] rounded-t-2xl overflow-hidden">
-                    <Image
-                      src={p.image}
-                      alt={title}
-                      fill
-                      sizes="(max-width: 640px) 224px, 224px"
-                      className="object-contain object-center p-4 sm:p-5"
-                      priority={false}
-                    />
-                  </div>
+                  {/* Clickable area to go to details */}
+                  <Link
+                    href={`/products/${p.slug}`}
+                    className="flex-1 rounded-2xl overflow-hidden focus:outline-none"
+                  >
+                    {/* Image well — matches main CupCard */}
+                    <div className="relative w-full h-44 sm:h-48 bg-gray-50 rounded-t-2xl overflow-hidden">
+                      <Image
+                        src={p.image}
+                        alt={title}
+                        fill
+                        sizes="(max-width: 640px) 224px, 224px"
+                        className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                        priority={false}
+                      />
+                    </div>
 
-                  {/* Content */}
-                  <div className="p-3">
-                    <p className="text-xs sm:text-sm font-medium text-gray-900 leading-snug text-center">
-                      {title}
-                    </p>
-                    <p className="text-sm sm:text-base font-semibold text-gray-900 text-center mt-2">
-                      ${casePrice.toFixed(2)}
-                    </p>
+                    {/* Content */}
+                    <div className="p-3">
+                      <p className="text-xs sm:text-sm font-medium text-gray-900 leading-snug text-center">
+                        {title}
+                      </p>
+                      <p className="text-sm sm:text-base font-semibold text-gray-900 text-center mt-2">
+                        ${effectiveCasePrice.toFixed(2)}
+                      </p>
+                    </div>
+                  </Link>
+
+                  {/* Add Case Button — same style as CupCard, stops navigation */}
+                  <div className="px-3 pb-3">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        addCaseToCart(p, effectiveCasePrice);
+                      }}
+                      className="
+                        inline-flex h-10 w-full items-center justify-center
+                        rounded-md
+                        bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633]
+                        text-white text-base font-medium
+                        hover:shadow-sm
+                        cursor-pointer
+                        focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
+                        transition-colors
+                      "
+                      aria-label={`Add 1 case of ${sizeText} cups to cart`}
+                    >
+                      Add to Cart
+                    </button>
                   </div>
-                </Link>
+                </div>
               );
             })}
         </div>
