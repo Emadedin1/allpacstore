@@ -329,61 +329,56 @@ export default function ProductPage({ params: { slug } }) {
         </div>
       </div>
 
-      {/* ── OTHER PRODUCTS (eco-style square cards) ── */}
+      {/* ── OTHER PRODUCTS CAROUSEL (slider, seamless image) ── */}
       <div>
-        <h2 className="text-2xl font-bold mb-3">Other Products</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+        <h2 className="text-2xl font-bold mb-4">Other Products</h2>
+        <div className="flex space-x-4 overflow-x-auto pb-2 snap-x snap-mandatory">
           {products
             .filter((p) => p.slug !== slug)
             .map((p) => {
-              // Derive "<size> oz" from name/slug if needed
-              const sizeFromName = p.name?.match(/(\d+)\s*oz/i)?.[1];
-              const sizeText = sizeFromName ? `${sizeFromName} oz` : (p.size ? String(p.size) : "");
-              const title = `${p.qtyCase || 1000} cups | ${sizeText} Blank Single-Walled Paper Cup`;
-              const priceCase = p.priceCase ?? 0;
+              // Build requested title like "1000 cups | 12 oz Blank Single-Walled Paper Cup"
+              const sizeFromName =
+                p.name?.match(/(\d+)\s*oz/i)?.[1] ||
+                p.slug?.match(/(\d+)/)?.[1] ||
+                "";
+              const title = `${p.qtyCase || 1000} cups | ${sizeFromName} oz Blank Single-Walled Paper Cup`;
 
               return (
                 <Link
                   key={p.slug}
                   href={`/products/${p.slug}`}
                   className="
-                    group flex flex-col rounded-xl overflow-hidden
-                    border border-gray-200 bg-white
-                    hover:shadow-md transition-shadow
+                    snap-start flex flex-col bg-[#F2EEEB]
+                    rounded-xl shadow-sm ring-1 ring-black/5
+                    hover:shadow-md hover:ring-black/10
+                    transition flex-shrink-0 w-48
                   "
                 >
-                  {/* Square image well that feels integrated with the card */}
-                  <div className="relative aspect-square bg-white">
+                  {/* Unified background so image feels part of the card */}
+                  <div className="relative w-full aspect-[3/4]">
                     <Image
                       src={p.image}
                       alt={title}
                       fill
-                      sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 20vw"
-                      className="object-contain p-5 sm:p-6"
+                      sizes="192px"
+                      className="
+                        object-contain object-center
+                        p-3 transition-transform duration-300
+                        group-hover:scale-[1.02]
+                      "
+                      priority={false}
                     />
+                    {/* Subtle inner vignette to blend edges without looking abrupt */}
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/[0.02] via-transparent to-black/[0.03] rounded-t-xl" />
                   </div>
 
-                  {/* Body: centered title, price, CTA */}
-                  <div className="px-3.5 py-3 text-center">
-                    <h3 className="text-sm font-medium leading-snug line-clamp-2 min-h-[2.6em]">
+                  <div className="px-3 pb-3 pt-2">
+                    <h3 className="text-xs font-semibold leading-snug line-clamp-2 min-h-[2.4em]">
                       {title}
                     </h3>
-
-                    <div className="mt-2 text-base font-semibold">
-                      ${priceCase.toFixed(2)}
-                    </div>
-
-                    <div className="mt-2">
-                      <span
-                        className="
-                          inline-flex items-center justify-center w-full h-9
-                          rounded-md bg-[#1F8248] text-white text-sm font-semibold
-                          hover:bg-[#196D3D] active:bg-[#145633]
-                        "
-                      >
-                        Options
-                      </span>
-                    </div>
+                    <p className="text-sm font-semibold mt-1">
+                      ${(p.priceCase ?? 0).toFixed(2)}
+                    </p>
                   </div>
                 </Link>
               );
