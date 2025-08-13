@@ -18,19 +18,23 @@ const CASE_PRICE_BY_SIZE = {
   "32 oz": 90,
 };
 
+// Robust size extraction: prefer entity.size, else parse name, else slug
 function getSizeText(entity) {
-  // Try explicit size property, then fall back to parsing name/slug
-  const size =
-    entity?.size ||
-    entity?.name?.match(/(\d+)\s*oz/i)?.[1] + " oz" ||
-    (entity?.slug?.match(/(\d+)/)?.[1] ? entity.slug.match(/(\d+)/)[1] + " oz" : "");
-  return size || "";
+  if (entity?.size) {
+    // Ensure it includes "oz"
+    return /oz/i.test(entity.size) ? entity.size : `${entity.size} oz`;
+  }
+  const fromName = entity?.name?.match(/(\d+)\s*oz/i);
+  if (fromName?.[1]) return `${fromName[1]} oz`;
+  const fromSlug = entity?.slug?.match(/(\d+)/);
+  if (fromSlug?.[1]) return `${fromSlug[1]} oz`;
+  return "";
 }
 
 function buildTitle(entity) {
   const sizeText = getSizeText(entity);
   const qtyPerCase = entity?.qtyCase || 1000;
-  return `${qtyPerCase} cups | ${sizeText} ${DEFAULT_DESCRIPTOR}`;
+  return `${qtyPerCase} cups | ${sizeText} ${DEFAULT_DESCRIPTOR}`.replace("  ", " ");
 }
 
 export default function ProductPage({ params: { slug } }) {
@@ -67,8 +71,18 @@ export default function ProductPage({ params: { slug } }) {
 
   // 4) Handlers
   const handleAdd = () => {
+    // Normalize product before adding to cart so size is always present and title is correct
+    const sizeText = getSizeText(product);
+    const normalized = {
+      ...product,
+      size: sizeText,
+      qtyCase: caseQty,
+      // Set the name to the desired display for cart
+      name: buildTitle({ ...product, size: sizeText, qtyCase: caseQty }),
+    };
+
     addItem(
-      product,
+      normalized,
       Number(qty),
       designFile,
       previewURL,
@@ -80,26 +94,35 @@ export default function ProductPage({ params: { slug } }) {
 
   const handleUpload = (e) => {
     const file = e.target.files[0];
-    if (file?.type.startsWith("image/")) {
+    if (file?.type?.startsWith("image/")) {
       setDesignFile(file);
       setPreviewURL(URL.createObjectURL(file));
     }
   };
 
   // Helper: add ONE CASE for a given product card (like CupCard)
-  const addCaseToCart = (cup, effectiveCasePriceOverride) => {
+  const addCaseToCart = (cup) => {
     const sizeText = getSizeText(cup);
-    const effectiveCasePrice =
-      effectiveCasePriceOverride ??
-      (CASE_PRICE_BY_SIZE[sizeText] !== undefined
-        ? CASE_PRICE_BY_SIZE[sizeText]
-        : cup.priceCase);
-
     const qtyPerCase = cup.qtyCase || 1000;
+
+    const effectiveCasePrice =
+      CASE_PRICE_BY_SIZE[sizeText] !== undefined
+        ? CASE_PRICE_BY_SIZE[sizeText]
+        : cup.priceCase;
+
     const perCup = effectiveCasePrice / qtyPerCase;
 
+    const normalized = {
+      ...cup,
+      size: sizeText,
+      qtyCase: qtyPerCase,
+      priceCase: effectiveCasePrice,
+      // Ensure cart shows desired title
+      name: buildTitle({ ...cup, size: sizeText, qtyCase: qtyPerCase }),
+    };
+
     addItem(
-      { ...cup, priceCase: effectiveCasePrice, qtyCase: qtyPerCase },
+      normalized,
       qtyPerCase, // add one full case
       null,
       "",
@@ -367,13 +390,14 @@ export default function ProductPage({ params: { slug } }) {
           {products
             .filter((p) => p.slug !== slug)
             .map((p) => {
-              const title = buildTitle(p);
               const sizeText = getSizeText(p);
               const qtyPerCase = p.qtyCase || 1000;
               const effectiveCasePrice =
                 CASE_PRICE_BY_SIZE[sizeText] !== undefined
                   ? CASE_PRICE_BY_SIZE[sizeText]
                   : p.priceCase;
+
+              const displayTitle = buildTitle({ ...p, size: sizeText });
 
               return (
                 <div
@@ -395,7 +419,7 @@ export default function ProductPage({ params: { slug } }) {
                     <div className="relative w-full h-44 sm:h-48 bg-gray-50 rounded-t-2xl overflow-hidden">
                       <Image
                         src={p.image}
-                        alt={title}
+                        alt={displayTitle}
                         fill
                         sizes="(max-width: 640px) 224px, 224px"
                         className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
@@ -406,7 +430,7 @@ export default function ProductPage({ params: { slug } }) {
                     {/* Content */}
                     <div className="p-3">
                       <p className="text-xs sm:text-sm font-medium text-gray-900 leading-snug text-center">
-                        {title}
+                        {displayTitle}
                       </p>
                       <p className="text-sm sm:text-base font-semibold text-gray-900 text-center mt-2">
                         ${effectiveCasePrice.toFixed(2)}
@@ -421,7 +445,7 @@ export default function ProductPage({ params: { slug } }) {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        addCaseToCart(p, effectiveCasePrice);
+                        addCaseToCart(p);
                       }}
                       className="
                         inline-flex h-10 w-full items-center justify-center
