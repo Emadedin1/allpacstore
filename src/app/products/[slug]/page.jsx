@@ -13,7 +13,7 @@ export default function ProductPage({ params: { slug } }) {
   const product = getProductBySlug(slug);
   if (!product) return <div className="p-4">Product not found.</div>;
 
-  // Cups per case (used for default qty and the +/- control)
+  // Cups per case
   const caseQty = product.qtyCase || 1000;
 
   // 2️⃣ Cart & UI state
@@ -21,7 +21,7 @@ export default function ProductPage({ params: { slug } }) {
   const [designType, setDesignType] = useState("Plain White");
   const [designFile, setDesignFile] = useState(null);
   const [previewURL, setPreviewURL] = useState("");
-  // Default quantity to 1 full case so "Add to Cart" is immediately clickable
+  // Default to 1 full case so the button is clickable immediately
   const [qty, setQty] = useState(caseQty);
 
   // 3️⃣ Pricing & texture/model URLs
@@ -262,9 +262,10 @@ export default function ProductPage({ params: { slug } }) {
             <p className="font-semibold text-sm">Subtotal: ${subtotal}</p>
             <button
               onClick={handleAdd}
-              disabled={(designType === 'Custom' && !designFile)}
+              // Only block if custom design selected without a file
+              disabled={designType === 'Custom' && !designFile}
               className={`w-full py-2 rounded-lg text-sm font-semibold ${
-                (designType !== 'Custom' || designFile)
+                designType !== 'Custom' || designFile
                   ? 'bg-[#196D3D] text-white hover:bg-[#145633] active:bg-[#145633]'
                   : 'bg-gray-300 text-gray-600 cursor-not-allowed'
               }`}
@@ -335,21 +336,28 @@ export default function ProductPage({ params: { slug } }) {
               <Link
                 key={p.slug}
                 href={`/products/${p.slug}`}
-                className="flex flex-col bg-blue-50 rounded-xl shadow-md flex-shrink-0 w-60 hover:shadow-lg transition-shadow"
+                className="
+                  group flex flex-col flex-shrink-0
+                  w-60 rounded-xl overflow-hidden
+                  border border-gray-200 bg-white
+                  shadow-sm hover:shadow-md transition
+                "
               >
-                {/* Ensure the whole cup is visible (no cropping) */}
-                <div className="w-full h-[180px] grid place-items-center bg-white">
+                {/* Modern image area with preserved cup, fills card comfortably */}
+                <div className="relative w-full aspect-[4/5] sm:aspect-[3/4] bg-white">
                   <Image
                     src={p.image}
                     alt={p.name}
-                    width={320}
-                    height={180}
-                    className="object-contain w-full h-full p-3"
+                    fill
+                    sizes="240px"
+                    className="object-contain p-2 sm:p-3 transition-transform duration-300 group-hover:scale-[1.02]"
+                    priority={false}
                   />
                 </div>
+
                 <div className="p-4 flex flex-col flex-1 justify-between">
-                  <h3 className="text-lg font-bold">{p.name}</h3>
-                  <p className="text-sm font-semibold mt-2">
+                  <h3 className="text-base font-semibold line-clamp-1">{p.name}</h3>
+                  <p className="text-sm font-semibold mt-1">
                     ${(p.priceCase / p.qtyCase).toFixed(3)}/cup
                   </p>
                 </div>
