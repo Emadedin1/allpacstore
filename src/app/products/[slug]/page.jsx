@@ -200,7 +200,6 @@ export default function ProductPage({ params: { slug } }) {
           <div className="space-y-2">
             <label className="block font-medium text-sm">Quantity</label>
 
-            {/* Cart-like quantity control (cases) */}
             <div
               className="inline-flex items-center overflow-hidden rounded-full shadow-sm"
               role="group"
@@ -318,7 +317,7 @@ export default function ProductPage({ params: { slug } }) {
         </div>
       </div>
 
-      {/* ── OTHER PRODUCTS CAROUSEL (match main grid look) ── */}
+      {/* ── OTHER PRODUCTS CAROUSEL (seamless, full cup visible) ── */}
       <div>
         <h2 className="text-2xl font-bold mb-4">Other Products</h2>
         <div className="flex space-x-4 overflow-x-auto pb-2 snap-x snap-mandatory">
@@ -339,14 +338,15 @@ export default function ProductPage({ params: { slug } }) {
                     focus:outline-none focus-visible:ring-2 focus-visible:ring-black/10
                   "
                 >
-                  {/* Image well — identical treatment to main grid */}
-                  <div className="relative w-full h-44 sm:h-48 bg-gray-50 rounded-t-2xl overflow-hidden">
+                  {/* Image well: use object-contain + padding so the whole cup stays inside.
+                     Use #F2EEEB to blend and rounded top to feel integrated. */}
+                  <div className="relative w-full h-44 sm:h-48 bg-[#F2EEEB] rounded-t-2xl overflow-hidden">
                     <Image
                       src={p.image}
                       alt={title}
                       fill
                       sizes="(max-width: 640px) 224px, 224px"
-                      className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                      className="object-contain object-center p-4 sm:p-5"
                       priority={false}
                     />
                   </div>
