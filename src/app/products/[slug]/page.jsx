@@ -331,48 +331,58 @@ export default function ProductPage({ params: { slug } }) {
 
       {/* ── OTHER PRODUCTS CAROUSEL ── */}
       <div>
-        <h2 className="text-2xl font-bold mb-4">Other Products</h2>
-        <div className="flex space-x-3 sm:space-x-4 overflow-x-auto pb-2">
+        <h2 className="text-2xl font-bold mb-3">Other Products</h2>
+        <div className="flex space-x-3 overflow-x-auto pb-1">
           {products
             .filter((p) => p.slug !== slug)
-            .map((p) => (
-              <Link
-                key={p.slug}
-                href={`/products/${p.slug}`}
-                className="
-                  group flex flex-col flex-shrink-0
-                  w-48 sm:w-52 rounded-xl overflow-hidden
-                  bg-white ring-1 ring-black/5 shadow-sm
-                  hover:shadow-md hover:ring-black/10 transition
-                "
-              >
-                {/* Compact image area that blends with page background and shows full cup */}
-                <div className="relative w-full aspect-[3/4] overflow-hidden bg-[#F2EEEB]">
-                  <Image
-                    src={p.image}
-                    alt={p.name}
-                    fill
-                    sizes="(max-width: 640px) 192px, 208px"
-                    className="
-                      object-contain object-center
-                      p-2 sm:p-2.5
-                      transition-transform duration-300
-                      group-hover:scale-[1.02]
-                    "
-                    priority={false}
-                  />
-                </div>
+            .map((p) => {
+              // Derive a clean "<size> oz" from slug if needed
+              const sizeOz =
+                (p.size && String(p.size)) ||
+                (p.slug?.match(/(\d+)\s*oz/i)?.[1] ??
+                  p.slug?.match(/(\d+)/)?.[1] ??
+                  "");
+              const title = `${p.qtyCase || 1000} cups | ${sizeOz} oz Blank Single-Walled Paper Cup`;
 
-                <div className="px-3.5 py-3">
-                  <h3 className="text-sm font-semibold leading-tight line-clamp-1">
-                    {p.name}
-                  </h3>
-                  <p className="text-xs font-medium text-gray-700 mt-1">
-                    ${(p.priceCase / p.qtyCase).toFixed(3)}/cup
-                  </p>
-                </div>
-              </Link>
-            ))}
+              return (
+                <Link
+                  key={p.slug}
+                  href={`/products/${p.slug}`}
+                  className="
+                    group flex flex-col flex-shrink-0
+                    w-40 sm:w-44 rounded-xl overflow-hidden
+                    bg-white ring-1 ring-black/5 shadow-sm
+                    hover:shadow-md hover:ring-black/10 transition
+                  "
+                >
+                  {/* Smaller, seamless image area that blends with the card */}
+                  <div className="relative w-full aspect-[5/6] bg-[#F2EEEB]">
+                    <Image
+                      src={p.image}
+                      alt={title}
+                      fill
+                      sizes="(max-width: 640px) 160px, 176px"
+                      className="
+                        object-contain object-center
+                        p-1.5 sm:p-2
+                        transition-transform duration-300
+                        group-hover:scale-[1.015]
+                      "
+                      priority={false}
+                    />
+                  </div>
+
+                  <div className="px-3 py-2">
+                    <h3 className="text-[13px] font-semibold leading-snug line-clamp-2">
+                      {title}
+                    </h3>
+                    <p className="text-[11px] font-medium text-gray-700 mt-1">
+                      ${(p.priceCase / p.qtyCase).toFixed(3)}/cup
+                    </p>
+                  </div>
+                </Link>
+              );
+            })}
         </div>
       </div>
     </main>
