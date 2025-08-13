@@ -9,22 +9,22 @@ import { getProductBySlug, products } from "../../../data/products";
 import Cup3DPreview from "../../../components/Cup3DPreview";
 
 export default function ProductPage({ params: { slug } }) {
-  // 1️⃣ Lookup product
+  // 1) Lookup product
   const product = getProductBySlug(slug);
   if (!product) return <div className="p-4">Product not found.</div>;
 
-  // Cups per case (used for default qty and the +/- control)
+  // Cups per case
   const caseQty = product.qtyCase || 1000;
 
-  // 2️⃣ Cart & UI state
+  // 2) Cart & UI state
   const { addItem, openCart, isOpen } = useCart();
   const [designType, setDesignType] = useState("Plain White");
   const [designFile, setDesignFile] = useState(null);
   const [previewURL, setPreviewURL] = useState("");
-  // Default quantity to 1 full case so "Add to Cart" is immediately clickable
+  // Default to one full case so Add to Cart is clickable immediately
   const [qty, setQty] = useState(caseQty);
 
-  // 3️⃣ Pricing & texture/model URLs
+  // 3) Pricing & texture/model URLs
   const { plain, custom } = pricing[slug];
   const pricePerCup = designType === "Plain White" ? plain : custom;
   const subtotal = qty ? (pricePerCup * Number(qty)).toFixed(2) : "0.00";
@@ -37,13 +37,10 @@ export default function ProductPage({ params: { slug } }) {
     "Preset B": "/textures/preset-b.png",
   };
 
-  // load `<slug>.glb` from your `/public/models` folder
   const modelURL = `/models/${slug}.glb`;
-  // if custom, use blob preview; otherwise pick from your presets
-  const textureURL =
-    designType === "Custom" ? previewURL : TEXTURES[designType];
+  const textureURL = designType === "Custom" ? previewURL : TEXTURES[designType];
 
-  // 4️⃣ Handlers
+  // 4) Handlers
   const handleAdd = () => {
     addItem(
       product,
@@ -63,7 +60,7 @@ export default function ProductPage({ params: { slug } }) {
     }
   };
 
-  // 5️⃣ Specs panels
+  // 5) Specs panels
   const specs = [
     { label: "Description", content: product.desc.split(". ").filter(Boolean) },
     { label: "Material", content: [product.type] },
@@ -74,6 +71,15 @@ export default function ProductPage({ params: { slug } }) {
   );
   const toggle = (label) =>
     setOpenSections((prev) => ({ ...prev, [label]: !prev[label] }));
+
+  // Helper for "Other Products" titles
+  const buildOtherTitle = (p) => {
+    const sizeFromName =
+      p.name?.match(/(\d+)\s*oz/i)?.[1] ||
+      p.slug?.match(/(\d+)/)?.[1] ||
+      "";
+    return `${p.qtyCase || 1000} cups | ${sizeFromName} oz Blank Single-Walled Paper Cup`;
+  };
 
   return (
     <main className="max-w-6xl mx-auto p-4 md:p-6 space-y-8">
@@ -106,7 +112,7 @@ export default function ProductPage({ params: { slug } }) {
             </p>
           </div>
 
-          {/* Pricing Breakdown Table under Overview */}
+          {/* Pricing Breakdown Table */}
           <div className="hidden md:block bg-white rounded-lg p-6 shadow mt-6">
             <h3 className="text-lg font-semibold mb-3">Pricing Breakdown</h3>
             <table className="w-full table-auto border-collapse">
@@ -194,12 +200,9 @@ export default function ProductPage({ params: { slug } }) {
           <div className="space-y-2">
             <label className="block font-medium text-sm">Quantity</label>
 
-            {/* Quantity modifier (cases +/- like cart) */}
+            {/* Cart-like quantity control (cases) */}
             <div
-              className="
-                inline-flex items-center overflow-hidden rounded-full
-                shadow-sm
-              "
+              className="inline-flex items-center overflow-hidden rounded-full shadow-sm"
               role="group"
               aria-label="Change quantity in cases"
             >
@@ -211,27 +214,18 @@ export default function ProductPage({ params: { slug } }) {
                   setQty(next * caseQty);
                 }}
                 disabled={currentCases <= 1}
-                className={`
-                  w-10 h-10 grid place-items-center
-                  text-white text-lg select-none
-                  ${
-                    currentCases <= 1
-                      ? "bg-[#1F8248]/60 cursor-not-allowed"
-                      : "bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer"
-                  }
-                  focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
-                `}
+                className={`w-10 h-10 grid place-items-center text-white text-lg select-none ${
+                  currentCases <= 1
+                    ? "bg-[#1F8248]/60 cursor-not-allowed"
+                    : "bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer"
+                } focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1`}
               >
                 −
               </button>
 
               <div
                 aria-live="polite"
-                className="
-                  w-12 h-10 grid place-items-center
-                  bg-white text-[#1F8248] font-semibold
-                  font-mono tabular-nums select-none
-                "
+                className="w-12 h-10 grid place-items-center bg-white text-[#1F8248] font-semibold font-mono tabular-nums select-none"
               >
                 {currentCases}
               </div>
@@ -243,13 +237,7 @@ export default function ProductPage({ params: { slug } }) {
                   const next = currentCases + 1;
                   setQty(next * caseQty);
                 }}
-                className="
-                  w-10 h-10 grid place-items-center
-                  bg-[#1F8248] text-white text-lg select-none
-                  hover:bg-[#196D3D] active:bg-[#145633]
-                  cursor-pointer
-                  focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
-                "
+                className="w-10 h-10 grid place-items-center bg-[#1F8248] text-white text-lg select-none hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1"
               >
                 +
               </button>
@@ -262,7 +250,6 @@ export default function ProductPage({ params: { slug } }) {
             <p className="font-semibold text-sm">Subtotal: ${subtotal}</p>
             <button
               onClick={handleAdd}
-              // Only block if custom design selected without a file
               disabled={designType === "Custom" && !designFile}
               className={`w-full py-2 rounded-lg text-sm font-semibold ${
                 designType !== "Custom" || designFile
@@ -324,61 +311,57 @@ export default function ProductPage({ params: { slug } }) {
             <p className="text-gray-700 mb-3">
               <strong>Price / Case:</strong> ${product.priceCase.toFixed(2)}
             </p>
-            <p className="text-sm text-gray-600">Minimum order quantity is 500 cups.</p>
+            <p className="text-sm text-gray-600">
+              Minimum order quantity is 500 cups.
+            </p>
           </div>
         </div>
       </div>
 
-      {/* ── OTHER PRODUCTS CAROUSEL (slider, seamless image) ── */}
+      {/* ── OTHER PRODUCTS CAROUSEL (slider, integrated image) ── */}
       <div>
         <h2 className="text-2xl font-bold mb-4">Other Products</h2>
         <div className="flex space-x-4 overflow-x-auto pb-2 snap-x snap-mandatory">
           {products
             .filter((p) => p.slug !== slug)
             .map((p) => {
-              // Build requested title like "1000 cups | 12 oz Blank Single-Walled Paper Cup"
-              const sizeFromName =
-                p.name?.match(/(\d+)\s*oz/i)?.[1] ||
-                p.slug?.match(/(\d+)/)?.[1] ||
-                "";
-              const title = `${p.qtyCase || 1000} cups | ${sizeFromName} oz Blank Single-Walled Paper Cup`;
+              const title = buildOtherTitle(p);
+              const casePrice = p.priceCase ?? 0;
 
               return (
                 <Link
                   key={p.slug}
                   href={`/products/${p.slug}`}
                   className="
-                    snap-start flex flex-col bg-[#F2EEEB]
-                    rounded-xl shadow-sm ring-1 ring-black/5
-                    hover:shadow-md hover:ring-black/10
-                    transition flex-shrink-0 w-48
+                    snap-start flex-shrink-0
+                    w-52 rounded-2xl overflow-hidden
+                    bg-white shadow-sm ring-1 ring-black/5
+                    hover:shadow-md hover:ring-black/10 transition
                   "
                 >
-                  {/* Unified background so image feels part of the card */}
-                  <div className="relative w-full aspect-[3/4]">
+                  {/* Make the image feel like part of the box:
+                      - No inner margins around the image container
+                      - Same background as the card (white) so there's no abrupt bar
+                      - Slight inner shadow at the top to 'seat' the photo visually */}
+                  <div className="relative w-full aspect-[4/5] bg-white">
                     <Image
                       src={p.image}
                       alt={title}
                       fill
-                      sizes="192px"
-                      className="
-                        object-contain object-center
-                        p-3 transition-transform duration-300
-                        group-hover:scale-[1.02]
-                      "
+                      sizes="208px"
+                      // Keep the whole cup visible but let it breathe a bit to avoid edge collisions
+                      className="object-contain object-center"
                       priority={false}
                     />
-                    {/* Subtle inner vignette to blend edges without looking abrupt */}
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/[0.02] via-transparent to-black/[0.03] rounded-t-xl" />
+                    {/* Soft inner shadow at top edges to blend without a hard seam */}
+                    <div className="pointer-events-none absolute inset-0 rounded-t-2xl shadow-[inset_0_8px_20px_-12px_rgba(0,0,0,0.25)]" />
                   </div>
 
-                  <div className="px-3 pb-3 pt-2">
+                  <div className="px-3.5 pt-2.5 pb-3">
                     <h3 className="text-xs font-semibold leading-snug line-clamp-2 min-h-[2.4em]">
                       {title}
                     </h3>
-                    <p className="text-sm font-semibold mt-1">
-                      ${(p.priceCase ?? 0).toFixed(2)}
-                    </p>
+                    <p className="text-sm font-semibold mt-1">${casePrice.toFixed(2)}</p>
                   </div>
                 </Link>
               );
