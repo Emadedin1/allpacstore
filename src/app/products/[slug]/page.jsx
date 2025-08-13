@@ -13,24 +13,23 @@ export default function ProductPage({ params: { slug } }) {
   const product = getProductBySlug(slug);
   if (!product) return <div className="p-4">Product not found.</div>;
 
+  // Cups per case (used for default qty and the +/- control)
+  const caseQty = product.qtyCase || 1000;
+
   // 2️⃣ Cart & UI state
   const { addItem, openCart, isOpen } = useCart();
   const [designType, setDesignType] = useState("Plain White");
   const [designFile, setDesignFile] = useState(null);
   const [previewURL, setPreviewURL] = useState("");
-  const [qty, setQty] = useState(""); // quantity in cups
+  // Default quantity to 1 full case so "Add to Cart" is immediately clickable
+  const [qty, setQty] = useState(caseQty);
 
   // 3️⃣ Pricing & texture/model URLs
   const { plain, custom } = pricing[slug];
   const pricePerCup = designType === "Plain White" ? plain : custom;
   const subtotal = qty ? (pricePerCup * Number(qty)).toFixed(2) : "0.00";
 
-  // Cases (match cart control behavior)
-  const caseQty = product.qtyCase || 1000; // cups per case
-  const currentCases = Math.max(
-    1,
-    Math.round(((Number(qty) || 0) || 0) / caseQty) || (qty ? 1 : 1)
-  );
+  const currentCases = Math.max(1, Math.round((Number(qty) || 0) / caseQty));
 
   const TEXTURES = {
     "Plain White": "/textures/plain-white.png",
@@ -54,7 +53,6 @@ export default function ProductPage({ params: { slug } }) {
       designType,
       pricePerCup
     );
-    // only open the drawer if it’s currently closed
     if (!isOpen) openCart();
   };
   const handleUpload = (e) => {
@@ -196,7 +194,7 @@ export default function ProductPage({ params: { slug } }) {
           <div className="space-y-2">
             <label className="block font-medium text-sm">Quantity</label>
 
-            {/* Quantity modifier (exactly like cart: cases +/-) */}
+            {/* Quantity modifier (cases +/- like cart) */}
             <div
               className="
                 inline-flex items-center overflow-hidden rounded-full
@@ -212,12 +210,12 @@ export default function ProductPage({ params: { slug } }) {
                   const next = Math.max(1, currentCases - 1);
                   setQty(next * caseQty);
                 }}
-                disabled={currentCases <= 1 || !qty}
+                disabled={currentCases <= 1}
                 className={`
                   w-10 h-10 grid place-items-center
                   text-white text-lg select-none
                   ${
-                    currentCases <= 1 || !qty
+                    currentCases <= 1
                       ? "bg-[#1F8248]/60 cursor-not-allowed"
                       : "bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer"
                   }
@@ -235,20 +233,15 @@ export default function ProductPage({ params: { slug } }) {
                   font-mono tabular-nums select-none
                 "
               >
-                {qty ? currentCases : 1}
+                {currentCases}
               </div>
 
               <button
                 type="button"
                 aria-label="Increase quantity (one case)"
                 onClick={() => {
-                  if (!qty) {
-                    // first click sets to one case
-                    setQty(caseQty);
-                  } else {
-                    const next = currentCases + 1;
-                    setQty(next * caseQty);
-                  }
+                  const next = currentCases + 1;
+                  setQty(next * caseQty);
                 }}
                 className="
                   w-10 h-10 grid place-items-center
@@ -269,14 +262,8 @@ export default function ProductPage({ params: { slug } }) {
             <p className="font-semibold text-sm">Subtotal: ${subtotal}</p>
             <button
               onClick={handleAdd}
-              disabled={
-                !qty ||
-                Number(qty) < 500 ||
-                (designType === 'Custom' && !designFile)
-              }
+              disabled={(designType === 'Custom' && !designFile)}
               className={`w-full py-2 rounded-lg text-sm font-semibold ${
-                qty &&
-                Number(qty) >= 500 &&
                 (designType !== 'Custom' || designFile)
                   ? 'bg-[#196D3D] text-white hover:bg-[#145633] active:bg-[#145633]'
                   : 'bg-gray-300 text-gray-600 cursor-not-allowed'
@@ -350,13 +337,14 @@ export default function ProductPage({ params: { slug } }) {
                 href={`/products/${p.slug}`}
                 className="flex flex-col bg-blue-50 rounded-xl shadow-md flex-shrink-0 w-60 hover:shadow-lg transition-shadow"
               >
-                <div className="w-full h-[180px]">
+                {/* Ensure the whole cup is visible (no cropping) */}
+                <div className="w-full h-[180px] grid place-items-center bg-white">
                   <Image
                     src={p.image}
                     alt={p.name}
                     width={320}
                     height={180}
-                    className="object-cover w-full h-full rounded-t-xl"
+                    className="object-contain w-full h-full p-3"
                   />
                 </div>
                 <div className="p-4 flex flex-col flex-1 justify-between">
