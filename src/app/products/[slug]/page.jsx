@@ -318,7 +318,7 @@ export default function ProductPage({ params: { slug } }) {
         </div>
       </div>
 
-      {/* ── OTHER PRODUCTS CAROUSEL (slider, integrated image) ── */}
+      {/* ── OTHER PRODUCTS CAROUSEL (match main grid look) ── */}
       <div>
         <h2 className="text-2xl font-bold mb-4">Other Products</h2>
         <div className="flex space-x-4 overflow-x-auto pb-2 snap-x snap-mandatory">
@@ -333,35 +333,32 @@ export default function ProductPage({ params: { slug } }) {
                   key={p.slug}
                   href={`/products/${p.slug}`}
                   className="
-                    snap-start flex-shrink-0
-                    w-52 rounded-2xl overflow-hidden
-                    bg-white shadow-sm ring-1 ring-black/5
-                    hover:shadow-md hover:ring-black/10 transition
+                    snap-start group flex-shrink-0 w-56
+                    bg-white rounded-2xl shadow-sm hover:shadow-md transition
+                    ring-1 ring-black/5 hover:ring-black/10
+                    focus:outline-none focus-visible:ring-2 focus-visible:ring-black/10
                   "
                 >
-                  {/* Make the image feel like part of the box:
-                      - No inner margins around the image container
-                      - Same background as the card (white) so there's no abrupt bar
-                      - Slight inner shadow at the top to 'seat' the photo visually */}
-                  <div className="relative w-full aspect-[4/5] bg-white">
+                  {/* Image well — identical treatment to main grid */}
+                  <div className="relative w-full h-44 sm:h-48 bg-gray-50 rounded-t-2xl overflow-hidden">
                     <Image
                       src={p.image}
                       alt={title}
                       fill
-                      sizes="208px"
-                      // Keep the whole cup visible but let it breathe a bit to avoid edge collisions
-                      className="object-contain object-center"
+                      sizes="(max-width: 640px) 224px, 224px"
+                      className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                       priority={false}
                     />
-                    {/* Soft inner shadow at top edges to blend without a hard seam */}
-                    <div className="pointer-events-none absolute inset-0 rounded-t-2xl shadow-[inset_0_8px_20px_-12px_rgba(0,0,0,0.25)]" />
                   </div>
 
-                  <div className="px-3.5 pt-2.5 pb-3">
-                    <h3 className="text-xs font-semibold leading-snug line-clamp-2 min-h-[2.4em]">
+                  {/* Content */}
+                  <div className="p-3">
+                    <p className="text-xs sm:text-sm font-medium text-gray-900 leading-snug text-center">
                       {title}
-                    </h3>
-                    <p className="text-sm font-semibold mt-1">${casePrice.toFixed(2)}</p>
+                    </p>
+                    <p className="text-sm sm:text-base font-semibold text-gray-900 text-center mt-2">
+                      ${casePrice.toFixed(2)}
+                    </p>
                   </div>
                 </Link>
               );
