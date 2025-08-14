@@ -299,8 +299,8 @@ export default function CartDrawer() {
                             text-white text-lg select-none
                             ${
                               currentCases <= 1
-                                ? "bg-[#1F8248]/60 cursor-not-allowed"
-                                : "bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer"
+                                ? "bg-[#28a745]/60 cursor-not-allowed"
+                                : "bg-[#28a745] hover:bg-[#218838] active:bg-[#1e7e34] cursor-pointer"
                             }
                             focus:outline-none
                           `}
