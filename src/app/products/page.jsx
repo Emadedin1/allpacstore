@@ -8,9 +8,9 @@ export default function ProductsCategoriesPage() {
     {
       slug: "cups",
       title: "Paper Cups",
-      image: "/cups/12oz.png", // ensure this is at least 660px x 660px for retina crispness
+      image: "/cups/12oz.png", // Ensure this is >= 660px square for retina sharpness
     },
-    // Add more categories as needed
+    // Add more categories here...
   ];
 
   return (
@@ -23,7 +23,7 @@ export default function ProductsCategoriesPage() {
         </p>
       </header>
 
-      {/* Category Grid: 2 cols mobile, 4 cols large */}
+      {/* Category Grid: 2 columns mobile, 4 columns large */}
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {categories.map((cat) => (
           <Link
@@ -44,7 +44,6 @@ export default function ProductsCategoriesPage() {
                 fill
                 priority
                 quality={100}
-                // Expanded desktop size hint for sharper source selection
                 sizes="(max-width:640px) 45vw, (max-width:1024px) 30vw, 330px"
                 className="
                   object-cover
@@ -53,15 +52,15 @@ export default function ProductsCategoriesPage() {
                   transform-gpu
                 "
               />
-              {/* Gradient for legibility */}
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
-              {/* Title */}
+              {/* Softer gradient (reduced opacity & darkness) */}
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-black/5 to-transparent" />
+              {/* Title with lighter shadow/glow */}
               <div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3 flex justify-center">
                 <span
                   className="
                     text-white text-sm sm:text-base font-semibold tracking-tight
-                    drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)]
-                    [text-shadow:0_1px_2px_rgba(0,0,0,0.7),0_4px_14px_rgba(0,0,0,0.4)]
+                    drop-shadow-[0_1px_4px_rgba(0,0,0,0.35)]
+                    [text-shadow:0_1px_2px_rgba(0,0,0,0.55)]
                     text-center select-none
                   "
                 >
