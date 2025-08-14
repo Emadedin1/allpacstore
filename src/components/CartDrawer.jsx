@@ -396,8 +396,8 @@ export default function CartDrawer() {
                           }}
                           className="
                             w-10 h-10 grid place-items-center
-                            bg-[#1F8248] text-white text-lg select-none
-                            hover:bg-[#196D3D] active:bg-[#145633]
+                            bg-[#28a745] text-white text-lg select-none
+                            hover:bg-[#218838] active:bg-[#1e7e34]
                             cursor-pointer
                             focus:outline-none
                           "
@@ -435,8 +435,8 @@ export default function CartDrawer() {
               setActiveEditKey(null);
               closeWithShield();
             }}
-            className="no-close w-full inline-flex items-center justify-center h-11 rounded-full bg-[#1F8248] text-white font-semibold shadow-sm
-                       hover:bg-[#196D3D] active:bg-[#145633]
+            className="no-close w-full inline-flex items-center justify-center h-11 rounded-full bg-[#28a745] text-white font-semibold shadow-sm
+                       hover:bg-[#218838] active:bg-[#1e7e34]
                        cursor-pointer
                        focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
                        transition-colors"
