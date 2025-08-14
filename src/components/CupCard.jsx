@@ -5,7 +5,6 @@ import { useCart } from "../context/CartContext";
 
 const DEFAULT_DESCRIPTOR = "Blank Single-Walled Paper Cup";
 
-// Override map (use your case prices here)
 const CASE_PRICE_BY_SIZE = {
   "10 oz": 92,
   "12 oz": 94,
@@ -18,7 +17,6 @@ export default function CupCard({ cup }) {
   const router = useRouter();
   const { addItem, openCart } = useCart();
 
-  // Case price + case qty
   const effectiveCasePrice =
     CASE_PRICE_BY_SIZE[cup.size] !== undefined
       ? CASE_PRICE_BY_SIZE[cup.size]
@@ -40,13 +38,12 @@ export default function CupCard({ cup }) {
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    // Add ONE FULL CASE so the cart shows the case total (e.g., $92)
     addItem(
       { ...cup, priceCase: effectiveCasePrice, qtyCase: qtyPerCase },
-      qtyPerCase,           // quantity in cups = 1 case
+      qtyPerCase,
       null,
       "",
-      undefined,            // let designType default internally
+      undefined,
       pricePerCup
     );
     openCart();
@@ -58,21 +55,33 @@ export default function CupCard({ cup }) {
       tabIndex={0}
       onClick={goToDetails}
       onKeyDown={handleKeyDown}
-      className="group bg-white rounded-2xl shadow-sm hover:shadow-md transition h-full flex flex-col cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-black/10"
+      className="group bg-white rounded-2xl shadow-sm hover:shadow-md transition flex flex-col cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-black/10"
       aria-label={`${cup.size} details`}
     >
-      {/* Image */}
-      <div className="relative w-full h-36 sm:h-44 md:h-48 bg-gray-50 rounded-t-2xl overflow-hidden">
+      {/* SQUARE IMAGE WELL (structure fix) */}
+      <div className="relative w-full aspect-square bg-gray-50 rounded-t-2xl overflow-hidden">
+        {/* OPTION A: object-cover (square source => no crop) */}
         <img
-          src={cup.image}
-          alt={`${cup.size} cup`}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            src={cup.image}
+            alt={`${cup.size} cup`}
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+            draggable={false}
+            loading="lazy"
         />
+        {/*
+          OPTION B (swap the <img> above for this one if you want breathing room):
+          <img
+            src={cup.image}
+            alt={`${cup.size} cup`}
+            className="absolute inset-0 w-full h-full object-contain p-4 sm:p-5 transition-transform duration-300 group-hover:scale-[1.03]"
+            draggable={false}
+            loading="lazy"
+          />
+        */}
       </div>
 
-      {/* Content */}
-      <div className="p-3 sm:p-4 flex flex-col gap-2">
-        {/* Spec line */}
+      {/* CONTENT */}
+      <div className="p-3 sm:p-4 flex flex-col gap-2 flex-1">
         <p className="text-sm font-medium text-gray-900 leading-snug text-center">
           {qtyPerCase} cups | {cup.size}{" "}
           <span className="font-normal text-gray-700 block sm:inline">
@@ -80,25 +89,14 @@ export default function CupCard({ cup }) {
           </span>
         </p>
 
-        {/* Centered Case Price (no "/case") */}
         <p className="text-lg font-semibold text-gray-900 text-center">
           ${effectiveCasePrice.toFixed(2)}
         </p>
 
-        {/* Add Case Button */}
         <button
           type="button"
           onClick={handleAddToCart}
-          className="
-            inline-flex h-10 w-full items-center justify-center
-            rounded-md
-            bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633]
-            text-white text-base font-medium
-            hover:shadow-sm
-            cursor-pointer
-            focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
-            transition-colors
-          "
+          className="mt-auto inline-flex h-10 w-full items-center justify-center rounded-md bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633] text-white text-base font-medium hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1 transition-colors"
           aria-label={`Add 1 case of ${cup.size} cups to cart`}
         >
           Add to Cart
