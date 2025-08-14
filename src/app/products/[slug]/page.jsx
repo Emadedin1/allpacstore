@@ -44,7 +44,14 @@ export default function ProductPage({ params: { slug } }) {
   const [designType, setDesignType] = useState("Plain White");
   const [designFile, setDesignFile] = useState(null);
   const [previewURL, setPreviewURL] = useState("");
-  const [qty, setQty] = useState(caseQty); // cups
+
+  // We keep qty in cups internally. Start at 1 case.
+  const [qty, setQty] = useState(caseQty);
+
+  // New: track edit mode for cases input
+  const [editingCases, setEditingCases] = useState(false);
+  // Optionally remember previous cases if user cancels (Esc)
+  const [prevCases, setPrevCases] = useState(1);
 
   // Pricing (assumes pricing entry exists)
   const { plain, custom } = pricing[slug];
@@ -119,6 +126,25 @@ export default function ProductPage({ params: { slug } }) {
 
   const pageTitle = buildTitle(product);
 
+  // ---- Cases Editing Helpers ----
+  function commitCases(rawValue) {
+    let val = parseInt(rawValue, 10);
+    if (isNaN(val) || val < 1) val = 1;
+    setQty(val * caseQty);
+    setEditingCases(false);
+  }
+
+  function startEditing() {
+    setPrevCases(selectedCases);
+    setEditingCases(true);
+  }
+
+  function cancelEditing() {
+    // Revert
+    setQty(prevCases * caseQty);
+    setEditingCases(false);
+  }
+
   return (
     <main className="max-w-6xl mx-auto p-4 md:p-6 space-y-8">
       {/* TOP SECTION */}
@@ -134,7 +160,7 @@ export default function ProductPage({ params: { slug } }) {
             priority
           />
 
-            <div className="hidden md:block bg-gray-100 rounded-lg p-6 mt-6">
+          <div className="hidden md:block bg-gray-100 rounded-lg p-6 mt-6">
             <h2 className="text-2xl font-semibold mb-3">Overview</h2>
             <p className="text-gray-700 mb-2">{product.desc}</p>
             <p className="text-gray-700 mb-1">
@@ -231,14 +257,15 @@ export default function ProductPage({ params: { slug } }) {
             )}
           </fieldset>
 
-          {/* Quantity */}
+          {/* Quantity (cases) */}
           <div className="space-y-2">
-            <label className="block font-medium text-sm">Quantity</label>
+            <label className="block font-medium text-sm">Quantity (cases)</label>
             <div
               className="inline-flex items-center overflow-hidden rounded-full shadow-sm"
               role="group"
               aria-label="Change quantity in cases"
             >
+              {/* Decrease */}
               <button
                 type="button"
                 aria-label="Decrease quantity (one case)"
@@ -247,7 +274,7 @@ export default function ProductPage({ params: { slug } }) {
                   setQty(next * caseQty);
                 }}
                 disabled={selectedCases <= 1}
-                className={`w-10 h-10 grid place-items-center text-white text-lg ${
+                className={`w-10 h-10 grid place-items-center text-white text-lg select-none ${
                   selectedCases <= 1
                     ? "bg-[#1F8248]/60 cursor-not-allowed"
                     : "bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633]"
@@ -255,12 +282,39 @@ export default function ProductPage({ params: { slug } }) {
               >
                 −
               </button>
-              <div
-                aria-live="polite"
-                className="w-12 h-10 grid place-items-center bg-white text-[#1F8248] font-semibold font-mono"
-              >
-                {selectedCases}
-              </div>
+
+              {/* Editable center (cases) */}
+              {editingCases ? (
+                <input
+                  type="number"
+                  min={1}
+                  inputMode="numeric"
+                  defaultValue={selectedCases}
+                  autoFocus
+                  onFocus={(e) => e.target.select()}
+                  onBlur={(e) => commitCases(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      commitCases(e.currentTarget.value);
+                    } else if (e.key === "Escape") {
+                      cancelEditing();
+                    }
+                  }}
+                  className="w-16 h-10 text-center bg-white text-[#1F8248] font-semibold font-mono outline-none focus:ring-2 focus:ring-[#145633]/50"
+                  aria-label="Edit number of cases"
+                />
+              ) : (
+                <button
+                  type="button"
+                  onClick={startEditing}
+                  className="w-16 h-10 grid place-items-center bg-white text-[#1F8248] font-semibold font-mono text-base hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1 cursor-text"
+                  aria-label={`Current quantity in cases: ${selectedCases}. Click to edit.`}
+                >
+                  {selectedCases}
+                </button>
+              )}
+
+              {/* Increase */}
               <button
                 type="button"
                 aria-label="Increase quantity (one case)"
@@ -268,12 +322,16 @@ export default function ProductPage({ params: { slug } }) {
                   const next = selectedCases + 1;
                   setQty(next * caseQty);
                 }}
-                className="w-10 h-10 grid place-items-center bg-[#1F8248] text-white text-lg hover:bg-[#196D3D] active:bg-[#145633] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1"
+                className="w-10 h-10 grid place-items-center bg-[#1F8248] text-white text-lg select-none hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1"
               >
                 +
               </button>
             </div>
-            <p className="text-xs text-gray-600">{caseQty.toLocaleString()} cups per case</p>
+
+            <p className="text-xs text-gray-600">
+              {caseQty.toLocaleString()} cups per case (total cups:{" "}
+              {qty.toLocaleString()})
+            </p>
             <p className="font-semibold text-sm">Subtotal: ${subtotal}</p>
             <button
               onClick={handleAdd}
@@ -343,7 +401,7 @@ export default function ProductPage({ params: { slug } }) {
         </div>
       </div>
 
-      {/* OTHER PRODUCTS SLIDER (no desktop buttons) */}
+      {/* OTHER PRODUCTS SLIDER (unchanged except earlier improvements) */}
       <div>
         <h2 className="text-2xl font-bold mb-4">Other Products</h2>
 
