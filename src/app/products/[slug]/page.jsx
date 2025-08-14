@@ -1,9 +1,9 @@
 "use client";
 
-import { pricing } from "../../../utils/pricing";
 import React, { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { pricing } from "../../../utils/pricing";
 import { useCart } from "../../../context/CartContext";
 import { getProductBySlug, products } from "../../../data/products";
 import Cup3DPreview from "../../../components/Cup3DPreview";
@@ -17,7 +17,7 @@ const CASE_PRICE_BY_SIZE = {
   "32 oz": 90,
 };
 
-// Extract size robustly
+// ---------- Helpers ----------
 function getSizeText(entity) {
   if (entity?.size) return /oz/i.test(entity.size) ? entity.size : `${entity.size} oz`;
   const fromName = entity?.name?.match(/(\d+)\s*oz/i);
@@ -33,6 +33,7 @@ function buildTitle(entity) {
   return `${qtyPerCase} cups | ${sizeText} ${DEFAULT_DESCRIPTOR}`.replace("  ", " ").trim();
 }
 
+// ---------- Page Component ----------
 export default function ProductPage({ params: { slug } }) {
   const product = getProductBySlug(slug);
   if (!product) return <div className="p-4">Product not found.</div>;
@@ -45,11 +46,11 @@ export default function ProductPage({ params: { slug } }) {
   const [previewURL, setPreviewURL] = useState("");
   const [qty, setQty] = useState(caseQty); // cups
 
-  // Pricing
+  // Pricing safety (assumes pricing[slug] exists based on earlier code)
   const { plain, custom } = pricing[slug];
   const pricePerCup = designType === "Plain White" ? plain : custom;
-  const subtotal = (pricePerCup * qty).toFixed(2);
   const selectedCases = Math.max(1, Math.round(qty / caseQty));
+  const subtotal = (pricePerCup * qty).toFixed(2);
 
   const TEXTURES = {
     "Plain White": "/textures/plain-white.png",
@@ -68,7 +69,14 @@ export default function ProductPage({ params: { slug } }) {
       name: buildTitle({ ...product, size: sizeText, qtyCase: caseQty }),
       cases: selectedCases,
     };
-    addItem(normalized, selectedCases * caseQty, designFile, previewURL, designType, pricePerCup);
+    addItem(
+      normalized,
+      selectedCases * caseQty,
+      designFile,
+      previewURL,
+      designType,
+      pricePerCup
+    );
     if (!isOpen) openCart();
   }
 
@@ -111,19 +119,23 @@ export default function ProductPage({ params: { slug } }) {
 
   const pageTitle = buildTitle(product);
 
-  /* OTHER PRODUCTS SLIDER REFS / HANDLERS */
+  // Slider refs
   const sliderRef = useRef(null);
-  const CARD_WIDTH = 185; // pixels (approx width inc gap). Keep in sync with --other-card adjustments.
-  function scrollSlider(dir) {
+  const CARD_WIDTH_WITH_GAP = 210; // approximate scroll step (adjust with width change)
+
+  function scrollSlider(direction) {
     if (!sliderRef.current) return;
-    sliderRef.current.scrollBy({ left: dir * CARD_WIDTH, behavior: "smooth" });
+    sliderRef.current.scrollBy({
+      left: direction * CARD_WIDTH_WITH_GAP,
+      behavior: "smooth",
+    });
   }
 
   return (
     <main className="max-w-6xl mx-auto p-4 md:p-6 space-y-8">
       {/* TOP SECTION */}
       <div className="flex flex-col md:flex-row gap-8">
-        {/* Left */}
+        {/* Left Column */}
         <div className="md:w-1/2 space-y-4">
           <Image
             src={product.image}
@@ -174,7 +186,7 @@ export default function ProductPage({ params: { slug } }) {
           </div>
         </div>
 
-        {/* Right */}
+        {/* Right Column */}
         <div className="md:w-1/2 space-y-6">
           <div className="space-y-1">
             <h1 className="text-2xl sm:text-3xl font-bold">{pageTitle}</h1>
@@ -184,7 +196,7 @@ export default function ProductPage({ params: { slug } }) {
             </p>
           </div>
 
-            {/* Design Type */}
+          {/* Design Type */}
           <fieldset className="space-y-2">
             <legend className="font-medium">Design Type</legend>
             <div className="flex gap-6 flex-wrap">
@@ -219,7 +231,7 @@ export default function ProductPage({ params: { slug } }) {
                   />
                 </label>
                 <p className="text-red-600 text-sm font-medium">
-                  Notice: For best results, upload an image sized 1024×864 (approx 6:5 ratio).
+                  For best results: 1024×864 image (≈6:5 ratio).
                 </p>
                 {previewURL && (
                   <div className="flex items-center gap-2">
@@ -288,12 +300,13 @@ export default function ProductPage({ params: { slug } }) {
             </button>
           </div>
 
+          {/* 3D Preview */}
           <div className="w-full h-64 md:h-96">
             <Cup3DPreview modelURL={modelURL} textureURL={textureURL} />
           </div>
 
           {/* Collapsible Specs */}
-            <div className="space-y-4">
+          <div className="space-y-4">
             {specs.map(({ label, content }) => (
               <div key={label} className="border rounded-lg overflow-hidden shadow-sm">
                 <button
@@ -324,6 +337,7 @@ export default function ProductPage({ params: { slug } }) {
             ))}
           </div>
 
+          {/* Mobile Overview */}
           <div className="md:hidden bg-gray-100 rounded-lg p-4">
             <h2 className="text-xl font-semibold mb-2">Overview</h2>
             <p className="text-gray-700 mb-2">{product.desc}</p>
@@ -345,13 +359,11 @@ export default function ProductPage({ params: { slug } }) {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-bold">Other Products</h2>
-
-          {/* Arrow Buttons (hidden on small screens) */}
           <div className="hidden md:flex gap-2">
             <button
               type="button"
               onClick={() => scrollSlider(-1)}
-              className="h-9 w-9 rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900 flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-gray-400 disabled:opacity-40"
+              className="h-9 w-9 rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900 flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-gray-400"
               aria-label="Scroll previous products"
             >
               ‹
@@ -359,7 +371,7 @@ export default function ProductPage({ params: { slug } }) {
             <button
               type="button"
               onClick={() => scrollSlider(1)}
-              className="h-9 w-9 rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900 flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-gray-400 disabled:opacity-40"
+              className="h-9 w-9 rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900 flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-gray-400"
               aria-label="Scroll next products"
             >
               ›
@@ -370,28 +382,18 @@ export default function ProductPage({ params: { slug } }) {
         <div
           ref={sliderRef}
           className="
-            relative
-            flex gap-4
-            overflow-x-auto
+            flex gap-5
+            overflow-x-auto hide-scrollbar
             pb-2
             snap-x snap-mandatory
             scroll-smooth
             [-webkit-overflow-scrolling:touch]
-            [--other-card:185px]
-            sm:[--other-card:188px]
-            md:[--other-card:190px]
-            lg:[--other-card:192px]
-            xl:[--other-card:195px]
+            [--other-card:195px]
+            sm:[--other-card:198px]
+            md:[--other-card:200px]
+            lg:[--other-card:205px]
           "
-          style={{ scrollbarWidth: "none" }}
         >
-          {/* Hide scrollbar (Firefox via scrollbarWidth, Webkit via pseudo) */}
-          <style jsx>{`
-            div::-webkit-scrollbar {
-              display: none;
-            }
-          `}</style>
-
           {products
             .filter((p) => p.slug !== slug)
             .map((p) => {
@@ -424,16 +426,16 @@ export default function ProductPage({ params: { slug } }) {
                         src={p.image}
                         alt={displayTitle}
                         fill
-                        sizes="(max-width: 640px) 45vw, (max-width: 1024px) 190px, 195px"
+                        sizes="(max-width: 640px) 48vw, (max-width: 1024px) 200px, 205px"
                         className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                         priority={false}
                       />
                     </div>
                     <div className="p-3 flex flex-col gap-2">
-                      <p className="text-[13px] sm:text-sm font-medium text-gray-900 leading-snug text-center">
+                      <p className="text-sm font-medium text-gray-900 leading-snug text-center">
                         {displayTitle}
                       </p>
-                      <p className="text-base sm:text-lg font-semibold text-gray-900 text-center">
+                      <p className="text-base font-semibold text-gray-900 text-center">
                         ${effectiveCasePrice.toFixed(2)}
                       </p>
                     </div>
@@ -447,9 +449,9 @@ export default function ProductPage({ params: { slug } }) {
                         addCaseToCart(p);
                       }}
                       className="
-                        inline-flex h-9 sm:h-10 w-full items-center justify-center
+                        inline-flex h-10 w-full items-center justify-center
                         rounded-md bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633]
-                        text-white text-[14px] sm:text-[15px] font-medium
+                        text-white text-sm font-medium
                         hover:shadow-sm
                         focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
                         transition-colors
