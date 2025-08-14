@@ -42,12 +42,23 @@ export default function ProductPage({ params: { slug } }) {
   const [designType, setDesignType] = useState("Plain White");
   const [designFile, setDesignFile] = useState(null);
   const [previewURL, setPreviewURL] = useState("");
-  const [qty, setQty] = useState(caseQty); // stored in cups
+
+  // qty stored in cups
+  const [qty, setQty] = useState(caseQty);
+
+  // NEW: local input buffer for cases (allows blank while editing)
+  const [caseInput, setCaseInput] = useState("1");
 
   const { plain, custom } = pricing[slug];
   const pricePerCup = designType === "Plain White" ? plain : custom;
   const selectedCases = Math.max(1, Math.round(qty / caseQty));
   const subtotal = (pricePerCup * qty).toFixed(2);
+
+  // keep buffer in sync when qty changes externally (buttons)
+  if (String(selectedCases) !== caseInput && !/^\d*$/.test(caseInput)) {
+    // if somehow buffer got invalid chars, normalize
+    setCaseInput(String(selectedCases));
+  }
 
   const TEXTURES = {
     "Plain White": "/textures/plain-white.png",
@@ -56,6 +67,54 @@ export default function ProductPage({ params: { slug } }) {
   };
   const modelURL = `/models/${slug}.glb`;
   const textureURL = designType === "Custom" ? previewURL : TEXTURES[designType];
+
+  function commitCases(raw) {
+    let v = parseInt(raw, 10);
+    if (isNaN(v) || v < 1) v = 1;
+    setQty(v * caseQty);
+    setCaseInput(String(v));
+  }
+
+  function handleCasesChange(e) {
+    // Allow blank
+    const raw = e.target.value.replace(/[^\d]/g, "");
+    setCaseInput(raw);
+    // Do NOT update qty yet (wait until blur / Enter) to mirror cart behavior
+  }
+
+  function handleCasesBlur() {
+    commitCases(caseInput);
+  }
+
+  function handleCasesKey(e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      commitCases(caseInput);
+      e.currentTarget.blur();
+    } else if (e.key === "Escape") {
+      // revert to current selectedCases
+      setCaseInput(String(selectedCases));
+      e.currentTarget.blur();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      const base = caseInput === "" ? selectedCases : parseInt(caseInput || "0", 10) || 0;
+      const next = (base < 1 ? 1 : base) + 1;
+      setQty(next * caseQty);
+      setCaseInput(String(next));
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      const base = caseInput === "" ? selectedCases : parseInt(caseInput || "0", 10) || 0;
+      const next = Math.max(1, (base < 1 ? 1 : base) - 1);
+      setQty(next * caseQty);
+      setCaseInput(String(next));
+    }
+  }
+
+  function bump(delta) {
+    const next = Math.max(1, selectedCases + delta);
+    setQty(next * caseQty);
+    setCaseInput(String(next));
+  }
 
   function handleAdd() {
     const sizeText = getSizeText(product);
@@ -115,48 +174,6 @@ export default function ProductPage({ params: { slug } }) {
     setOpenSections((prev) => ({ ...prev, [label]: !prev[label] }));
 
   const pageTitle = buildTitle(product);
-
-  // Input handlers for cases
-  function setCases(newCases) {
-    const c = Number.isFinite(newCases) && newCases >= 1 ? Math.floor(newCases) : 1;
-    setQty(c * caseQty);
-  }
-
-  function handleCasesChange(e) {
-    // Allow blank while typing; do not update qty until valid
-    const val = e.target.value.replace(/[^\d]/g, "");
-    if (val === "") {
-      e.target.value = "";
-      return;
-    }
-    const num = parseInt(val, 10);
-    if (!isNaN(num)) {
-      setCases(num);
-    }
-  }
-
-  function handleCasesBlur(e) {
-    let val = parseInt(e.target.value, 10);
-    if (isNaN(val) || val < 1) val = 1;
-    e.target.value = String(val);
-    setCases(val);
-  }
-
-  function handleCasesKey(e) {
-    if (e.key === "Enter") {
-      e.currentTarget.blur();
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setCases(selectedCases + 1);
-    } else if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setCases(Math.max(1, selectedCases - 1));
-    } else if (e.key === "Escape") {
-      // revert display to current selectedCases
-      e.currentTarget.value = selectedCases;
-      e.currentTarget.blur();
-    }
-  }
 
   return (
     <main className="max-w-6xl mx-auto p-4 md:p-6 space-y-8">
@@ -268,7 +285,7 @@ export default function ProductPage({ params: { slug } }) {
             )}
           </fieldset>
 
-          {/* Quantity (always-input version) */}
+          {/* Quantity (improved editable input) */}
           <div className="space-y-2">
             <label className="block font-medium text-sm">Quantity (cases)</label>
             <div
@@ -279,7 +296,7 @@ export default function ProductPage({ params: { slug } }) {
               <button
                 type="button"
                 aria-label="Decrease quantity (one case)"
-                onClick={() => setCases(selectedCases - 1)}
+                onClick={() => bump(-1)}
                 disabled={selectedCases <= 1}
                 className={`w-10 h-10 grid place-items-center text-white text-lg select-none ${
                   selectedCases <= 1
@@ -295,15 +312,16 @@ export default function ProductPage({ params: { slug } }) {
                 inputMode="numeric"
                 pattern="[0-9]*"
                 aria-label="Number of cases"
-                value={selectedCases}
+                value={caseInput}
+                placeholder="1"
                 onChange={handleCasesChange}
                 onBlur={handleCasesBlur}
                 onKeyDown={handleCasesKey}
                 className="
                   no-spinner appearance-none
-                  w-16 h-10
+                  w-12 h-10
                   text-center bg-white text-[#1F8248]
-                  font-semibold font-mono tabular text-base
+                  font-semibold font-mono tabular-nums text-base
                   leading-none p-0
                   outline-none focus:outline-none focus:ring-0
                   cursor-text
@@ -314,7 +332,7 @@ export default function ProductPage({ params: { slug } }) {
               <button
                 type="button"
                 aria-label="Increase quantity (one case)"
-                onClick={() => setCases(selectedCases + 1)}
+                onClick={() => bump(1)}
                 className="w-10 h-10 grid place-items-center bg-[#1F8248] text-white text-lg select-none hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer focus:outline-none"
               >
                 +
