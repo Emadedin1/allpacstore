@@ -46,7 +46,7 @@ export default function ProductPage({ params: { slug } }) {
   // qty stored in cups
   const [qty, setQty] = useState(caseQty);
 
-  // NEW: local input buffer for cases (allows blank while editing)
+  // local input buffer (allows blank while editing)
   const [caseInput, setCaseInput] = useState("1");
 
   const { plain, custom } = pricing[slug];
@@ -54,11 +54,8 @@ export default function ProductPage({ params: { slug } }) {
   const selectedCases = Math.max(1, Math.round(qty / caseQty));
   const subtotal = (pricePerCup * qty).toFixed(2);
 
-  // keep buffer in sync when qty changes externally (buttons)
-  if (String(selectedCases) !== caseInput && !/^\d*$/.test(caseInput)) {
-    // if somehow buffer got invalid chars, normalize
-    setCaseInput(String(selectedCases));
-  }
+  // sanitize buffer if somehow non-digit sneaks in
+  if (!/^\d*$/.test(caseInput)) setCaseInput(String(selectedCases));
 
   const TEXTURES = {
     "Plain White": "/textures/plain-white.png",
@@ -76,10 +73,8 @@ export default function ProductPage({ params: { slug } }) {
   }
 
   function handleCasesChange(e) {
-    // Allow blank
     const raw = e.target.value.replace(/[^\d]/g, "");
-    setCaseInput(raw);
-    // Do NOT update qty yet (wait until blur / Enter) to mirror cart behavior
+    setCaseInput(raw); // allow blank
   }
 
   function handleCasesBlur() {
@@ -92,7 +87,6 @@ export default function ProductPage({ params: { slug } }) {
       commitCases(caseInput);
       e.currentTarget.blur();
     } else if (e.key === "Escape") {
-      // revert to current selectedCases
       setCaseInput(String(selectedCases));
       e.currentTarget.blur();
     } else if (e.key === "ArrowUp") {
@@ -238,7 +232,7 @@ export default function ProductPage({ params: { slug } }) {
             </p>
           </div>
 
-          {/* Design Type */}
+            {/* Design Type */}
           <fieldset className="space-y-2">
             <legend className="font-medium">Design Type</legend>
             <div className="flex gap-6 flex-wrap">
@@ -285,7 +279,7 @@ export default function ProductPage({ params: { slug } }) {
             )}
           </fieldset>
 
-          {/* Quantity (improved editable input) */}
+          {/* Quantity (editable input allowing blank) */}
           <div className="space-y-2">
             <label className="block font-medium text-sm">Quantity (cases)</label>
             <div
@@ -313,7 +307,6 @@ export default function ProductPage({ params: { slug } }) {
                 pattern="[0-9]*"
                 aria-label="Number of cases"
                 value={caseInput}
-                placeholder="1"
                 onChange={handleCasesChange}
                 onBlur={handleCasesBlur}
                 onKeyDown={handleCasesKey}
