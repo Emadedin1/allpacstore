@@ -153,10 +153,6 @@ export default function ProductPage({ params: { slug } }) {
         {/* Left Column */}
         <div className="md:w-1/2 space-y-4">
           {/* High-res main image container */}
-            {/* Notes:
-                - Provide a source image at least 1200x1200 for retina clarity.
-                - Optionally add product.imageHiRes in your data pointing to a larger asset (e.g. WebP).
-             */}
           <div
             className="
               relative aspect-square w-full
@@ -166,21 +162,18 @@ export default function ProductPage({ params: { slug } }) {
             "
           >
             <Image
-              // If you later add a higher-res key (imageHiRes) it will prefer that:
               src={product.imageHiRes || product.image}
               alt={pageTitle}
               fill
               priority
               quality={100}
-              // sizes reflects actual rendered width (approx 100% on mobile, ~50% of container on md+)
               sizes="(max-width: 640px) 90vw, (max-width: 1100px) 50vw, 600px"
               className="
-                object-cover md:object-cover
+                object-cover
                 w-full h-full
                 select-none
                 transition-opacity
                 duration-300
-                [image-rendering:-webkit-optimize-contrast]
                 transform-gpu
               "
             />
@@ -223,15 +216,13 @@ export default function ProductPage({ params: { slug } }) {
 
         {/* Right Column */}
         <div className="md:w-1/2 space-y-6">
-          {/* Heading + Price + Quantity */}
-            <div className="space-y-3">
+          <div className="space-y-3">
             <div className="space-y-1">
               <h1 className="text-2xl sm:text-3xl font-bold">{pageTitle}</h1>
               <p className="text-gray-600 text-sm">{product.desc}</p>
               <p className="text-lg font-semibold">${casePrice.toFixed(2)}/case</p>
             </div>
 
-            {/* Quantity moved close to price */}
             <div className="space-y-1">
               <label className="block font-medium text-sm">Quantity (cases)</label>
               <div
@@ -286,9 +277,7 @@ export default function ProductPage({ params: { slug } }) {
               <p className="text-xs text-gray-600">
                 {caseQty} cups per case (total cups: {qty.toLocaleString()})
               </p>
-              <p className="font-semibold text-sm">
-                Subtotal: ${subtotal}
-              </p>
+              <p className="font-semibold text-sm">Subtotal: ${subtotal}</p>
               <button
                 onClick={handleAdd}
                 className="w-full mt-1 py-2 rounded-lg text-sm font-semibold bg-[#196D3D] text-white hover:bg-[#145633] active:bg-[#145633]"
@@ -402,16 +391,27 @@ export default function ProductPage({ params: { slug } }) {
                   >
                     <div className="relative w-full aspect-square bg-gray-50 rounded-t-2xl overflow-hidden">
                       <Image
-                        src={p.image}
+                        /* Prefer a hi-res asset if available */
+                        src={p.imageHiRes || p.image}
                         alt={displayTitle}
                         fill
-                        sizes="(max-width: 640px) 48vw, (max-width: 1024px) 200px, 205px"
-                        className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                        quality={100}
+                        /* Provide an accurate / slightly larger size hint to avoid undersized generation.
+                           Card width max ~205px; we ask for 230px for crisp retina selection. */
+                        sizes="230px"
+                        className="
+                          object-cover
+                          w-full h-full
+                          transform-gpu
+                          transition-transform duration-300
+                          /* Removed scale hover to keep maximum crispness */
+                        "
+                        /* If images still look soft, make sure the source file is at least 450-500px square (2x) */
                         priority={false}
                       />
                     </div>
                     <div className="p-3 flex flex-col gap-2">
-                      <p className="text-sm font-medium text-gray-900 leading-snug text-center">
+                      <p className="text-[13px] font-medium text-gray-900 leading-snug text-center">
                         {displayTitle}
                       </p>
                       <p className="text-base font-semibold text-gray-900 text-center">
