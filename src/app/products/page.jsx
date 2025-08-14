@@ -2,25 +2,25 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import clsx from "clsx";
 
 export default function ProductsCategoriesPage() {
-  // You can append more categories; square images will all display fully (object-contain)
   const categories = [
     {
       slug: "cups",
       title: "Paper Cups",
       image: "/cups/12oz.png",
-      // optional: bg color fallback if image has transparency
       bg: "bg-[#F5F7FA]",
     },
-    // Future example:
-    // { slug: "lids", title: "Cup Lids", image: "/lids/lid.png", bg: "bg-white" },
   ];
+
+  // Determine grid column classes (mirrors previous clsx logic)
+  const gridCols =
+    categories.length === 1
+      ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+      : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4";
 
   return (
     <main className="p-6 space-y-8">
-      {/* Heading */}
       <div className="max-w-4xl mx-auto text-center">
         <h1 className="text-4xl font-bold mb-2">Shop by Category</h1>
         <p className="text-lg text-gray-700">
@@ -28,29 +28,19 @@ export default function ProductsCategoriesPage() {
         </p>
       </div>
 
-      {/* Categories Grid */}
       <section className="max-w-6xl mx-auto">
-        <div
-          className={clsx(
-            "grid gap-5 sm:gap-6",
-            // Responsive columns: adapt based on count
-            categories.length === 1
-              ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-              : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-          )}
-        >
+        <div className={`grid gap-5 sm:gap-6 ${gridCols}`}>
           {categories.map((cat) => (
             <Link
               key={cat.slug}
               href={`/products/${cat.slug}`}
               aria-label={`Browse ${cat.title}`}
-              className={clsx(
-                "group relative block w-full overflow-hidden rounded-2xl",
-                "ring-1 ring-black/5 hover:ring-black/10 hover:shadow-md shadow-sm transition",
-                cat.bg || "bg-gray-50"
-              )}
+              className={`
+                group relative block w-full overflow-hidden rounded-2xl
+                ring-1 ring-black/5 hover:ring-black/10 hover:shadow-md shadow-sm transition
+                ${cat.bg || "bg-gray-50"}
+              `}
             >
-              {/* Square aspect so square product artwork is fully visible; adjust for larger screens if desired */}
               <div className="relative aspect-square flex items-center justify-center">
                 <Image
                   src={cat.image}
@@ -65,7 +55,6 @@ export default function ProductsCategoriesPage() {
                   "
                   priority
                 />
-                {/* Bottom gradient only on hover for subtle readability (kept minimal since we use object-contain) */}
                 <div
                   className="
                     pointer-events-none absolute inset-x-0 bottom-0 h-1/2
@@ -75,20 +64,17 @@ export default function ProductsCategoriesPage() {
                 />
               </div>
 
-              {/* Title badge */}
               <div className="absolute bottom-3 left-3 right-3 flex">
                 <h2
                   className="
                     text-white text-lg sm:text-xl font-semibold
-                    drop-shadow
-                    line-clamp-2
+                    drop-shadow line-clamp-2
                   "
                 >
                   {cat.title}
                 </h2>
               </div>
 
-              {/* Focus outline */}
               <span className="absolute inset-0 rounded-2xl ring-2 ring-transparent group-focus-visible:ring-black/30 transition pointer-events-none" />
             </Link>
           ))}
