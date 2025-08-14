@@ -1,13 +1,12 @@
-// src/data/products.js
-
 export const products = [
   {
     key: "10oz",
     slug: "10oz",
+    size: "10 oz",
     name: "10 oz Hot Cup",
     desc: "Hot Cup, ideal for small beverages.",
     image: "/cups/10oz.png",
-    priceCase: 92,
+    priceCase: 41.50,
     qtyCase: 1000,
     specs: {
       Description: [
@@ -37,10 +36,11 @@ export const products = [
   {
     key: "12oz",
     slug: "12oz",
+    size: "12 oz",
     name: "12 oz Hot Cup",
     desc: "Most popular size for cafes. Perfect for coffee and tea.",
     image: "/cups/12oz.png",
-    priceCase: 94,
+    priceCase: 46.50,
     qtyCase: 1000,
     specs: {
       Description: [
@@ -70,10 +70,11 @@ export const products = [
   {
     key: "16oz",
     slug: "16oz",
+    size: "16 oz",
     name: "16 oz Hot Cup",
     desc: "Larger size for lattes and premium hot beverages.",
     image: "/cups/16oz.png",
-    priceCase: 96,
+    priceCase: 60.00,
     qtyCase: 1000,
     specs: {
       Description: [
@@ -101,10 +102,11 @@ export const products = [
   {
     key: "22oz",
     slug: "22oz",
+    size: "22 oz",
     name: "22 oz Cold Cup",
     desc: "Perfect for soft drinks, smoothies, and cold beverages.",
     image: "/cups/22oz.png",
-    priceCase: 88,
+    priceCase: 78.00,
     qtyCase: 1000,
     specs: {
       Description: [
@@ -133,10 +135,11 @@ export const products = [
   {
     key: "32oz",
     slug: "32oz",
+    size: "32 oz",
     name: "32 oz Cold Cup",
     desc: "Extra large cold cup, great for events or promotions.",
     image: "/cups/32oz.png",
-    priceCase: 90,
+    priceCase: 114.50,
     qtyCase: 1000,
     specs: {
       Description: [
