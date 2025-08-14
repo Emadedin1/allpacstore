@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { pricing } from "../../../utils/pricing";
@@ -46,7 +46,7 @@ export default function ProductPage({ params: { slug } }) {
   const [previewURL, setPreviewURL] = useState("");
   const [qty, setQty] = useState(caseQty); // cups
 
-  // Pricing safety (assumes pricing[slug] exists based on earlier code)
+  // Pricing (assumes pricing entry exists)
   const { plain, custom } = pricing[slug];
   const pricePerCup = designType === "Plain White" ? plain : custom;
   const selectedCases = Math.max(1, Math.round(qty / caseQty));
@@ -119,18 +119,6 @@ export default function ProductPage({ params: { slug } }) {
 
   const pageTitle = buildTitle(product);
 
-  // Slider refs
-  const sliderRef = useRef(null);
-  const CARD_WIDTH_WITH_GAP = 210; // approximate scroll step (adjust with width change)
-
-  function scrollSlider(direction) {
-    if (!sliderRef.current) return;
-    sliderRef.current.scrollBy({
-      left: direction * CARD_WIDTH_WITH_GAP,
-      behavior: "smooth",
-    });
-  }
-
   return (
     <main className="max-w-6xl mx-auto p-4 md:p-6 space-y-8">
       {/* TOP SECTION */}
@@ -146,7 +134,7 @@ export default function ProductPage({ params: { slug } }) {
             priority
           />
 
-          <div className="hidden md:block bg-gray-100 rounded-lg p-6 mt-6">
+            <div className="hidden md:block bg-gray-100 rounded-lg p-6 mt-6">
             <h2 className="text-2xl font-semibold mb-3">Overview</h2>
             <p className="text-gray-700 mb-2">{product.desc}</p>
             <p className="text-gray-700 mb-1">
@@ -355,32 +343,11 @@ export default function ProductPage({ params: { slug } }) {
         </div>
       </div>
 
-      {/* OTHER PRODUCTS SLIDER */}
+      {/* OTHER PRODUCTS SLIDER (no desktop buttons) */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold">Other Products</h2>
-          <div className="hidden md:flex gap-2">
-            <button
-              type="button"
-              onClick={() => scrollSlider(-1)}
-              className="h-9 w-9 rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900 flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-gray-400"
-              aria-label="Scroll previous products"
-            >
-              ‹
-            </button>
-            <button
-              type="button"
-              onClick={() => scrollSlider(1)}
-              className="h-9 w-9 rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900 flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-gray-400"
-              aria-label="Scroll next products"
-            >
-              ›
-            </button>
-          </div>
-        </div>
+        <h2 className="text-2xl font-bold mb-4">Other Products</h2>
 
         <div
-          ref={sliderRef}
           className="
             flex gap-5
             overflow-x-auto hide-scrollbar
