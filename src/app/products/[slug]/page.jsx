@@ -42,11 +42,7 @@ export default function ProductPage({ params: { slug } }) {
   const [designType, setDesignType] = useState("Plain White");
   const [designFile, setDesignFile] = useState(null);
   const [previewURL, setPreviewURL] = useState("");
-  const [qty, setQty] = useState(caseQty); // cups
-
-  // Editable quantity (cases)
-  const [editingCases, setEditingCases] = useState(false);
-  const [prevCases, setPrevCases] = useState(1);
+  const [qty, setQty] = useState(caseQty); // stored in cups
 
   const { plain, custom } = pricing[slug];
   const pricePerCup = designType === "Plain White" ? plain : custom;
@@ -120,21 +116,46 @@ export default function ProductPage({ params: { slug } }) {
 
   const pageTitle = buildTitle(product);
 
-  function commitCases(rawValue) {
-    let val = parseInt(rawValue, 10);
+  // Input handlers for cases
+  function setCases(newCases) {
+    const c = Number.isFinite(newCases) && newCases >= 1 ? Math.floor(newCases) : 1;
+    setQty(c * caseQty);
+  }
+
+  function handleCasesChange(e) {
+    // Allow blank while typing; do not update qty until valid
+    const val = e.target.value.replace(/[^\d]/g, "");
+    if (val === "") {
+      e.target.value = "";
+      return;
+    }
+    const num = parseInt(val, 10);
+    if (!isNaN(num)) {
+      setCases(num);
+    }
+  }
+
+  function handleCasesBlur(e) {
+    let val = parseInt(e.target.value, 10);
     if (isNaN(val) || val < 1) val = 1;
-    setQty(val * caseQty);
-    setEditingCases(false);
+    e.target.value = String(val);
+    setCases(val);
   }
 
-  function startEditing() {
-    setPrevCases(selectedCases);
-    setEditingCases(true);
-  }
-
-  function cancelEditing() {
-    setQty(prevCases * caseQty);
-    setEditingCases(false);
+  function handleCasesKey(e) {
+    if (e.key === "Enter") {
+      e.currentTarget.blur();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setCases(selectedCases + 1);
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setCases(Math.max(1, selectedCases - 1));
+    } else if (e.key === "Escape") {
+      // revert display to current selectedCases
+      e.currentTarget.value = selectedCases;
+      e.currentTarget.blur();
+    }
   }
 
   return (
@@ -247,7 +268,7 @@ export default function ProductPage({ params: { slug } }) {
             )}
           </fieldset>
 
-          {/* Quantity (editable cases) */}
+          {/* Quantity (always-input version) */}
           <div className="space-y-2">
             <label className="block font-medium text-sm">Quantity (cases)</label>
             <div
@@ -255,14 +276,10 @@ export default function ProductPage({ params: { slug } }) {
               role="group"
               aria-label="Change quantity in cases"
             >
-              {/* Decrease */}
               <button
                 type="button"
                 aria-label="Decrease quantity (one case)"
-                onClick={() => {
-                  const next = Math.max(1, selectedCases - 1);
-                  setQty(next * caseQty);
-                }}
+                onClick={() => setCases(selectedCases - 1)}
                 disabled={selectedCases <= 1}
                 className={`w-10 h-10 grid place-items-center text-white text-lg select-none ${
                   selectedCases <= 1
@@ -273,60 +290,31 @@ export default function ProductPage({ params: { slug } }) {
                 −
               </button>
 
-              {/* Center editable area (Option A) */}
-              {editingCases ? (
-                <input
-                  type="number"
-                  min={1}
-                  inputMode="numeric"
-                  defaultValue={selectedCases}
-                  autoFocus
-                  onFocus={(e) => e.target.select()}
-                  onBlur={(e) => commitCases(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") commitCases(e.currentTarget.value);
-                    else if (e.key === "Escape") cancelEditing();
-                  }}
-                  className="
-                    no-spinner appearance-none
-                    w-16 h-10
-                    flex items-center justify-center
-                    bg-white text-[#1F8248]
-                    font-semibold font-mono text-base
-                    leading-none p-0
-                    outline-none ring-0 focus:ring-0
-                    transition
-                  "
-                  aria-label="Edit number of cases"
-                />
-              ) : (
-                <button
-                  type="button"
-                  onClick={startEditing}
-                  className="
-                    w-16 h-10
-                    flex items-center justify-center
-                    bg-white text-[#1F8248]
-                    font-semibold font-mono text-base
-                    leading-none p-0
-                    hover:bg-gray-50
-                    cursor-text
-                    focus:outline-none
-                  "
-                  aria-label={`Current quantity in cases: ${selectedCases}. Click to edit.`}
-                >
-                  {selectedCases}
-                </button>
-              )}
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                aria-label="Number of cases"
+                value={selectedCases}
+                onChange={handleCasesChange}
+                onBlur={handleCasesBlur}
+                onKeyDown={handleCasesKey}
+                className="
+                  no-spinner appearance-none
+                  w-16 h-10
+                  text-center bg-white text-[#1F8248]
+                  font-semibold font-mono tabular text-base
+                  leading-none p-0
+                  outline-none focus:outline-none focus:ring-0
+                  cursor-text
+                  selection:bg-[#1F8248]/20
+                "
+              />
 
-              {/* Increase */}
               <button
                 type="button"
                 aria-label="Increase quantity (one case)"
-                onClick={() => {
-                  const next = selectedCases + 1;
-                  setQty(next * caseQty);
-                }}
+                onClick={() => setCases(selectedCases + 1)}
                 className="w-10 h-10 grid place-items-center bg-[#1F8248] text-white text-lg select-none hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer focus:outline-none"
               >
                 +
