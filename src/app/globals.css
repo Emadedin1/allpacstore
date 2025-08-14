@@ -40,3 +40,12 @@ body {
     gap: 1.5rem; /* Tailwind gap-6 */
   }
 }
+
+/* Hide horizontal scrollbar utility */
+.hide-scrollbar {
+  -ms-overflow-style: none;       /* IE/Edge */
+  scrollbar-width: none;          /* Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;                  /* Chrome/Safari */
+}
