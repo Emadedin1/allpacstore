@@ -373,12 +373,12 @@ export default function CartDrawer() {
                           className="
                             no-spinner appearance-none
                             w-12 h-10
-                            text-center bg-white text-[#1F8248]
+                            text-center bg-white text-[#28a745]
                             font-semibold font-mono tabular-nums text-base
                             leading-none p-0
                             outline-none focus:outline-none focus:ring-0
                             cursor-text
-                            selection:bg-[#1F8248]/20
+                            selection:bg-[#28a745]/20
                           "
                         />
 
