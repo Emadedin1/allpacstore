@@ -256,12 +256,12 @@ export default function ProductPage({ params: { slug } }) {
                   className="
                     no-spinner appearance-none
                     w-12 h-10
-                    text-center bg-white text-[#1F8248]
+                    text-center bg-white text-[#28a745]
                     font-semibold font-mono tabular-nums text-base
                     leading-none p-0
                     outline-none focus:outline-none focus:ring-0
                     cursor-text
-                    selection:bg-[#1F8248]/20
+                    selection:bg-[#28a745]/20
                   "
                 />
 
@@ -269,7 +269,7 @@ export default function ProductPage({ params: { slug } }) {
                   type="button"
                   aria-label="Increase quantity (one case)"
                   onClick={() => bump(1)}
-                  className="w-10 h-10 grid place-items-center bg-[#1F8248] text-white text-lg select-none hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer focus:outline-none"
+                  className="w-10 h-10 grid place-items-center bg-[#28a745] text-white text-lg select-none hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer focus:outline-none"
                 >
                   +
                 </button>
