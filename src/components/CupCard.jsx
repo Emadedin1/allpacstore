@@ -89,7 +89,7 @@ export default function CupCard({ cup }) {
           onClick={handleAddToCart}
           className="
             mt-auto inline-flex h-9 sm:h-10 w-full items-center justify-center
-            rounded-md bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633]
+            rounded-md bg-[#28a745] hover:bg-[#218838] active:bg-[#1e7e34]
             text-white text-[14px] sm:text-[15px] font-medium
             hover:shadow-sm focus:outline-none
             focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
