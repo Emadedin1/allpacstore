@@ -49,7 +49,7 @@ export default function ProductPage({ params: { slug } }) {
   const [designType, setDesignType] = useState("Plain White");
   const [designFile, setDesignFile] = useState(null);
   const [previewURL, setPreviewURL] = useState("");
-  // qty stores number of cups; default to one full case so Add to Cart is clickable immediately
+  // qty stores number of cups; default to one full case
   const [qty, setQty] = useState(caseQty);
 
   // 3) Pricing & texture/model URLs
@@ -57,7 +57,7 @@ export default function ProductPage({ params: { slug } }) {
   const pricePerCup = designType === "Plain White" ? plain : custom;
   const subtotal = qty ? (pricePerCup * Number(qty)).toFixed(2) : "0.00";
 
-  // Show/modify quantity in cases, but store qty in cups
+  // Show/modify quantity in cases, but store qty (cups)
   const selectedCases = Math.max(1, Math.round((Number(qty) || 0) / caseQty));
 
   const TEXTURES = {
@@ -71,21 +71,15 @@ export default function ProductPage({ params: { slug } }) {
 
   // 4) Handlers
   const handleAdd = () => {
-    // Normalize product before adding to cart so size is always present and title is correct
     const sizeText = getSizeText(product);
     const normalized = {
       ...product,
       size: sizeText,
       qtyCase: caseQty,
-      // Ensure cart shows desired display name
       name: buildTitle({ ...product, size: sizeText, qtyCase: caseQty }),
-      // Optional meta: how many cases user selected (cart UI can use this)
       cases: selectedCases,
     };
-
-    // Convert selected cases to cups for cart math
     const cupsToAdd = selectedCases * caseQty;
-
     addItem(
       normalized,
       cupsToAdd,
@@ -105,18 +99,15 @@ export default function ProductPage({ params: { slug } }) {
     }
   };
 
-  // Helper: add ONE CASE for a given product card (like CupCard)
+  // Helper: add ONE CASE for a given product card
   const addCaseToCart = (cup) => {
     const sizeText = getSizeText(cup);
     const qtyPerCase = cup.qtyCase || 1000;
-
     const effectiveCasePrice =
       CASE_PRICE_BY_SIZE[sizeText] !== undefined
         ? CASE_PRICE_BY_SIZE[sizeText]
         : cup.priceCase;
-
     const perCup = effectiveCasePrice / qtyPerCase;
-
     const normalized = {
       ...cup,
       size: sizeText,
@@ -125,10 +116,9 @@ export default function ProductPage({ params: { slug } }) {
       name: buildTitle({ ...cup, size: sizeText, qtyCase: qtyPerCase }),
       cases: 1,
     };
-
     addItem(
       normalized,
-      qtyPerCase, // add one full case (in cups)
+      qtyPerCase,
       null,
       "",
       undefined,
@@ -149,14 +139,13 @@ export default function ProductPage({ params: { slug } }) {
   const toggle = (label) =>
     setOpenSections((prev) => ({ ...prev, [label]: !prev[label] }));
 
-  // Build display title in requested format for this product page
   const pageTitle = buildTitle(product);
 
   return (
     <main className="max-w-6xl mx-auto p-4 md:p-6 space-y-8">
       {/* ── TOP SECTION ── */}
       <div className="flex flex-col md:flex-row gap-8">
-        {/* Left: Image + desktop Overview */}
+        {/* Left */}
         <div className="md:w-1/2 space-y-4">
           <Image
             src={product.image}
@@ -183,7 +172,7 @@ export default function ProductPage({ params: { slug } }) {
             </p>
           </div>
 
-          {/* Pricing Breakdown Table */}
+            {/* Pricing Breakdown Table */}
           <div className="hidden md:block bg-white rounded-lg p-6 shadow mt-6">
             <h3 className="text-lg font-semibold mb-3">Pricing Breakdown</h3>
             <table className="w-full table-auto border-collapse">
@@ -209,9 +198,8 @@ export default function ProductPage({ params: { slug } }) {
           </div>
         </div>
 
-        {/* Right: Form + 3D + panels + mobile Overview */}
+        {/* Right */}
         <div className="md:w-1/2 space-y-6">
-          {/* Title & Price */}
           <div className="space-y-1">
             <h1 className="text-2xl sm:text-3xl font-bold">{pageTitle}</h1>
             <p className="text-gray-600 text-sm">{product.desc}</p>
@@ -220,10 +208,9 @@ export default function ProductPage({ params: { slug } }) {
             </p>
           </div>
 
-          {/* Design Type */}
           <fieldset className="space-y-2">
             <legend className="font-medium">Design Type</legend>
-            <div className="flex gap-6">
+            <div className="flex gap-6 flex-wrap">
               {["Plain White", "Preset A", "Preset B", "Custom"].map((opt) => (
                 <label key={opt} className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -267,10 +254,8 @@ export default function ProductPage({ params: { slug } }) {
             )}
           </fieldset>
 
-          {/* Quantity & Add */}
           <div className="space-y-2">
             <label className="block font-medium text-sm">Quantity</label>
-
             <div
               className="inline-flex items-center overflow-hidden rounded-full shadow-sm"
               role="group"
@@ -281,33 +266,31 @@ export default function ProductPage({ params: { slug } }) {
                 aria-label="Decrease quantity (one case)"
                 onClick={() => {
                   const next = Math.max(1, selectedCases - 1);
-                  setQty(next * caseQty); // store cups
+                  setQty(next * caseQty);
                 }}
                 disabled={selectedCases <= 1}
                 className={`w-10 h-10 grid place-items-center text-white text-lg select-none ${
                   selectedCases <= 1
                     ? "bg-[#1F8248]/60 cursor-not-allowed"
-                    : "bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer"
+                    : "bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633]"
                 } focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1`}
               >
                 −
               </button>
-
               <div
                 aria-live="polite"
                 className="w-12 h-10 grid place-items-center bg-white text-[#1F8248] font-semibold font-mono tabular-nums select-none"
               >
                 {selectedCases}
               </div>
-
               <button
                 type="button"
                 aria-label="Increase quantity (one case)"
                 onClick={() => {
                   const next = selectedCases + 1;
-                  setQty(next * caseQty); // store cups
+                  setQty(next * caseQty);
                 }}
-                className="w-10 h-10 grid place-items-center bg-[#1F8248] text-white text-lg select-none hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1"
+                className="w-10 h-10 grid place-items-center bg-[#1F8248] text-white text-lg select-none hover:bg-[#196D3D] active:bg-[#145633] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1"
               >
                 +
               </button>
@@ -316,7 +299,6 @@ export default function ProductPage({ params: { slug } }) {
             <p className="text-xs text-gray-600">
               {caseQty.toLocaleString()} cups per case
             </p>
-
             <p className="font-semibold text-sm">Subtotal: ${subtotal}</p>
             <button
               onClick={handleAdd}
@@ -331,12 +313,10 @@ export default function ProductPage({ params: { slug } }) {
             </button>
           </div>
 
-          {/* 3D Canvas */}
           <div className="w-full h-64 md:h-96">
             <Cup3DPreview modelURL={modelURL} textureURL={textureURL} />
           </div>
 
-          {/* Collapsible Specs */}
           <div className="space-y-4">
             {specs.map(({ label, content }) => (
               <div key={label} className="border rounded-lg overflow-hidden shadow-sm">
@@ -368,7 +348,6 @@ export default function ProductPage({ params: { slug } }) {
             ))}
           </div>
 
-          {/* Mobile Overview */}
           <div className="md:hidden bg-gray-100 rounded-lg p-4">
             <h2 className="text-xl font-semibold mb-2">Overview</h2>
             <p className="text-gray-700 mb-2">{product.desc}</p>
@@ -388,10 +367,28 @@ export default function ProductPage({ params: { slug } }) {
         </div>
       </div>
 
-      {/* ── OTHER PRODUCTS CAROUSEL (Add to Cart in each card) ── */}
+      {/* ── OTHER PRODUCTS GRID (refactored for consistent sizing) ── */}
       <div>
         <h2 className="text-2xl font-bold mb-4">Other Products</h2>
-        <div className="flex space-x-4 overflow-x-auto pb-2 snap-x snap-mandatory">
+
+        {/* Responsive dense grid:
+            - Fixed-width columns (no stretch) via repeat(auto-fill,minmax(var(--other-min),var(--other-min)))
+            - Adjust --other-min per breakpoint for density control
+        */}
+        <div
+          className="
+            grid
+            gap-y-6 gap-x-3 sm:gap-x-4
+            justify-start
+            [--other-min:170px]
+            sm:[--other-min:165px]
+            md:[--other-min:160px]
+            lg:[--other-min:155px]
+            xl:[--other-min:150px]
+            2xl:[--other-min:148px]
+            grid-cols-[repeat(auto-fill,minmax(var(--other-min),var(--other-min)))]
+          "
+        >
           {products
             .filter((p) => p.slug !== slug)
             .map((p) => {
@@ -401,49 +398,45 @@ export default function ProductPage({ params: { slug } }) {
                 CASE_PRICE_BY_SIZE[sizeText] !== undefined
                   ? CASE_PRICE_BY_SIZE[sizeText]
                   : p.priceCase;
-
               const displayTitle = buildTitle({ ...p, size: sizeText });
 
               return (
                 <div
                   key={p.slug}
                   className="
-                    snap-start group flex-shrink-0 w-56
-                    bg-white rounded-2xl shadow-sm hover:shadow-md transition
+                    group bg-white rounded-2xl shadow-sm hover:shadow-md transition
                     ring-1 ring-black/5 hover:ring-black/10
                     focus-within:ring-2 focus-within:ring-black/10
                     flex flex-col
+                    w-[var(--other-min)]
                   "
                 >
-                  {/* Clickable area to go to details */}
+                  {/* Clickable area */}
                   <Link
                     href={`/products/${p.slug}`}
                     className="flex-1 rounded-2xl overflow-hidden focus:outline-none"
                   >
-                    {/* Image well — matches main CupCard */}
-                    <div className="relative w-full h-44 sm:h-48 bg-gray-50 rounded-t-2xl overflow-hidden">
+                    <div className="relative w-full aspect-square bg-gray-50 rounded-t-2xl overflow-hidden">
                       <Image
                         src={p.image}
                         alt={displayTitle}
                         fill
-                        sizes="(max-width: 640px) 224px, 224px"
-                        className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                        sizes="(max-width: 640px) 170px, (max-width: 1024px) 160px, 155px"
+                        className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                         priority={false}
                       />
                     </div>
 
-                    {/* Content */}
-                    <div className="p-3">
-                      <p className="text-xs sm:text-sm font-medium text-gray-900 leading-snug text-center">
+                    <div className="p-3 flex flex-col gap-2">
+                      <p className="text-[13px] sm:text-sm font-medium text-gray-900 leading-snug text-center">
                         {displayTitle}
                       </p>
-                      <p className="text-sm sm:text-base font-semibold text-gray-900 text-center mt-2">
+                      <p className="text-base sm:text-lg font-semibold text-gray-900 text-center">
                         ${effectiveCasePrice.toFixed(2)}
                       </p>
                     </div>
                   </Link>
 
-                  {/* Add Case Button — same style as CupCard, stops navigation */}
                   <div className="px-3 pb-3">
                     <button
                       type="button"
@@ -453,12 +446,10 @@ export default function ProductPage({ params: { slug } }) {
                         addCaseToCart(p);
                       }}
                       className="
-                        inline-flex h-10 w-full items-center justify-center
-                        rounded-md
-                        bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633]
-                        text-white text-base font-medium
+                        inline-flex h-9 sm:h-10 w-full items-center justify-center
+                        rounded-md bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633]
+                        text-white text-[14px] sm:text-[15px] font-medium
                         hover:shadow-sm
-                        cursor-pointer
                         focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
                         transition-colors
                       "
@@ -471,6 +462,9 @@ export default function ProductPage({ params: { slug } }) {
               );
             })}
         </div>
+
+        {/* Optional: If you still want a horizontal scroll on mobile only,
+            wrap the grid in overflow-x-auto md:overflow-visible and set inline-block; let me know and I can provide that variant. */}
       </div>
     </main>
   );
