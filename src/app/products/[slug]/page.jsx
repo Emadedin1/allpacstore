@@ -17,7 +17,6 @@ const CASE_PRICE_BY_SIZE = {
   "32 oz": 90,
 };
 
-// ---------- Helpers ----------
 function getSizeText(entity) {
   if (entity?.size) return /oz/i.test(entity.size) ? entity.size : `${entity.size} oz`;
   const fromName = entity?.name?.match(/(\d+)\s*oz/i);
@@ -33,7 +32,6 @@ function buildTitle(entity) {
   return `${qtyPerCase} cups | ${sizeText} ${DEFAULT_DESCRIPTOR}`.replace("  ", " ").trim();
 }
 
-// ---------- Page Component ----------
 export default function ProductPage({ params: { slug } }) {
   const product = getProductBySlug(slug);
   if (!product) return <div className="p-4">Product not found.</div>;
@@ -44,16 +42,12 @@ export default function ProductPage({ params: { slug } }) {
   const [designType, setDesignType] = useState("Plain White");
   const [designFile, setDesignFile] = useState(null);
   const [previewURL, setPreviewURL] = useState("");
+  const [qty, setQty] = useState(caseQty); // cups
 
-  // We keep qty in cups internally. Start at 1 case.
-  const [qty, setQty] = useState(caseQty);
-
-  // New: track edit mode for cases input
+  // Editable quantity (cases)
   const [editingCases, setEditingCases] = useState(false);
-  // Optionally remember previous cases if user cancels (Esc)
   const [prevCases, setPrevCases] = useState(1);
 
-  // Pricing (assumes pricing entry exists)
   const { plain, custom } = pricing[slug];
   const pricePerCup = designType === "Plain White" ? plain : custom;
   const selectedCases = Math.max(1, Math.round(qty / caseQty));
@@ -126,7 +120,6 @@ export default function ProductPage({ params: { slug } }) {
 
   const pageTitle = buildTitle(product);
 
-  // ---- Cases Editing Helpers ----
   function commitCases(rawValue) {
     let val = parseInt(rawValue, 10);
     if (isNaN(val) || val < 1) val = 1;
@@ -140,16 +133,14 @@ export default function ProductPage({ params: { slug } }) {
   }
 
   function cancelEditing() {
-    // Revert
     setQty(prevCases * caseQty);
     setEditingCases(false);
   }
 
   return (
     <main className="max-w-6xl mx-auto p-4 md:p-6 space-y-8">
-      {/* TOP SECTION */}
+      {/* TOP SECTION (unchanged) */}
       <div className="flex flex-col md:flex-row gap-8">
-        {/* Left Column */}
         <div className="md:w-1/2 space-y-4">
           <Image
             src={product.image}
@@ -159,7 +150,6 @@ export default function ProductPage({ params: { slug } }) {
             className="rounded-lg object-cover w-full"
             priority
           />
-
           <div className="hidden md:block bg-gray-100 rounded-lg p-6 mt-6">
             <h2 className="text-2xl font-semibold mb-3">Overview</h2>
             <p className="text-gray-700 mb-2">{product.desc}</p>
@@ -174,7 +164,6 @@ export default function ProductPage({ params: { slug } }) {
             </p>
             <p className="text-sm text-gray-600">Minimum order quantity is 500 cups.</p>
           </div>
-
           <div className="hidden md:block bg-white rounded-lg p-6 shadow mt-6">
             <h3 className="text-lg font-semibold mb-3">Pricing Breakdown</h3>
             <table className="w-full table-auto border-collapse">
@@ -200,7 +189,6 @@ export default function ProductPage({ params: { slug } }) {
           </div>
         </div>
 
-        {/* Right Column */}
         <div className="md:w-1/2 space-y-6">
           <div className="space-y-1">
             <h1 className="text-2xl sm:text-3xl font-bold">{pageTitle}</h1>
@@ -257,15 +245,14 @@ export default function ProductPage({ params: { slug } }) {
             )}
           </fieldset>
 
-          {/* Quantity (cases) */}
-          <div className="space-y-2">
+          {/* Quantity (editable cases) */}
+            <div className="space-y-2">
             <label className="block font-medium text-sm">Quantity (cases)</label>
             <div
               className="inline-flex items-center overflow-hidden rounded-full shadow-sm"
               role="group"
               aria-label="Change quantity in cases"
             >
-              {/* Decrease */}
               <button
                 type="button"
                 aria-label="Decrease quantity (one case)"
@@ -283,7 +270,6 @@ export default function ProductPage({ params: { slug } }) {
                 −
               </button>
 
-              {/* Editable center (cases) */}
               {editingCases ? (
                 <input
                   type="number"
@@ -300,7 +286,7 @@ export default function ProductPage({ params: { slug } }) {
                       cancelEditing();
                     }
                   }}
-                  className="w-16 h-10 text-center bg-white text-[#1F8248] font-semibold font-mono outline-none focus:ring-2 focus:ring-[#145633]/50"
+                  className="no-spinner appearance-none w-16 h-10 text-center bg-white text-[#1F8248] font-semibold font-mono text-base outline-none focus:ring-2 focus:ring-[#145633]/50"
                   aria-label="Edit number of cases"
                 />
               ) : (
@@ -314,7 +300,6 @@ export default function ProductPage({ params: { slug } }) {
                 </button>
               )}
 
-              {/* Increase */}
               <button
                 type="button"
                 aria-label="Increase quantity (one case)"
@@ -329,8 +314,7 @@ export default function ProductPage({ params: { slug } }) {
             </div>
 
             <p className="text-xs text-gray-600">
-              {caseQty.toLocaleString()} cups per case (total cups:{" "}
-              {qty.toLocaleString()})
+              {caseQty.toLocaleString()} cups per case (total cups: {qty.toLocaleString()})
             </p>
             <p className="font-semibold text-sm">Subtotal: ${subtotal}</p>
             <button
@@ -346,12 +330,10 @@ export default function ProductPage({ params: { slug } }) {
             </button>
           </div>
 
-          {/* 3D Preview */}
           <div className="w-full h-64 md:h-96">
             <Cup3DPreview modelURL={modelURL} textureURL={textureURL} />
           </div>
 
-          {/* Collapsible Specs */}
           <div className="space-y-4">
             {specs.map(({ label, content }) => (
               <div key={label} className="border rounded-lg overflow-hidden shadow-sm">
@@ -383,7 +365,6 @@ export default function ProductPage({ params: { slug } }) {
             ))}
           </div>
 
-          {/* Mobile Overview */}
           <div className="md:hidden bg-gray-100 rounded-lg p-4">
             <h2 className="text-xl font-semibold mb-2">Overview</h2>
             <p className="text-gray-700 mb-2">{product.desc}</p>
@@ -401,10 +382,9 @@ export default function ProductPage({ params: { slug } }) {
         </div>
       </div>
 
-      {/* OTHER PRODUCTS SLIDER (unchanged except earlier improvements) */}
+      {/* OTHER PRODUCTS SLIDER */}
       <div>
         <h2 className="text-2xl font-bold mb-4">Other Products</h2>
-
         <div
           className="
             flex gap-5
