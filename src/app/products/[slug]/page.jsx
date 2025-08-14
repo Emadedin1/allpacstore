@@ -3,14 +3,14 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { pricing } from "../../../utils/pricing"; // still imported if you reference elsewhere
+import { pricing } from "../../../utils/pricing"; // retained if needed elsewhere
 import { useCart } from "../../../context/CartContext";
 import { getProductBySlug, products } from "../../../data/products";
 import Cup3DPreview from "../../../components/Cup3DPreview";
 
 const DEFAULT_DESCRIPTOR = "Blank Single-Walled Paper Cup";
 
-// Case prices you specified
+// Case prices specified
 const CASE_PRICE_OVERRIDE = {
   "10 oz": 41.50,
   "12 oz": 46.50,
@@ -197,7 +197,7 @@ export default function ProductPage({ params: { slug } }) {
 
         {/* Right Column */}
         <div className="md:w-1/2 space-y-6">
-          {/* Heading + Price + (moved) Quantity */}
+          {/* Heading + Price + Quantity */}
           <div className="space-y-3">
             <div className="space-y-1">
               <h1 className="text-2xl sm:text-3xl font-bold">{pageTitle}</h1>
@@ -205,7 +205,7 @@ export default function ProductPage({ params: { slug } }) {
               <p className="text-lg font-semibold">${casePrice.toFixed(2)}/case</p>
             </div>
 
-            {/* Quantity moved up directly below price */}
+            {/* Quantity moved close to price */}
             <div className="space-y-1">
               <label className="block font-medium text-sm">Quantity (cases)</label>
               <div
@@ -258,7 +258,7 @@ export default function ProductPage({ params: { slug } }) {
                 </button>
               </div>
               <p className="text-xs text-gray-600">
-                {caseQty.toLocaleString()} cups per case (total cups: {qty.toLocaleString()})
+                {caseQty} cups per case (total cups: {qty.toLocaleString()})
               </p>
               <p className="font-semibold text-sm">
                 Subtotal: ${subtotal}
@@ -281,36 +281,36 @@ export default function ProductPage({ params: { slug } }) {
           </div>
 
           {/* Collapsible Specs */}
-            <div className="space-y-4">
-              {specs.map(({ label, content }) => (
-                <div key={label} className="border rounded-lg overflow-hidden shadow-sm">
-                  <button
-                    onClick={() => toggle(label)}
-                    className="w-full flex justify-between items-center px-4 py-2 bg-white hover:bg-gray-50 transition text-sm"
-                  >
-                    <span className="font-medium">{label}</span>
-                    <span
-                      className={`transform transition-transform duration-200 ${
-                        openSections[label] ? "rotate-180" : ""
-                      }`}
-                    >
-                      ▼
-                    </span>
-                  </button>
-                  <div
-                    className={`px-4 overflow-hidden transition-[max-height] duration-300 ${
-                      openSections[label] ? "max-h-48 py-3" : "max-h-0 py-0"
+          <div className="space-y-4">
+            {specs.map(({ label, content }) => (
+              <div key={label} className="border rounded-lg overflow-hidden shadow-sm">
+                <button
+                  onClick={() => toggle(label)}
+                  className="w-full flex justify-between items-center px-4 py-2 bg-white hover:bg-gray-50 transition text-sm"
+                >
+                  <span className="font-medium">{label}</span>
+                  <span
+                    className={`transform transition-transform duration-200 ${
+                      openSections[label] ? "rotate-180" : ""
                     }`}
                   >
-                    {content.map((line, i) => (
-                      <p key={i} className="text-gray-700 text-sm">
-                        {line}
-                      </p>
-                    ))}
-                  </div>
+                    ▼
+                  </span>
+                </button>
+                <div
+                  className={`px-4 overflow-hidden transition-[max-height] duration-300 ${
+                    openSections[label] ? "max-h-48 py-3" : "max-h-0 py-0"
+                  }`}
+                >
+                  {content.map((line, i) => (
+                    <p key={i} className="text-gray-700 text-sm">
+                      {line}
+                    </p>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
+          </div>
 
           {/* Mobile Overview */}
           <div className="md:hidden bg-gray-100 rounded-lg p-4">
