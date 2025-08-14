@@ -237,8 +237,8 @@ export default function ProductPage({ params: { slug } }) {
                   disabled={selectedCases <= 1}
                   className={`w-10 h-10 grid place-items-center text-white text-lg select-none ${
                     selectedCases <= 1
-                      ? "bg-[#1F8248]/60 cursor-not-allowed"
-                      : "bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633]"
+                      ? "bg-[#28a745]/60 cursor-not-allowed"
+                      : "bg-[#28a745] hover:bg-[#218838] active:bg-[#1e7e34]"
                   } focus:outline-none`}
                 >
                   −
