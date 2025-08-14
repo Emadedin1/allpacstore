@@ -139,8 +139,9 @@ export default function ProductPage({ params: { slug } }) {
 
   return (
     <main className="max-w-6xl mx-auto p-4 md:p-6 space-y-8">
-      {/* TOP SECTION (unchanged) */}
+      {/* TOP SECTION */}
       <div className="flex flex-col md:flex-row gap-8">
+        {/* Left Column */}
         <div className="md:w-1/2 space-y-4">
           <Image
             src={product.image}
@@ -189,6 +190,7 @@ export default function ProductPage({ params: { slug } }) {
           </div>
         </div>
 
+        {/* Right Column */}
         <div className="md:w-1/2 space-y-6">
           <div className="space-y-1">
             <h1 className="text-2xl sm:text-3xl font-bold">{pageTitle}</h1>
@@ -246,13 +248,14 @@ export default function ProductPage({ params: { slug } }) {
           </fieldset>
 
           {/* Quantity (editable cases) */}
-            <div className="space-y-2">
+          <div className="space-y-2">
             <label className="block font-medium text-sm">Quantity (cases)</label>
             <div
               className="inline-flex items-center overflow-hidden rounded-full shadow-sm"
               role="group"
               aria-label="Change quantity in cases"
             >
+              {/* Decrease */}
               <button
                 type="button"
                 aria-label="Decrease quantity (one case)"
@@ -265,11 +268,12 @@ export default function ProductPage({ params: { slug } }) {
                   selectedCases <= 1
                     ? "bg-[#1F8248]/60 cursor-not-allowed"
                     : "bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633]"
-                } focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1`}
+                } focus:outline-none`}
               >
                 −
               </button>
 
+              {/* Center editable area (Option A) */}
               {editingCases ? (
                 <input
                   type="number"
@@ -280,26 +284,42 @@ export default function ProductPage({ params: { slug } }) {
                   onFocus={(e) => e.target.select()}
                   onBlur={(e) => commitCases(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      commitCases(e.currentTarget.value);
-                    } else if (e.key === "Escape") {
-                      cancelEditing();
-                    }
+                    if (e.key === "Enter") commitCases(e.currentTarget.value);
+                    else if (e.key === "Escape") cancelEditing();
                   }}
-                  className="no-spinner appearance-none w-16 h-10 text-center bg-white text-[#1F8248] font-semibold font-mono text-base outline-none focus:ring-2 focus:ring-[#145633]/50"
+                  className="
+                    no-spinner appearance-none
+                    w-16 h-10
+                    flex items-center justify-center
+                    bg-white text-[#1F8248]
+                    font-semibold font-mono text-base
+                    leading-none p-0
+                    outline-none ring-0 focus:ring-0
+                    transition
+                  "
                   aria-label="Edit number of cases"
                 />
               ) : (
                 <button
                   type="button"
                   onClick={startEditing}
-                  className="w-16 h-10 grid place-items-center bg-white text-[#1F8248] font-semibold font-mono text-base hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1 cursor-text"
+                  className="
+                    w-16 h-10
+                    flex items-center justify-center
+                    bg-white text-[#1F8248]
+                    font-semibold font-mono text-base
+                    leading-none p-0
+                    hover:bg-gray-50
+                    cursor-text
+                    focus:outline-none
+                  "
                   aria-label={`Current quantity in cases: ${selectedCases}. Click to edit.`}
                 >
                   {selectedCases}
                 </button>
               )}
 
+              {/* Increase */}
               <button
                 type="button"
                 aria-label="Increase quantity (one case)"
@@ -307,7 +327,7 @@ export default function ProductPage({ params: { slug } }) {
                   const next = selectedCases + 1;
                   setQty(next * caseQty);
                 }}
-                className="w-10 h-10 grid place-items-center bg-[#1F8248] text-white text-lg select-none hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1"
+                className="w-10 h-10 grid place-items-center bg-[#1F8248] text-white text-lg select-none hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer focus:outline-none"
               >
                 +
               </button>
@@ -330,10 +350,12 @@ export default function ProductPage({ params: { slug } }) {
             </button>
           </div>
 
+          {/* 3D Preview */}
           <div className="w-full h-64 md:h-96">
             <Cup3DPreview modelURL={modelURL} textureURL={textureURL} />
           </div>
 
+          {/* Collapsible Specs */}
           <div className="space-y-4">
             {specs.map(({ label, content }) => (
               <div key={label} className="border rounded-lg overflow-hidden shadow-sm">
@@ -365,6 +387,7 @@ export default function ProductPage({ params: { slug } }) {
             ))}
           </div>
 
+          {/* Mobile Overview */}
           <div className="md:hidden bg-gray-100 rounded-lg p-4">
             <h2 className="text-xl font-semibold mb-2">Overview</h2>
             <p className="text-gray-700 mb-2">{product.desc}</p>
