@@ -3,14 +3,14 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { pricing } from "../../../utils/pricing"; // kept in case other logic depends on it
+import { pricing } from "../../../utils/pricing"; // still imported if you reference elsewhere
 import { useCart } from "../../../context/CartContext";
 import { getProductBySlug, products } from "../../../data/products";
 import Cup3DPreview from "../../../components/Cup3DPreview";
 
 const DEFAULT_DESCRIPTOR = "Blank Single-Walled Paper Cup";
 
-// Requested case prices override (by size)
+// Case prices you specified
 const CASE_PRICE_OVERRIDE = {
   "10 oz": 41.50,
   "12 oz": 46.50,
@@ -41,7 +41,6 @@ export default function ProductPage({ params: { slug } }) {
   const caseQty = product.qtyCase || 1000;
   const sizeText = getSizeText(product);
 
-  // Use override pricing if provided, else fall back to product.priceCase
   const casePrice =
     CASE_PRICE_OVERRIDE[sizeText] !== undefined
       ? CASE_PRICE_OVERRIDE[sizeText]
@@ -51,10 +50,9 @@ export default function ProductPage({ params: { slug } }) {
 
   const { addItem, openCart, isOpen } = useCart();
 
-  // qty stored internally in cups
+  // qty stored in cups
   const [qty, setQty] = useState(caseQty);
-  // local input buffer allowing blank while editing
-  const [caseInput, setCaseInput] = useState("1");
+  const [caseInput, setCaseInput] = useState("1"); // buffer allowing blank
 
   const selectedCases = Math.max(1, Math.round(qty / caseQty));
   const subtotal = (casePrice * selectedCases).toFixed(2);
@@ -65,16 +63,13 @@ export default function ProductPage({ params: { slug } }) {
     setQty(v * caseQty);
     setCaseInput(String(v));
   }
-
   function handleCasesChange(e) {
     const raw = e.target.value.replace(/[^\d]/g, "");
-    setCaseInput(raw); // can be blank
+    setCaseInput(raw);
   }
-
   function handleCasesBlur() {
     commitCases(caseInput);
   }
-
   function handleCasesKey(e) {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -97,7 +92,6 @@ export default function ProductPage({ params: { slug } }) {
       setCaseInput(String(next));
     }
   }
-
   function bump(delta) {
     const next = Math.max(1, selectedCases + delta);
     setQty(next * caseQty);
@@ -110,7 +104,7 @@ export default function ProductPage({ params: { slug } }) {
       size: sizeText,
       qtyCase: caseQty,
       priceCase: casePrice,
-      pricePerCup, // helpful for cart math
+      pricePerCup,
       name: buildTitle({ ...product, size: sizeText, qtyCase: caseQty }),
       cases: selectedCases,
     };
@@ -203,80 +197,82 @@ export default function ProductPage({ params: { slug } }) {
 
         {/* Right Column */}
         <div className="md:w-1/2 space-y-6">
-          <div className="space-y-1">
-            <h1 className="text-2xl sm:text-3xl font-bold">{pageTitle}</h1>
-            <p className="text-gray-600 text-sm">{product.desc}</p>
-            <p className="text-lg font-semibold">
-              ${casePrice.toFixed(2)}/case
-            </p>
-          </div>
-
-          {/* Quantity (cases) */}
-          <div className="space-y-2">
-            <label className="block font-medium text-sm">Quantity (cases)</label>
-            <div
-              className="inline-flex items-center overflow-hidden rounded-full shadow-sm"
-              role="group"
-              aria-label="Change quantity in cases"
-            >
-              <button
-                type="button"
-                aria-label="Decrease quantity (one case)"
-                onClick={() => bump(-1)}
-                disabled={selectedCases <= 1}
-                className={`w-10 h-10 grid place-items-center text-white text-lg select-none ${
-                  selectedCases <= 1
-                    ? "bg-[#1F8248]/60 cursor-not-allowed"
-                    : "bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633]"
-                } focus:outline-none`}
-              >
-                −
-              </button>
-
-              <input
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                aria-label="Number of cases"
-                value={caseInput}
-                onChange={handleCasesChange}
-                onBlur={handleCasesBlur}
-                onKeyDown={handleCasesKey}
-                className="
-                  no-spinner appearance-none
-                  w-12 h-10
-                  text-center bg-white text-[#1F8248]
-                  font-semibold font-mono tabular-nums text-base
-                  leading-none p-0
-                  outline-none focus:outline-none focus:ring-0
-                  cursor-text
-                  selection:bg-[#1F8248]/20
-                "
-              />
-
-              <button
-                type="button"
-                aria-label="Increase quantity (one case)"
-                onClick={() => bump(1)}
-                className="w-10 h-10 grid place-items-center bg-[#1F8248] text-white text-lg select-none hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer focus:outline-none"
-              >
-                +
-              </button>
+          {/* Heading + Price + (moved) Quantity */}
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <h1 className="text-2xl sm:text-3xl font-bold">{pageTitle}</h1>
+              <p className="text-gray-600 text-sm">{product.desc}</p>
+              <p className="text-lg font-semibold">${casePrice.toFixed(2)}/case</p>
             </div>
 
-            <p className="text-xs text-gray-600">
-              {caseQty.toLocaleString()} cups per case (total cups: {qty.toLocaleString()})
-            </p>
-            <p className="font-semibold text-sm">Subtotal: ${subtotal}</p>
-            <button
-              onClick={handleAdd}
-              className="w-full py-2 rounded-lg text-sm font-semibold bg-[#196D3D] text-white hover:bg-[#145633] active:bg-[#145633]"
-            >
-              Add to Cart
-            </button>
+            {/* Quantity moved up directly below price */}
+            <div className="space-y-1">
+              <label className="block font-medium text-sm">Quantity (cases)</label>
+              <div
+                className="inline-flex items-center overflow-hidden rounded-full shadow-sm"
+                role="group"
+                aria-label="Change quantity in cases"
+              >
+                <button
+                  type="button"
+                  aria-label="Decrease quantity (one case)"
+                  onClick={() => bump(-1)}
+                  disabled={selectedCases <= 1}
+                  className={`w-10 h-10 grid place-items-center text-white text-lg select-none ${
+                    selectedCases <= 1
+                      ? "bg-[#1F8248]/60 cursor-not-allowed"
+                      : "bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633]"
+                  } focus:outline-none`}
+                >
+                  −
+                </button>
+
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  aria-label="Number of cases"
+                  value={caseInput}
+                  onChange={handleCasesChange}
+                  onBlur={handleCasesBlur}
+                  onKeyDown={handleCasesKey}
+                  className="
+                    no-spinner appearance-none
+                    w-12 h-10
+                    text-center bg-white text-[#1F8248]
+                    font-semibold font-mono tabular-nums text-base
+                    leading-none p-0
+                    outline-none focus:outline-none focus:ring-0
+                    cursor-text
+                    selection:bg-[#1F8248]/20
+                  "
+                />
+
+                <button
+                  type="button"
+                  aria-label="Increase quantity (one case)"
+                  onClick={() => bump(1)}
+                  className="w-10 h-10 grid place-items-center bg-[#1F8248] text-white text-lg select-none hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer focus:outline-none"
+                >
+                  +
+                </button>
+              </div>
+              <p className="text-xs text-gray-600">
+                {caseQty.toLocaleString()} cups per case (total cups: {qty.toLocaleString()})
+              </p>
+              <p className="font-semibold text-sm">
+                Subtotal: ${subtotal}
+              </p>
+              <button
+                onClick={handleAdd}
+                className="w-full mt-1 py-2 rounded-lg text-sm font-semibold bg-[#196D3D] text-white hover:bg-[#145633] active:bg-[#145633]"
+              >
+                Add to Cart
+              </button>
+            </div>
           </div>
 
-          {/* 3D Preview (static texture now) */}
+          {/* 3D Preview */}
           <div className="w-full h-64 md:h-96">
             <Cup3DPreview
               modelURL={`/models/${slug}.glb`}
@@ -285,36 +281,36 @@ export default function ProductPage({ params: { slug } }) {
           </div>
 
           {/* Collapsible Specs */}
-          <div className="space-y-4">
-            {specs.map(({ label, content }) => (
-              <div key={label} className="border rounded-lg overflow-hidden shadow-sm">
-                <button
-                  onClick={() => toggle(label)}
-                  className="w-full flex justify-between items-center px-4 py-2 bg-white hover:bg-gray-50 transition text-sm"
-                >
-                  <span className="font-medium">{label}</span>
-                  <span
-                    className={`transform transition-transform duration-200 ${
-                      openSections[label] ? "rotate-180" : ""
+            <div className="space-y-4">
+              {specs.map(({ label, content }) => (
+                <div key={label} className="border rounded-lg overflow-hidden shadow-sm">
+                  <button
+                    onClick={() => toggle(label)}
+                    className="w-full flex justify-between items-center px-4 py-2 bg-white hover:bg-gray-50 transition text-sm"
+                  >
+                    <span className="font-medium">{label}</span>
+                    <span
+                      className={`transform transition-transform duration-200 ${
+                        openSections[label] ? "rotate-180" : ""
+                      }`}
+                    >
+                      ▼
+                    </span>
+                  </button>
+                  <div
+                    className={`px-4 overflow-hidden transition-[max-height] duration-300 ${
+                      openSections[label] ? "max-h-48 py-3" : "max-h-0 py-0"
                     }`}
                   >
-                    ▼
-                  </span>
-                </button>
-                <div
-                  className={`px-4 overflow-hidden transition-[max-height] duration-300 ${
-                    openSections[label] ? "max-h-48 py-3" : "max-h-0 py-0"
-                  }`}
-                >
-                  {content.map((line, i) => (
-                    <p key={i} className="text-gray-700 text-sm">
-                      {line}
-                    </p>
-                  ))}
+                    {content.map((line, i) => (
+                      <p key={i} className="text-gray-700 text-sm">
+                        {line}
+                      </p>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
 
           {/* Mobile Overview */}
           <div className="md:hidden bg-gray-100 rounded-lg p-4">
