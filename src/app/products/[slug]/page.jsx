@@ -3,18 +3,20 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { pricing } from "../../../utils/pricing";
+import { pricing } from "../../../utils/pricing"; // kept in case other logic depends on it
 import { useCart } from "../../../context/CartContext";
 import { getProductBySlug, products } from "../../../data/products";
 import Cup3DPreview from "../../../components/Cup3DPreview";
 
 const DEFAULT_DESCRIPTOR = "Blank Single-Walled Paper Cup";
-const CASE_PRICE_BY_SIZE = {
-  "10 oz": 92,
-  "12 oz": 94,
-  "16 oz": 96,
-  "22 oz": 88,
-  "32 oz": 90,
+
+// Requested case prices override (by size)
+const CASE_PRICE_OVERRIDE = {
+  "10 oz": 41.50,
+  "12 oz": 46.50,
+  "16 oz": 60.0,
+  "22 oz": 78.0,
+  "32 oz": 114.50,
 };
 
 function getSizeText(entity) {
@@ -37,33 +39,25 @@ export default function ProductPage({ params: { slug } }) {
   if (!product) return <div className="p-4">Product not found.</div>;
 
   const caseQty = product.qtyCase || 1000;
+  const sizeText = getSizeText(product);
+
+  // Use override pricing if provided, else fall back to product.priceCase
+  const casePrice =
+    CASE_PRICE_OVERRIDE[sizeText] !== undefined
+      ? CASE_PRICE_OVERRIDE[sizeText]
+      : product.priceCase || 0;
+
+  const pricePerCup = caseQty ? casePrice / caseQty : 0;
 
   const { addItem, openCart, isOpen } = useCart();
-  const [designType, setDesignType] = useState("Plain White");
-  const [designFile, setDesignFile] = useState(null);
-  const [previewURL, setPreviewURL] = useState("");
 
-  // qty stored in cups
+  // qty stored internally in cups
   const [qty, setQty] = useState(caseQty);
-
-  // local input buffer (allows blank while editing)
+  // local input buffer allowing blank while editing
   const [caseInput, setCaseInput] = useState("1");
 
-  const { plain, custom } = pricing[slug];
-  const pricePerCup = designType === "Plain White" ? plain : custom;
   const selectedCases = Math.max(1, Math.round(qty / caseQty));
-  const subtotal = (pricePerCup * qty).toFixed(2);
-
-  // sanitize buffer if somehow non-digit sneaks in
-  if (!/^\d*$/.test(caseInput)) setCaseInput(String(selectedCases));
-
-  const TEXTURES = {
-    "Plain White": "/textures/plain-white.png",
-    "Preset A": "/textures/preset-a.png",
-    "Preset B": "/textures/preset-b.png",
-  };
-  const modelURL = `/models/${slug}.glb`;
-  const textureURL = designType === "Custom" ? previewURL : TEXTURES[designType];
+  const subtotal = (casePrice * selectedCases).toFixed(2);
 
   function commitCases(raw) {
     let v = parseInt(raw, 10);
@@ -74,7 +68,7 @@ export default function ProductPage({ params: { slug } }) {
 
   function handleCasesChange(e) {
     const raw = e.target.value.replace(/[^\d]/g, "");
-    setCaseInput(raw); // allow blank
+    setCaseInput(raw); // can be blank
   }
 
   function handleCasesBlur() {
@@ -111,45 +105,34 @@ export default function ProductPage({ params: { slug } }) {
   }
 
   function handleAdd() {
-    const sizeText = getSizeText(product);
     const normalized = {
       ...product,
       size: sizeText,
       qtyCase: caseQty,
+      priceCase: casePrice,
+      pricePerCup, // helpful for cart math
       name: buildTitle({ ...product, size: sizeText, qtyCase: caseQty }),
       cases: selectedCases,
     };
-    addItem(
-      normalized,
-      selectedCases * caseQty,
-      designFile,
-      previewURL,
-      designType,
-      pricePerCup
-    );
+    addItem(normalized, selectedCases * caseQty, null, "", undefined, pricePerCup);
     if (!isOpen) openCart();
   }
 
-  function handleUpload(e) {
-    const file = e.target.files[0];
-    if (file?.type?.startsWith("image/")) {
-      setDesignFile(file);
-      setPreviewURL(URL.createObjectURL(file));
-    }
-  }
-
   function addCaseToCart(cup) {
-    const sizeText = getSizeText(cup);
+    const sizeTextInner = getSizeText(cup);
     const qtyPerCase = cup.qtyCase || 1000;
     const effectiveCasePrice =
-      CASE_PRICE_BY_SIZE[sizeText] !== undefined ? CASE_PRICE_BY_SIZE[sizeText] : cup.priceCase;
-    const perCup = effectiveCasePrice / qtyPerCase;
+      CASE_PRICE_OVERRIDE[sizeTextInner] !== undefined
+        ? CASE_PRICE_OVERRIDE[sizeTextInner]
+        : cup.priceCase;
+    const perCup = qtyPerCase ? effectiveCasePrice / qtyPerCase : 0;
     const normalized = {
       ...cup,
-      size: sizeText,
+      size: sizeTextInner,
       qtyCase: qtyPerCase,
       priceCase: effectiveCasePrice,
-      name: buildTitle({ ...cup, size: sizeText, qtyCase: qtyPerCase }),
+      pricePerCup: perCup,
+      name: buildTitle({ ...cup, size: sizeTextInner, qtyCase: qtyPerCase }),
       cases: 1,
     };
     addItem(normalized, qtyPerCase, null, "", undefined, perCup);
@@ -193,7 +176,7 @@ export default function ProductPage({ params: { slug } }) {
               <strong>Case Qty:</strong> {product.qtyCase} cups
             </p>
             <p className="text-gray-700 mb-3">
-              <strong>Price / Case:</strong> ${product.priceCase.toFixed(2)}
+              <strong>Case Price:</strong> ${casePrice.toFixed(2)}
             </p>
             <p className="text-sm text-gray-600">Minimum order quantity is 500 cups.</p>
           </div>
@@ -203,18 +186,14 @@ export default function ProductPage({ params: { slug } }) {
               <thead>
                 <tr>
                   <th className="border px-3 py-2 text-left">Size</th>
-                  <th className="border px-3 py-2 text-left">Plain White</th>
-                  <th className="border px-3 py-2 text-left">Custom Design</th>
+                  <th className="border px-3 py-2 text-left">Case Price</th>
                 </tr>
               </thead>
               <tbody>
-                {Object.entries(pricing).map(([key, { plain, custom }]) => (
-                  <tr key={key}>
-                    <td className="border px-3 py-2">
-                      {key.replace(/(\d+)(oz)/, "$1 oz")}
-                    </td>
-                    <td className="border px-3 py-2">${plain.toFixed(3)}/cup</td>
-                    <td className="border px-3 py-2">${custom.toFixed(3)}/cup</td>
+                {Object.entries(CASE_PRICE_OVERRIDE).map(([size, value]) => (
+                  <tr key={size}>
+                    <td className="border px-3 py-2">{size}</td>
+                    <td className="border px-3 py-2">${value.toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -228,58 +207,11 @@ export default function ProductPage({ params: { slug } }) {
             <h1 className="text-2xl sm:text-3xl font-bold">{pageTitle}</h1>
             <p className="text-gray-600 text-sm">{product.desc}</p>
             <p className="text-lg font-semibold">
-              ${pricePerCup.toFixed(3)}/cup — ${product.priceCase}/case
+              ${casePrice.toFixed(2)}/case
             </p>
           </div>
 
-            {/* Design Type */}
-          <fieldset className="space-y-2">
-            <legend className="font-medium">Design Type</legend>
-            <div className="flex gap-6 flex-wrap">
-              {["Plain White", "Preset A", "Preset B", "Custom"].map((opt) => (
-                <label key={opt} className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="design"
-                    value={opt}
-                    checked={designType === opt}
-                    onChange={() => {
-                      setDesignType(opt);
-                      setPreviewURL("");
-                      setDesignFile(null);
-                    }}
-                    className="w-5 h-5 border-2 rounded-full checked:bg-yellow-400"
-                  />
-                  <span className="text-sm">{opt}</span>
-                </label>
-              ))}
-            </div>
-
-            {designType === "Custom" && (
-              <div className="mt-2 space-y-2">
-                <label className="inline-block bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 cursor-pointer text-sm">
-                  Upload Design
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleUpload}
-                    className="hidden"
-                  />
-                </label>
-                <p className="text-red-600 text-sm font-medium">
-                  For best results: 1024×864 image (≈6:5 ratio).
-                </p>
-                {previewURL && (
-                  <div className="flex items-center gap-2">
-                    <img src={previewURL} className="w-10 h-10 rounded" />
-                    <span className="text-sm">{designFile?.name}</span>
-                  </div>
-                )}
-              </div>
-            )}
-          </fieldset>
-
-          {/* Quantity (editable input allowing blank) */}
+          {/* Quantity (cases) */}
           <div className="space-y-2">
             <label className="block font-medium text-sm">Quantity (cases)</label>
             <div
@@ -338,20 +270,18 @@ export default function ProductPage({ params: { slug } }) {
             <p className="font-semibold text-sm">Subtotal: ${subtotal}</p>
             <button
               onClick={handleAdd}
-              disabled={designType === "Custom" && !designFile}
-              className={`w-full py-2 rounded-lg text-sm font-semibold ${
-                designType !== "Custom" || designFile
-                  ? "bg-[#196D3D] text-white hover:bg-[#145633] active:bg-[#145633]"
-                  : "bg-gray-300 text-gray-600 cursor-not-allowed"
-              }`}
+              className="w-full py-2 rounded-lg text-sm font-semibold bg-[#196D3D] text-white hover:bg-[#145633] active:bg-[#145633]"
             >
               Add to Cart
             </button>
           </div>
 
-          {/* 3D Preview */}
+          {/* 3D Preview (static texture now) */}
           <div className="w-full h-64 md:h-96">
-            <Cup3DPreview modelURL={modelURL} textureURL={textureURL} />
+            <Cup3DPreview
+              modelURL={`/models/${slug}.glb`}
+              textureURL={"/textures/plain-white.png"}
+            />
           </div>
 
           {/* Collapsible Specs */}
@@ -397,7 +327,7 @@ export default function ProductPage({ params: { slug } }) {
               <strong>Case Qty:</strong> {product.qtyCase} cups
             </p>
             <p className="text-gray-700 mb-3">
-              <strong>Price / Case:</strong> ${product.priceCase.toFixed(2)}
+              <strong>Case Price:</strong> ${casePrice.toFixed(2)}
             </p>
             <p className="text-sm text-gray-600">Minimum order quantity is 500 cups.</p>
           </div>
@@ -424,13 +354,13 @@ export default function ProductPage({ params: { slug } }) {
           {products
             .filter((p) => p.slug !== slug)
             .map((p) => {
-              const sizeText = getSizeText(p);
+              const sizeTextInner = getSizeText(p);
               const qtyPerCase = p.qtyCase || 1000;
               const effectiveCasePrice =
-                CASE_PRICE_BY_SIZE[sizeText] !== undefined
-                  ? CASE_PRICE_BY_SIZE[sizeText]
+                CASE_PRICE_OVERRIDE[sizeTextInner] !== undefined
+                  ? CASE_PRICE_OVERRIDE[sizeTextInner]
                   : p.priceCase;
-              const displayTitle = buildTitle({ ...p, size: sizeText });
+              const displayTitle = buildTitle({ ...p, size: sizeTextInner });
 
               return (
                 <div
@@ -483,7 +413,7 @@ export default function ProductPage({ params: { slug } }) {
                         focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
                         transition-colors
                       "
-                      aria-label={`Add 1 case of ${sizeText} cups to cart`}
+                      aria-label={`Add 1 case of ${sizeTextInner} cups to cart`}
                     >
                       Add to Cart
                     </button>
