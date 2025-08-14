@@ -152,14 +152,40 @@ export default function ProductPage({ params: { slug } }) {
       <div className="flex flex-col md:flex-row gap-8">
         {/* Left Column */}
         <div className="md:w-1/2 space-y-4">
-          <Image
-            src={product.image}
-            alt={pageTitle}
-            width={600}
-            height={600}
-            className="rounded-lg object-cover w-full"
-            priority
-          />
+          {/* High-res main image container */}
+            {/* Notes:
+                - Provide a source image at least 1200x1200 for retina clarity.
+                - Optionally add product.imageHiRes in your data pointing to a larger asset (e.g. WebP).
+             */}
+          <div
+            className="
+              relative aspect-square w-full
+              rounded-xl bg-gray-50
+              ring-1 ring-black/5
+              overflow-hidden
+            "
+          >
+            <Image
+              // If you later add a higher-res key (imageHiRes) it will prefer that:
+              src={product.imageHiRes || product.image}
+              alt={pageTitle}
+              fill
+              priority
+              quality={100}
+              // sizes reflects actual rendered width (approx 100% on mobile, ~50% of container on md+)
+              sizes="(max-width: 640px) 90vw, (max-width: 1100px) 50vw, 600px"
+              className="
+                object-cover md:object-cover
+                w-full h-full
+                select-none
+                transition-opacity
+                duration-300
+                [image-rendering:-webkit-optimize-contrast]
+                transform-gpu
+              "
+            />
+          </div>
+
           <div className="hidden md:block bg-gray-100 rounded-lg p-6 mt-6">
             <h2 className="text-2xl font-semibold mb-3">Overview</h2>
             <p className="text-gray-700 mb-2">{product.desc}</p>
@@ -198,7 +224,7 @@ export default function ProductPage({ params: { slug } }) {
         {/* Right Column */}
         <div className="md:w-1/2 space-y-6">
           {/* Heading + Price + Quantity */}
-          <div className="space-y-3">
+            <div className="space-y-3">
             <div className="space-y-1">
               <h1 className="text-2xl sm:text-3xl font-bold">{pageTitle}</h1>
               <p className="text-gray-600 text-sm">{product.desc}</p>
