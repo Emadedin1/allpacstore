@@ -280,7 +280,7 @@ export default function ProductPage({ params: { slug } }) {
               <p className="font-semibold text-sm">Subtotal: ${subtotal}</p>
               <button
                 onClick={handleAdd}
-                className="w-full mt-1 py-2 rounded-lg text-sm font-semibold bg-[#196D3D] text-white hover:bg-[#145633] active:bg-[#145633]"
+                className="w-full mt-1 py-2 rounded-lg text-sm font-semibold bg-[#28a745] text-white hover:bg-[#218838] active:bg-[#1e7e34]"
               >
                 Add to Cart
               </button>
