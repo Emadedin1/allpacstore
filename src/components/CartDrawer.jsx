@@ -36,6 +36,9 @@ export default function CartDrawer() {
   const [isMobile, setIsMobile] = useState(null);
   const [isClosing, setIsClosing] = useState(false); // overlay shield timing
 
+  // NEW: local edit buffer for case counts (string values while typing)
+  const [caseEdits, setCaseEdits] = useState({}); // { itemKey: "123" | "" }
+
   useLayoutEffect(() => {
     if (typeof window !== "undefined") {
       const setFlag = () => setIsMobile(window.innerWidth < 640);
@@ -115,7 +118,7 @@ export default function CartDrawer() {
     setIsClosing(true);
     setActiveEditKey(null);
     closeCart();
-    window.setTimeout(() => setIsClosing(false), 320); // keep overlay catching ghost clicks
+    window.setTimeout(() => setIsClosing(false), 320);
   };
 
   const total = cartItems
@@ -133,7 +136,7 @@ export default function CartDrawer() {
 
   return (
     <>
-      {/* Backdrop (also shields ghost clicks during closing) */}
+      {/* Backdrop */}
       <div
         aria-hidden="true"
         className={`
@@ -173,7 +176,6 @@ export default function CartDrawer() {
           ...(isMobile ? { maxHeight: "80vh", maxHeight: "80svh" } : {}),
           scrollbarGutter: "stable",
           touchAction: "pan-y",
-          // Slight translucency feels nicer on desktop without hurting readability
           ...(isMobile ? {} : { backgroundColor: "rgba(255,255,255,0.98)" }),
         }}
       >
@@ -220,6 +222,12 @@ export default function CartDrawer() {
               const designLabel = resolveDesignLabel(item);
               const descriptor = item.description || item.desc || DEFAULT_DESCRIPTOR;
 
+              // Input display value (use edit buffer if present)
+              const displayCases =
+                caseEdits[item.key] !== undefined
+                  ? caseEdits[item.key]
+                  : String(currentCases);
+
               return (
                 <div key={item.key} className="flex items-start gap-3">
                   <img
@@ -264,6 +272,7 @@ export default function CartDrawer() {
                     </div>
 
                     <div className="mt-2 flex items-center gap-3">
+                      {/* Quantity control with editable center input */}
                       <div
                         className="
                           inline-flex items-center overflow-hidden rounded-full
@@ -278,6 +287,11 @@ export default function CartDrawer() {
                           onClick={() => {
                             const next = Math.max(1, currentCases - 1);
                             updateItemQty(item.key, next * caseQty);
+                            setCaseEdits((prev) => {
+                              const cp = { ...prev };
+                              delete cp[item.key];
+                              return cp;
+                            });
                           }}
                           disabled={currentCases <= 1}
                           className={`
@@ -288,22 +302,85 @@ export default function CartDrawer() {
                                 ? "bg-[#1F8248]/60 cursor-not-allowed"
                                 : "bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer"
                             }
-                            focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
+                            focus:outline-none
                           `}
                         >
                           −
                         </button>
 
-                        <div
-                          aria-live="polite"
+                        {/* Editable input (always present to avoid layout shift) */}
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          aria-label="Number of cases for this item"
+                          value={displayCases}
+                          onChange={(e) => {
+                            const raw = e.target.value.replace(/[^\d]/g, "");
+                            // allow blank while typing
+                            setCaseEdits((prev) => ({
+                              ...prev,
+                              [item.key]: raw,
+                            }));
+                            if (raw !== "") {
+                              const num = parseInt(raw, 10);
+                              if (!isNaN(num) && num >= 1) {
+                                // do not update cart here (wait for blur/Enter) to reduce churn
+                              }
+                            }
+                          }}
+                          onBlur={(e) => {
+                            let val = parseInt(e.target.value, 10);
+                            if (isNaN(val) || val < 1) val = 1;
+                            updateItemQty(item.key, val * caseQty);
+                            setCaseEdits((prev) => {
+                              const cp = { ...prev };
+                              delete cp[item.key];
+                              return cp;
+                            });
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.currentTarget.blur();
+                            } else if (e.key === "Escape") {
+                              // revert to currentCases
+                              setCaseEdits((prev) => {
+                                const cp = { ...prev };
+                                delete cp[item.key];
+                                return cp;
+                              });
+                              e.currentTarget.blur();
+                            } else if (e.key === "ArrowUp") {
+                              e.preventDefault();
+                              const next = currentCases + 1;
+                              updateItemQty(item.key, next * caseQty);
+                              setCaseEdits((prev) => {
+                                const cp = { ...prev };
+                                delete cp[item.key];
+                                return cp;
+                              });
+                            } else if (e.key === "ArrowDown") {
+                              e.preventDefault();
+                              const next = Math.max(1, currentCases - 1);
+                              updateItemQty(item.key, next * caseQty);
+                              setCaseEdits((prev) => {
+                                const cp = { ...prev };
+                                delete cp[item.key];
+                                return cp;
+                              });
+                            }
+                          }}
                           className="
-                            w-12 h-10 grid place-items-center
-                            bg-white text-[#1F8248] font-semibold
-                            font-mono tabular-nums select-none
+                            no-spinner appearance-none
+                            w-12 h-10
+                            text-center bg-white text-[#1F8248]
+                            font-semibold font-mono tabular-nums text-base
+                            leading-none p-0
+                            outline-none focus:outline-none focus:ring-0
+                            cursor-text
+                            selection:bg-[#1F8248]/20
                           "
-                        >
-                          {currentCases}
-                        </div>
+                        />
 
                         <button
                           type="button"
@@ -311,13 +388,18 @@ export default function CartDrawer() {
                           onClick={() => {
                             const next = currentCases + 1;
                             updateItemQty(item.key, next * caseQty);
+                            setCaseEdits((prev) => {
+                              const cp = { ...prev };
+                              delete cp[item.key];
+                              return cp;
+                            });
                           }}
                           className="
                             w-10 h-10 grid place-items-center
                             bg-[#1F8248] text-white text-lg select-none
                             hover:bg-[#196D3D] active:bg-[#145633]
                             cursor-pointer
-                            focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
+                            focus:outline-none
                           "
                         >
                           +
@@ -347,7 +429,7 @@ export default function CartDrawer() {
             <span className="font-mono tabular-nums">${total}</span>
           </div>
 
-          <Link
+            <Link
             href="/checkout"
             onClick={() => {
               setActiveEditKey(null);
