@@ -25,8 +25,8 @@ export default function Home() {
           <Link
             href="/products/cups"
             className="inline-flex h-11 px-6 items-center justify-center rounded-md
-                       bg-[#28a745] text-white text-base font-bold
-                       hover:bg-[#218838] active:bg-[#1e7e34]
+                       bg-[#239356] text-white text-base font-bold
+                       hover:bg-[#1F844C] active:bg-[#176C3F]
                        focus:outline-none transition-colors"
           >
             Browse Products
