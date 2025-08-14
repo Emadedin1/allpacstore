@@ -1,14 +1,13 @@
 "use client";
 
 import { pricing } from "../../../utils/pricing";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "../../../context/CartContext";
 import { getProductBySlug, products } from "../../../data/products";
 import Cup3DPreview from "../../../components/Cup3DPreview";
 
-// Match CupCard's behavior for case pricing overrides
 const DEFAULT_DESCRIPTOR = "Blank Single-Walled Paper Cup";
 const CASE_PRICE_BY_SIZE = {
   "10 oz": 92,
@@ -18,11 +17,9 @@ const CASE_PRICE_BY_SIZE = {
   "32 oz": 90,
 };
 
-// Robust size extraction: prefer entity.size, else parse name, else slug
+// Extract size robustly
 function getSizeText(entity) {
-  if (entity?.size) {
-    return /oz/i.test(entity.size) ? entity.size : `${entity.size} oz`;
-  }
+  if (entity?.size) return /oz/i.test(entity.size) ? entity.size : `${entity.size} oz`;
   const fromName = entity?.name?.match(/(\d+)\s*oz/i);
   if (fromName?.[1]) return `${fromName[1]} oz`;
   const fromSlug = entity?.slug?.match(/(\d+)/);
@@ -33,44 +30,36 @@ function getSizeText(entity) {
 function buildTitle(entity) {
   const sizeText = getSizeText(entity);
   const qtyPerCase = entity?.qtyCase || 1000;
-  return `${qtyPerCase} cups | ${sizeText} ${DEFAULT_DESCRIPTOR}`.replace("  ", " ");
+  return `${qtyPerCase} cups | ${sizeText} ${DEFAULT_DESCRIPTOR}`.replace("  ", " ").trim();
 }
 
 export default function ProductPage({ params: { slug } }) {
-  // 1) Lookup product
   const product = getProductBySlug(slug);
   if (!product) return <div className="p-4">Product not found.</div>;
 
-  // Cups per case
   const caseQty = product.qtyCase || 1000;
 
-  // 2) Cart & UI state
   const { addItem, openCart, isOpen } = useCart();
   const [designType, setDesignType] = useState("Plain White");
   const [designFile, setDesignFile] = useState(null);
   const [previewURL, setPreviewURL] = useState("");
-  // qty stores number of cups; default to one full case
-  const [qty, setQty] = useState(caseQty);
+  const [qty, setQty] = useState(caseQty); // cups
 
-  // 3) Pricing & texture/model URLs
+  // Pricing
   const { plain, custom } = pricing[slug];
   const pricePerCup = designType === "Plain White" ? plain : custom;
-  const subtotal = qty ? (pricePerCup * Number(qty)).toFixed(2) : "0.00";
-
-  // Show/modify quantity in cases, but store qty (cups)
-  const selectedCases = Math.max(1, Math.round((Number(qty) || 0) / caseQty));
+  const subtotal = (pricePerCup * qty).toFixed(2);
+  const selectedCases = Math.max(1, Math.round(qty / caseQty));
 
   const TEXTURES = {
     "Plain White": "/textures/plain-white.png",
     "Preset A": "/textures/preset-a.png",
     "Preset B": "/textures/preset-b.png",
   };
-
   const modelURL = `/models/${slug}.glb`;
   const textureURL = designType === "Custom" ? previewURL : TEXTURES[designType];
 
-  // 4) Handlers
-  const handleAdd = () => {
+  function handleAdd() {
     const sizeText = getSizeText(product);
     const normalized = {
       ...product,
@@ -79,34 +68,23 @@ export default function ProductPage({ params: { slug } }) {
       name: buildTitle({ ...product, size: sizeText, qtyCase: caseQty }),
       cases: selectedCases,
     };
-    const cupsToAdd = selectedCases * caseQty;
-    addItem(
-      normalized,
-      cupsToAdd,
-      designFile,
-      previewURL,
-      designType,
-      pricePerCup
-    );
+    addItem(normalized, selectedCases * caseQty, designFile, previewURL, designType, pricePerCup);
     if (!isOpen) openCart();
-  };
+  }
 
-  const handleUpload = (e) => {
+  function handleUpload(e) {
     const file = e.target.files[0];
     if (file?.type?.startsWith("image/")) {
       setDesignFile(file);
       setPreviewURL(URL.createObjectURL(file));
     }
-  };
+  }
 
-  // Helper: add ONE CASE for a given product card
-  const addCaseToCart = (cup) => {
+  function addCaseToCart(cup) {
     const sizeText = getSizeText(cup);
     const qtyPerCase = cup.qtyCase || 1000;
     const effectiveCasePrice =
-      CASE_PRICE_BY_SIZE[sizeText] !== undefined
-        ? CASE_PRICE_BY_SIZE[sizeText]
-        : cup.priceCase;
+      CASE_PRICE_BY_SIZE[sizeText] !== undefined ? CASE_PRICE_BY_SIZE[sizeText] : cup.priceCase;
     const perCup = effectiveCasePrice / qtyPerCase;
     const normalized = {
       ...cup,
@@ -116,18 +94,10 @@ export default function ProductPage({ params: { slug } }) {
       name: buildTitle({ ...cup, size: sizeText, qtyCase: qtyPerCase }),
       cases: 1,
     };
-    addItem(
-      normalized,
-      qtyPerCase,
-      null,
-      "",
-      undefined,
-      perCup
-    );
+    addItem(normalized, qtyPerCase, null, "", undefined, perCup);
     openCart();
-  };
+  }
 
-  // 5) Specs panels
   const specs = [
     { label: "Description", content: product.desc.split(". ").filter(Boolean) },
     { label: "Material", content: [product.type] },
@@ -141,9 +111,17 @@ export default function ProductPage({ params: { slug } }) {
 
   const pageTitle = buildTitle(product);
 
+  /* OTHER PRODUCTS SLIDER REFS / HANDLERS */
+  const sliderRef = useRef(null);
+  const CARD_WIDTH = 185; // pixels (approx width inc gap). Keep in sync with --other-card adjustments.
+  function scrollSlider(dir) {
+    if (!sliderRef.current) return;
+    sliderRef.current.scrollBy({ left: dir * CARD_WIDTH, behavior: "smooth" });
+  }
+
   return (
     <main className="max-w-6xl mx-auto p-4 md:p-6 space-y-8">
-      {/* ── TOP SECTION ── */}
+      {/* TOP SECTION */}
       <div className="flex flex-col md:flex-row gap-8">
         {/* Left */}
         <div className="md:w-1/2 space-y-4">
@@ -155,6 +133,7 @@ export default function ProductPage({ params: { slug } }) {
             className="rounded-lg object-cover w-full"
             priority
           />
+
           <div className="hidden md:block bg-gray-100 rounded-lg p-6 mt-6">
             <h2 className="text-2xl font-semibold mb-3">Overview</h2>
             <p className="text-gray-700 mb-2">{product.desc}</p>
@@ -167,12 +146,9 @@ export default function ProductPage({ params: { slug } }) {
             <p className="text-gray-700 mb-3">
               <strong>Price / Case:</strong> ${product.priceCase.toFixed(2)}
             </p>
-            <p className="text-sm text-gray-600">
-              Minimum order quantity is 500 cups.
-            </p>
+            <p className="text-sm text-gray-600">Minimum order quantity is 500 cups.</p>
           </div>
 
-            {/* Pricing Breakdown Table */}
           <div className="hidden md:block bg-white rounded-lg p-6 shadow mt-6">
             <h3 className="text-lg font-semibold mb-3">Pricing Breakdown</h3>
             <table className="w-full table-auto border-collapse">
@@ -208,6 +184,7 @@ export default function ProductPage({ params: { slug } }) {
             </p>
           </div>
 
+            {/* Design Type */}
           <fieldset className="space-y-2">
             <legend className="font-medium">Design Type</legend>
             <div className="flex gap-6 flex-wrap">
@@ -242,7 +219,7 @@ export default function ProductPage({ params: { slug } }) {
                   />
                 </label>
                 <p className="text-red-600 text-sm font-medium">
-                  Notice: For best results, upload an image sized 1024×864 (or similar 6:5 ratio).
+                  Notice: For best results, upload an image sized 1024×864 (approx 6:5 ratio).
                 </p>
                 {previewURL && (
                   <div className="flex items-center gap-2">
@@ -254,6 +231,7 @@ export default function ProductPage({ params: { slug } }) {
             )}
           </fieldset>
 
+          {/* Quantity */}
           <div className="space-y-2">
             <label className="block font-medium text-sm">Quantity</label>
             <div
@@ -269,7 +247,7 @@ export default function ProductPage({ params: { slug } }) {
                   setQty(next * caseQty);
                 }}
                 disabled={selectedCases <= 1}
-                className={`w-10 h-10 grid place-items-center text-white text-lg select-none ${
+                className={`w-10 h-10 grid place-items-center text-white text-lg ${
                   selectedCases <= 1
                     ? "bg-[#1F8248]/60 cursor-not-allowed"
                     : "bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633]"
@@ -279,7 +257,7 @@ export default function ProductPage({ params: { slug } }) {
               </button>
               <div
                 aria-live="polite"
-                className="w-12 h-10 grid place-items-center bg-white text-[#1F8248] font-semibold font-mono tabular-nums select-none"
+                className="w-12 h-10 grid place-items-center bg-white text-[#1F8248] font-semibold font-mono"
               >
                 {selectedCases}
               </div>
@@ -290,15 +268,12 @@ export default function ProductPage({ params: { slug } }) {
                   const next = selectedCases + 1;
                   setQty(next * caseQty);
                 }}
-                className="w-10 h-10 grid place-items-center bg-[#1F8248] text-white text-lg select-none hover:bg-[#196D3D] active:bg-[#145633] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1"
+                className="w-10 h-10 grid place-items-center bg-[#1F8248] text-white text-lg hover:bg-[#196D3D] active:bg-[#145633] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1"
               >
                 +
               </button>
             </div>
-
-            <p className="text-xs text-gray-600">
-              {caseQty.toLocaleString()} cups per case
-            </p>
+            <p className="text-xs text-gray-600">{caseQty.toLocaleString()} cups per case</p>
             <p className="font-semibold text-sm">Subtotal: ${subtotal}</p>
             <button
               onClick={handleAdd}
@@ -317,7 +292,8 @@ export default function ProductPage({ params: { slug } }) {
             <Cup3DPreview modelURL={modelURL} textureURL={textureURL} />
           </div>
 
-          <div className="space-y-4">
+          {/* Collapsible Specs */}
+            <div className="space-y-4">
             {specs.map(({ label, content }) => (
               <div key={label} className="border rounded-lg overflow-hidden shadow-sm">
                 <button
@@ -360,35 +336,62 @@ export default function ProductPage({ params: { slug } }) {
             <p className="text-gray-700 mb-3">
               <strong>Price / Case:</strong> ${product.priceCase.toFixed(2)}
             </p>
-            <p className="text-sm text-gray-600">
-              Minimum order quantity is 500 cups.
-            </p>
+            <p className="text-sm text-gray-600">Minimum order quantity is 500 cups.</p>
           </div>
         </div>
       </div>
 
-      {/* ── OTHER PRODUCTS GRID (refactored for consistent sizing) ── */}
+      {/* OTHER PRODUCTS SLIDER */}
       <div>
-        <h2 className="text-2xl font-bold mb-4">Other Products</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold">Other Products</h2>
 
-        {/* Responsive dense grid:
-            - Fixed-width columns (no stretch) via repeat(auto-fill,minmax(var(--other-min),var(--other-min)))
-            - Adjust --other-min per breakpoint for density control
-        */}
+          {/* Arrow Buttons (hidden on small screens) */}
+          <div className="hidden md:flex gap-2">
+            <button
+              type="button"
+              onClick={() => scrollSlider(-1)}
+              className="h-9 w-9 rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900 flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-gray-400 disabled:opacity-40"
+              aria-label="Scroll previous products"
+            >
+              ‹
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollSlider(1)}
+              className="h-9 w-9 rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900 flex items-center justify-center shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-gray-400 disabled:opacity-40"
+              aria-label="Scroll next products"
+            >
+              ›
+            </button>
+          </div>
+        </div>
+
         <div
+          ref={sliderRef}
           className="
-            grid
-            gap-y-6 gap-x-3 sm:gap-x-4
-            justify-start
-            [--other-min:170px]
-            sm:[--other-min:165px]
-            md:[--other-min:160px]
-            lg:[--other-min:155px]
-            xl:[--other-min:150px]
-            2xl:[--other-min:148px]
-            grid-cols-[repeat(auto-fill,minmax(var(--other-min),var(--other-min)))]
+            relative
+            flex gap-4
+            overflow-x-auto
+            pb-2
+            snap-x snap-mandatory
+            scroll-smooth
+            [-webkit-overflow-scrolling:touch]
+            [--other-card:185px]
+            sm:[--other-card:188px]
+            md:[--other-card:190px]
+            lg:[--other-card:192px]
+            xl:[--other-card:195px]
           "
+          style={{ scrollbarWidth: "none" }}
         >
+          {/* Hide scrollbar (Firefox via scrollbarWidth, Webkit via pseudo) */}
+          <style jsx>{`
+            div::-webkit-scrollbar {
+              display: none;
+            }
+          `}</style>
+
           {products
             .filter((p) => p.slug !== slug)
             .map((p) => {
@@ -404,14 +407,14 @@ export default function ProductPage({ params: { slug } }) {
                 <div
                   key={p.slug}
                   className="
-                    group bg-white rounded-2xl shadow-sm hover:shadow-md transition
+                    snap-start flex-shrink-0
+                    w-[var(--other-card)]
+                    bg-white rounded-2xl shadow-sm hover:shadow-md transition
                     ring-1 ring-black/5 hover:ring-black/10
                     focus-within:ring-2 focus-within:ring-black/10
                     flex flex-col
-                    w-[var(--other-min)]
                   "
                 >
-                  {/* Clickable area */}
                   <Link
                     href={`/products/${p.slug}`}
                     className="flex-1 rounded-2xl overflow-hidden focus:outline-none"
@@ -421,12 +424,11 @@ export default function ProductPage({ params: { slug } }) {
                         src={p.image}
                         alt={displayTitle}
                         fill
-                        sizes="(max-width: 640px) 170px, (max-width: 1024px) 160px, 155px"
+                        sizes="(max-width: 640px) 45vw, (max-width: 1024px) 190px, 195px"
                         className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                         priority={false}
                       />
                     </div>
-
                     <div className="p-3 flex flex-col gap-2">
                       <p className="text-[13px] sm:text-sm font-medium text-gray-900 leading-snug text-center">
                         {displayTitle}
@@ -436,7 +438,6 @@ export default function ProductPage({ params: { slug } }) {
                       </p>
                     </div>
                   </Link>
-
                   <div className="px-3 pb-3">
                     <button
                       type="button"
@@ -462,9 +463,6 @@ export default function ProductPage({ params: { slug } }) {
               );
             })}
         </div>
-
-        {/* Optional: If you still want a horizontal scroll on mobile only,
-            wrap the grid in overflow-x-auto md:overflow-visible and set inline-block; let me know and I can provide that variant. */}
       </div>
     </main>
   );
