@@ -8,9 +8,9 @@ export default function ProductsCategoriesPage() {
     {
       slug: "cups",
       title: "Paper Cups",
-      image: "/cups/12oz.png", // Ensure this is >= 660px square for retina sharpness
+      image: "/cups/12oz.png",
     },
-    // Add more categories here...
+    // Add more categories as needed...
   ];
 
   return (
@@ -23,7 +23,7 @@ export default function ProductsCategoriesPage() {
         </p>
       </header>
 
-      {/* Category Grid: 2 columns mobile, 4 columns large */}
+      {/* Category Grid */}
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {categories.map((cat) => (
           <Link
@@ -52,15 +52,25 @@ export default function ProductsCategoriesPage() {
                   transform-gpu
                 "
               />
-              {/* Softer gradient (reduced opacity & darkness) */}
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-black/5 to-transparent" />
-              {/* Title with lighter shadow/glow */}
+
+              {/* Bottom-only soft gradient (covers ~38% height) */}
+              <div
+                className="
+                  pointer-events-none
+                  absolute inset-x-0 bottom-0
+                  h-[38%]
+                  bg-gradient-to-t
+                  from-black/45 via-black/15 to-transparent
+                "
+              />
+
+              {/* Title */}
               <div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3 flex justify-center">
                 <span
                   className="
                     text-white text-sm sm:text-base font-semibold tracking-tight
-                    drop-shadow-[0_1px_4px_rgba(0,0,0,0.35)]
-                    [text-shadow:0_1px_2px_rgba(0,0,0,0.55)]
+                    drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)]
+                    [text-shadow:0_1px_1px_rgba(0,0,0,0.45)]
                     text-center select-none
                   "
                 >
