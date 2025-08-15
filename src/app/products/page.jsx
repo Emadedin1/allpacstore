@@ -53,7 +53,7 @@ export default function ProductsCategoriesPage() {
                 "
               />
               {/* Softer gradient (reduced opacity & darkness) */}
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-black/5 to-transparent" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/25 to-transparent" />
               {/* Title with lighter shadow/glow */}
               <div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3 flex justify-center">
                 <span
