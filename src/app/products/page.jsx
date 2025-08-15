@@ -10,7 +10,7 @@ export default function ProductsCategoriesPage() {
       title: "Paper Cups",
       image: "/cups/12oz.png",
     },
-    // Add more categories as needed...
+    // Add more categories...
   ];
 
   return (
@@ -53,26 +53,35 @@ export default function ProductsCategoriesPage() {
                 "
               />
 
-              {/* Bottom-only soft gradient (covers ~38% height) */}
+              {/* Bottom-only soft gradient */}
               <div
                 className="
                   pointer-events-none
                   absolute inset-x-0 bottom-0
                   h-[38%]
                   bg-gradient-to-t
-                  from-black/45 via-black/15 to-transparent
+                  from-black/50 via-black/20 to-transparent
                 "
               />
 
               {/* Title */}
-              <div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3 flex justify-center">
+              <div className="absolute inset-x-0 bottom-0 pb-3 pt-2 flex justify-center">
                 <span
                   className="
-                    text-white text-sm sm:text-base font-semibold tracking-tight
-                    drop-shadow-[0_1px_3px_rgba(0,0,0,0.4)]
-                    [text-shadow:0_1px_1px_rgba(0,0,0,0.45)]
-                    text-center select-none
+                    text-base sm:text-lg xl:text-xl
+                    font-semibold tracking-tight
+                    text-white text-center select-none
+                    leading-snug
+                    px-2
+                    /* Optional subtle backdrop for busy images */
+                    backdrop-blur-sm
+                    /* Refined single shadow (removes double stacking) */
+                    drop-shadow-[0_2px_6px_rgba(0,0,0,0.45)]
                   "
+                  style={{
+                    // Slight negative letter spacing to tighten bold caps if needed
+                    letterSpacing: "-0.5px",
+                  }}
                 >
                   {cat.title}
                 </span>
