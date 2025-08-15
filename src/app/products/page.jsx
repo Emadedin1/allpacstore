@@ -15,7 +15,6 @@ export default function ProductsCategoriesPage() {
 
   return (
     <main className="max-w-7xl mx-auto p-6 md:p-8 space-y-10">
-      {/* Heading */}
       <header className="text-center space-y-3">
         <h1 className="text-4xl font-bold tracking-tight">Shop by Category</h1>
         <p className="text-lg text-gray-600">
@@ -23,7 +22,6 @@ export default function ProductsCategoriesPage() {
         </p>
       </header>
 
-      {/* Category Grid */}
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {categories.map((cat) => (
           <Link
@@ -53,35 +51,19 @@ export default function ProductsCategoriesPage() {
                 "
               />
 
-              {/* Bottom-only soft gradient */}
-              <div
-                className="
-                  pointer-events-none
-                  absolute inset-x-0 bottom-0
-                  h-[38%]
-                  bg-gradient-to-t
-                  from-black/50 via-black/20 to-transparent
-                "
-              />
-
-              {/* Title */}
+              {/* Title (no gradient / no gray box) */}
               <div className="absolute inset-x-0 bottom-0 pb-3 pt-2 flex justify-center">
                 <span
                   className="
                     text-base sm:text-lg xl:text-xl
-                    font-semibold tracking-tight
-                    text-white text-center select-none
-                    leading-snug
-                    px-2
-                    /* Optional subtle backdrop for busy images */
-                    backdrop-blur-sm
-                    /* Refined single shadow (removes double stacking) */
-                    drop-shadow-[0_2px_6px_rgba(0,0,0,0.45)]
+                    font-semibold tracking-tight text-white
+                    select-none text-center leading-snug px-2
+                    drop-shadow-[0_2px_4px_rgba(0,0,0,0.55)]
+                    /* If you want a crisp outline instead of shadow:
+                       [text-shadow:0_0_2px_#000,0_0_4px_#000]
+                    */
                   "
-                  style={{
-                    // Slight negative letter spacing to tighten bold caps if needed
-                    letterSpacing: "-0.5px",
-                  }}
+                  style={{ letterSpacing: "-0.5px" }}
                 >
                   {cat.title}
                 </span>
