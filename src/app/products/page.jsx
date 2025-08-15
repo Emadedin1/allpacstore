@@ -8,13 +8,14 @@ export default function ProductsCategoriesPage() {
     {
       slug: "cups",
       title: "Paper Cups",
-      image: "/cups/12oz.png",
+      image: "/cups/12oz.png", // Ensure this is >= 660px square for retina sharpness
     },
-    // Add more categories...
+    // Add more categories here...
   ];
 
   return (
     <main className="max-w-7xl mx-auto p-6 md:p-8 space-y-10">
+      {/* Heading */}
       <header className="text-center space-y-3">
         <h1 className="text-4xl font-bold tracking-tight">Shop by Category</h1>
         <p className="text-lg text-gray-600">
@@ -22,6 +23,7 @@ export default function ProductsCategoriesPage() {
         </p>
       </header>
 
+      {/* Category Grid: 2 columns mobile, 4 columns large */}
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {categories.map((cat) => (
           <Link
@@ -50,20 +52,17 @@ export default function ProductsCategoriesPage() {
                   transform-gpu
                 "
               />
-
-              {/* Title (no gradient / no gray box) */}
-              <div className="absolute inset-x-0 bottom-0 pb-3 pt-2 flex justify-center">
+              {/* Softer gradient (reduced opacity & darkness) */}
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-black/5 to-transparent" />
+              {/* Title with lighter shadow/glow */}
+              <div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3 flex justify-center">
                 <span
                   className="
-                    text-base sm:text-lg xl:text-xl
-                    font-semibold tracking-tight text-white
-                    select-none text-center leading-snug px-2
-                    drop-shadow-[0_2px_4px_rgba(0,0,0,0.55)]
-                    /* If you want a crisp outline instead of shadow:
-                       [text-shadow:0_0_2px_#000,0_0_4px_#000]
-                    */
+                    text-white text-sm sm:text-base font-semibold tracking-tight
+                    drop-shadow-[0_1px_4px_rgba(0,0,0,0.35)]
+                    [text-shadow:0_1px_2px_rgba(0,0,0,0.55)]
+                    text-center select-none
                   "
-                  style={{ letterSpacing: "-0.5px" }}
                 >
                   {cat.title}
                 </span>
