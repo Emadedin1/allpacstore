@@ -368,49 +368,48 @@ export default function ProductPage({ params: { slug } }) {
           </div>
 
           {/* Collapsible Specs - clean with fully rounded bottom */}
-          <div className="space-y-4">
-            {specs.map(({ label, content }, idx) => {
-              // rounded-b-lg only on the last open dropdown
-              const isOpen = openSections[label];
-              // find if this is the last open dropdown
-              const openIndexes = specs.map((s, i) => openSections[s.label] ? i : -1).filter(i => i !== -1);
-              const isLastOpen = openIndexes.length > 0 && openIndexes[openIndexes.length - 1] === idx;
-
-              return (
-                <div
-                  key={label}
-                  className={`bg-white rounded-lg border border-gray-200 shadow-sm transition ${isOpen && isLastOpen ? "rounded-b-lg" : ""}`}
-                >
-                  <button
-                    onClick={() => toggle(label)}
-                    className={`w-full flex justify-between items-center px-4 py-3 bg-white hover:bg-gray-50 transition text-base rounded-t-lg`}
-                    style={{ border: "none" }}
-                  >
-                    <span className="font-medium">{label}</span>
-                    <span
-                      className={`transform transition-transform duration-200 ${
-                        openSections[label] ? "rotate-180" : ""
-                      }`}
-                    >
-                      ▼
-                    </span>
-                  </button>
-                  <div
-                    className={`px-4 overflow-hidden transition-[max-height] duration-300 text-gray-700 text-sm bg-white ${
-                      openSections[label] ? "max-h-48 py-3 rounded-b-lg" : "max-h-0 py-0"
-                    }`}
-                    style={{
-                      borderTop: "1px solid #f3f4f6",
-                    }}
-                  >
-                    {content.map((line, i) => (
-                      <p key={i}>{line}</p>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+<div className="space-y-4">
+  {specs.map(({ label, content }) => {
+    const isOpen = openSections[label];
+    return (
+      <div
+        key={label}
+        className={`bg-white border border-gray-200 shadow-sm transition ${
+          isOpen
+            ? "rounded-t-lg rounded-b-lg"
+            : "rounded-lg"
+        }`}
+      >
+        <button
+          onClick={() => toggle(label)}
+          className="w-full flex justify-between items-center px-4 py-3 bg-white hover:bg-gray-50 transition text-base rounded-lg"
+          style={{ border: "none" }}
+        >
+          <span className="font-medium">{label}</span>
+          <span
+            className={`transform transition-transform duration-200 ${
+              isOpen ? "rotate-180" : ""
+            }`}
+          >
+            ▼
+          </span>
+        </button>
+        <div
+          className={`px-4 overflow-hidden transition-[max-height] duration-300 text-gray-700 text-sm bg-white ${
+            isOpen ? "max-h-48 py-3 rounded-b-lg" : "max-h-0 py-0"
+          }`}
+          style={{
+            borderTop: "1px solid #f3f4f6",
+          }}
+        >
+          {content.map((line, i) => (
+            <p key={i}>{line}</p>
+          ))}
+        </div>
+      </div>
+    );
+  })}
+</div>
         </div>
       </div>
 
