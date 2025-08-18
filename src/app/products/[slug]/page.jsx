@@ -280,7 +280,7 @@ export default function ProductPage({ params: { slug } }) {
               <p className="font-semibold text-sm">Subtotal: ${subtotal}</p>
               <button
                 onClick={handleAdd}
-                className="w-full mt-1 py-2 rounded-lg text-sm font-semibold bg-[#28a745] text-white hover:bg-[#218838] active:bg-[#1e7e34]"
+                className="w-full mt-1 py-2 rounded-lg text-sm font-semibold bg-[#28a745] text-white hover:bg-[#218838] active:bg-[#1e7e34] cursor-pointer"
               >
                 Add to Cart
               </button>
@@ -434,6 +434,7 @@ export default function ProductPage({ params: { slug } }) {
                         hover:shadow-sm
                         focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
                         transition-colors
+                        cursor-pointer
                       "
                       aria-label={`Add 1 case of ${sizeTextInner} cups to cart`}
                     >
