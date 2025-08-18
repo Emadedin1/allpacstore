@@ -15,8 +15,8 @@ export default function AboutPage() {
       <Image 
         src="/images/warehouse.JPG" // match the exact name and subfolder
         alt="Allpac warehouse"
-        width={800}
-        height={300}
+        width={600}
+        height={500}
         className="w-full h-[220px] sm:h-[280px] object-cover rounded-xl"
         priority
       />
