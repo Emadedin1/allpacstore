@@ -41,7 +41,7 @@ export const products = [
     qtyCase: 1000,
     specs: {
       Description: [
-        "Most popular size. Perfect for most drinks.",
+        "Most popular size, perfect for most drinks.",
         "Wrap-around design shows off branding."
       ],
       Material: [
