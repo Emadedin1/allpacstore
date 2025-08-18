@@ -17,6 +17,13 @@ const CASE_PRICE_OVERRIDE = {
   "32 oz": 124.5,
 };
 
+// Subheader text overrides
+const PRODUCT_SUBHEADERS = {
+  "10 oz": "ideal for small beverages",
+  "12 oz": "Most popular size. Perfect for most drinks.",
+  "16 oz": "Ideal for large drinks.",
+};
+
 function getSizeText(entity) {
   if (entity?.size) return /oz/i.test(entity.size) ? entity.size : `${entity.size} oz`;
   const fromName = entity?.name?.match(/(\d+)\s*oz/i);
@@ -32,7 +39,7 @@ function buildTitle(entity) {
   return `${qtyPerCase} cups | ${sizeText} ${DEFAULT_DESCRIPTOR}`.replace("  ", " ").trim();
 }
 
-// Modern swipeable gallery for image/3D with arrows
+// Arrow-only gallery (no swipe on mobile)
 function ProductGallery({ imageSrc, imageAlt, slug }) {
   const [index, setIndex] = useState(0);
   const slides = [
@@ -61,21 +68,6 @@ function ProductGallery({ imageSrc, imageAlt, slug }) {
     },
   ];
 
-  // Touch swipe handlers
-  let touchStartX = null;
-  let touchEndX = null;
-  function onTouchStart(e) {
-    touchStartX = e.changedTouches[0].screenX;
-  }
-  function onTouchEnd(e) {
-    touchEndX = e.changedTouches[0].screenX;
-    if (touchStartX !== null && touchEndX !== null) {
-      if (touchEndX - touchStartX > 40) setIndex((p) => Math.max(0, p - 1));
-      if (touchStartX - touchEndX > 40) setIndex((p) => Math.min(slides.length - 1, p + 1));
-    }
-    touchStartX = null;
-    touchEndX = null;
-  }
   function goTo(idx) {
     setIndex(idx);
   }
@@ -88,11 +80,7 @@ function ProductGallery({ imageSrc, imageAlt, slug }) {
 
   return (
     <div className="relative w-full aspect-square bg-gray-50 rounded-xl ring-1 ring-black/5 overflow-hidden mb-3 select-none">
-      <div
-        className="absolute inset-0 flex items-center justify-center"
-        onTouchStart={onTouchStart}
-        onTouchEnd={onTouchEnd}
-      >
+      <div className="absolute inset-0 flex items-center justify-center">
         {slides[index].content}
       </div>
       {/* Arrows */}
@@ -100,23 +88,29 @@ function ProductGallery({ imageSrc, imageAlt, slug }) {
         aria-label="Previous image"
         onClick={prev}
         disabled={index === 0}
-        className={`absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-gray-900 rounded-full shadow-md border border-gray-200 w-9 h-9 flex items-center justify-center transition ${
-          index === 0 ? "opacity-60 cursor-not-allowed" : "opacity-100"
-        }`}
-        style={{ backdropFilter: "blur(4px)" }}
+        className={`absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-gray-900 rounded-full shadow-md border border-gray-200 w-9 h-9 flex items-center justify-center transition
+          ${index === 0 ? "opacity-60 cursor-not-allowed" : "opacity-100"}
+          group
+        `}
+        style={{ backdropFilter: "blur(4px)", cursor: index === 0 ? "not-allowed" : "pointer" }}
       >
-        <svg width="22" height="22" fill="none" viewBox="0 0 22 22"><path d="M13.75 17.417 8.333 12l5.417-5.417" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        <svg width="22" height="22" fill="none" viewBox="0 0 22 22">
+          <path d="M13.75 17.417 8.333 12l5.417-5.417" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
       </button>
       <button
         aria-label="Next image"
         onClick={next}
         disabled={index === slides.length - 1}
-        className={`absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-gray-900 rounded-full shadow-md border border-gray-200 w-9 h-9 flex items-center justify-center transition ${
-          index === slides.length - 1 ? "opacity-60 cursor-not-allowed" : "opacity-100"
-        }`}
-        style={{ backdropFilter: "blur(4px)" }}
+        className={`absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-gray-900 rounded-full shadow-md border border-gray-200 w-9 h-9 flex items-center justify-center transition
+          ${index === slides.length - 1 ? "opacity-60 cursor-not-allowed" : "opacity-100"}
+          group
+        `}
+        style={{ backdropFilter: "blur(4px)", cursor: index === slides.length - 1 ? "not-allowed" : "pointer" }}
       >
-        <svg width="22" height="22" fill="none" viewBox="0 0 22 22"><path d="M8.25 17.417 13.667 12 8.25 6.583" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        <svg width="22" height="22" fill="none" viewBox="0 0 22 22">
+          <path d="M8.25 17.417 13.667 12 8.25 6.583" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
       </button>
       {/* Dots */}
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
@@ -126,6 +120,7 @@ function ProductGallery({ imageSrc, imageAlt, slug }) {
             onClick={() => goTo(i)}
             className={`w-3 h-3 rounded-full border border-gray-300 transition ${index === i ? "bg-[#28a745]" : "bg-white"}`}
             aria-label={i === 0 ? "Product image" : "3D Preview"}
+            style={{ cursor: "pointer" }}
           />
         ))}
       </div>
@@ -246,12 +241,19 @@ export default function ProductPage({ params: { slug } }) {
 
   const pageTitle = buildTitle(product);
 
+  // --- SUBHEADERS PATCH ---
+  // If the product has a size and it's 10, 12, or 16 oz, show the custom subheader.
+  let subHeader = "";
+  if (PRODUCT_SUBHEADERS[sizeText]) {
+    subHeader = PRODUCT_SUBHEADERS[sizeText];
+  }
+
   return (
     <main className="max-w-6xl mx-auto p-4 md:p-6 space-y-8">
       <div className="flex flex-col md:flex-row gap-8">
         {/* Left Column */}
         <div className="md:w-1/2 space-y-4">
-          {/* Product gallery with main image & 3D as swipeable */}
+          {/* Product gallery with main image & 3D as arrow-gallery */}
           <ProductGallery
             imageSrc={product.imageHiRes || product.image}
             imageAlt={pageTitle}
@@ -270,7 +272,14 @@ export default function ProductPage({ params: { slug } }) {
               <tbody>
                 {Object.entries(CASE_PRICE_OVERRIDE).map(([size, value]) => (
                   <tr key={size}>
-                    <td className="border px-3 py-2">{size}</td>
+                    <td className="border px-3 py-2">
+                      <div>
+                        <div className="font-medium">{size}</div>
+                        {PRODUCT_SUBHEADERS[size] && (
+                          <div className="text-xs text-gray-500">{PRODUCT_SUBHEADERS[size]}</div>
+                        )}
+                      </div>
+                    </td>
                     <td className="border px-3 py-2">${value.toFixed(2)}</td>
                   </tr>
                 ))}
@@ -284,6 +293,9 @@ export default function ProductPage({ params: { slug } }) {
           <div className="space-y-3">
             <div className="space-y-1">
               <h1 className="text-2xl sm:text-3xl font-bold">{pageTitle}</h1>
+              {subHeader && (
+                <p className="text-sm text-[#28a745] font-semibold tracking-wide">{subHeader}</p>
+              )}
               <p className="text-gray-600 text-sm">{product.desc}</p>
               <p className="text-lg font-semibold">${casePrice.toFixed(2)}/case</p>
             </div>
