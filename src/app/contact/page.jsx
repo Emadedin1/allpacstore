@@ -61,7 +61,14 @@ export default function ContactPage() {
         <h2 className="text-2xl font-semibold mb-4">Contact Form</h2>
         {submitted ? (
           <div className="bg-green-100 text-green-800 p-4 rounded shadow">
-            Thank you! Your message has been sent.
+            <h2 className="text-2xl font-bold mb-2">Thanks!</h2>
+            <p>Your message has been sent successfully.</p>
+            <Link
+              href="/"
+              className="text-red-700 font-semibold mt-4 inline-block hover:underline"
+            >
+              Go to Home
+            </Link>
           </div>
         ) : (
           <form
