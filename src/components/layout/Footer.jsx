@@ -8,11 +8,11 @@ export default function Footer() {
         className="
           max-w-7xl mx-auto px-4
           flex flex-col sm:flex-row justify-between items-start
-          gap-10
+          gap-4 sm:gap-10
         "
       >
         {/* Logo & Tagline */}
-        <div className="flex-1 min-w-[200px] pt-2 pb-6">
+        <div className="flex-1 min-w-[200px] pt-2 pb-2">
           <h3 className="text-xl font-bold text-white mb-2">Allpac</h3>
           <p className="text-sm leading-relaxed">
             Wholesale paper cups delivered fast. <br />
@@ -21,7 +21,7 @@ export default function Footer() {
         </div>
 
         {/* Navigation Links */}
-        <div className="flex-1 min-w-[200px] pt-2 pb-6">
+        <div className="flex-1 min-w-[200px] pt-2 pb-2">
           <h4 className="text-lg font-semibold text-white mb-3">Quick Links</h4>
           <ul className="space-y-2 text-sm">
             <li><Link href="/" className="hover:text-white">Home</Link></li>
@@ -32,10 +32,8 @@ export default function Footer() {
         </div>
 
         {/* Contact Info */}
-        <div className="flex-1 min-w-[200px] pt-2 pb-6">
+        <div className="flex-1 min-w-[200px] pt-2 pb-2">
           <h4 className="text-lg font-semibold text-white mb-3">Contact</h4>
-
-          {/* Two-line address with tighter spacing to the emoji */}
           <address className="not-italic text-sm mb-1">
             <a
               href="https://maps.google.com/?q=3324%20Marentette%20Ave%2C%20Windsor%2C%20ON%20N8X%204G4"
