@@ -32,6 +32,52 @@ function buildTitle(entity) {
   return `${qtyPerCase} cups | ${sizeText} ${DEFAULT_DESCRIPTOR}`.replace("  ", " ").trim();
 }
 
+// Simple swipeable image/preview gallery for main image + 3D preview
+function ProductGallery({ imageSrc, imageAlt, slug }) {
+  const [index, setIndex] = useState(0);
+  const slides = [
+    {
+      type: "image",
+      content: (
+        <Image
+          src={imageSrc}
+          alt={imageAlt}
+          fill
+          priority
+          quality={100}
+          sizes="(max-width: 640px) 90vw, (max-width: 1100px) 50vw, 600px"
+          className="object-cover w-full h-full select-none transition-opacity duration-300"
+        />
+      ),
+    },
+    {
+      type: "3d",
+      content: (
+        <Cup3DPreview
+          modelURL={`/models/${slug}.glb`}
+          textureURL={"/textures/plain-white.png"}
+        />
+      ),
+    },
+  ];
+  return (
+    <div className="relative w-full aspect-square bg-gray-50 rounded-xl ring-1 ring-black/5 overflow-hidden mb-3">
+      <div className="absolute inset-0">{slides[index].content}</div>
+      {/* Controls */}
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+        {slides.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setIndex(i)}
+            className={`w-3 h-3 rounded-full border border-gray-300 transition ${index === i ? "bg-[#28a745]" : "bg-white"}`}
+            aria-label={i === 0 ? "Product image" : "3D Preview"}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function ProductPage({ params: { slug } }) {
   const product = getProductBySlug(slug);
   if (!product) return <div className="p-4">Product not found.</div>;
@@ -50,7 +96,7 @@ export default function ProductPage({ params: { slug } }) {
 
   // qty stored in cups
   const [qty, setQty] = useState(caseQty);
-  const [caseInput, setCaseInput] = useState("1"); // buffer allowing blank
+  const [caseInput, setCaseInput] = useState("1");
 
   const selectedCases = Math.max(1, Math.round(qty / caseQty));
   const subtotal = (casePrice * selectedCases).toFixed(2);
@@ -131,10 +177,11 @@ export default function ProductPage({ params: { slug } }) {
     openCart();
   }
 
+  // Description/Material/Dimensions drop-downs
   const specs = [
     { label: "Description", content: product.desc.split(". ").filter(Boolean) },
     { label: "Material", content: [product.type] },
-    { label: "Case Qty", content: [`${product.qtyCase} cups per case`] },
+    { label: "Dimensions", content: [product.dimensions || "See size chart or specifications."] },
   ];
   const [openSections, setOpenSections] = useState(
     specs.reduce((acc, s) => ({ ...acc, [s.label]: false }), {})
@@ -146,58 +193,16 @@ export default function ProductPage({ params: { slug } }) {
 
   return (
     <main className="max-w-6xl mx-auto p-4 md:p-6 space-y-8">
-      {/* TOP SECTION */}
       <div className="flex flex-col md:flex-row gap-8">
         {/* Left Column */}
         <div className="md:w-1/2 space-y-4">
-          {/* High-res main image container */}
-          <div
-            className="
-              relative aspect-square w-full
-              rounded-xl bg-gray-50
-              ring-1 ring-black/5
-              overflow-hidden
-            "
-          >
-            <Image
-              src={product.imageHiRes || product.image}
-              alt={pageTitle}
-              fill
-              priority
-              quality={100}
-              sizes="(max-width: 640px) 90vw, (max-width: 1100px) 50vw, 600px"
-              className="
-                object-cover
-                w-full h-full
-                select-none
-                transition-opacity
-                duration-300
-                transform-gpu
-              "
-            />
-          </div>
-          {/* 3D Preview (moved above overview) */}
-          <div className="w-full h-64 md:h-96">
-            <Cup3DPreview
-              modelURL={`/models/${slug}.glb`}
-              textureURL={"/textures/plain-white.png"}
-            />
-          </div>
-          {/* Overview (now below 3D preview) */}
-          <div className="hidden md:block bg-gray-100 rounded-lg p-6 mt-6">
-            <h2 className="text-2xl font-semibold mb-3">Overview</h2>
-            <p className="text-gray-700 mb-2">{product.desc}</p>
-            <p className="text-gray-700 mb-1">
-              <strong>Material:</strong> {product.type}
-            </p>
-            <p className="text-gray-700 mb-1">
-              <strong>Case Qty:</strong> {product.qtyCase} cups
-            </p>
-            <p className="text-gray-700 mb-3">
-              <strong>Case Price:</strong> ${casePrice.toFixed(2)}
-            </p>
-            <p className="text-sm text-gray-600">Minimum order quantity is 1 case.</p>
-          </div>
+          {/* Product gallery with main image & 3D as swipeable */}
+          <ProductGallery
+            imageSrc={product.imageHiRes || product.image}
+            imageAlt={pageTitle}
+            slug={slug}
+          />
+          {/* Pricing table stays below for desktop */}
           <div className="hidden md:block bg-white rounded-lg p-6 shadow mt-6">
             <h3 className="text-lg font-semibold mb-3">Pricing Breakdown</h3>
             <table className="w-full table-auto border-collapse">
@@ -292,12 +297,28 @@ export default function ProductPage({ params: { slug } }) {
             </div>
           </div>
 
-          {/* Collapsible Specs - CLEAN, MODERN */}
+          {/* OVERVIEW - now right below Add to Cart */}
+          <div className="bg-gray-100 rounded-lg p-6 mt-6">
+            <h2 className="text-2xl font-semibold mb-3">Overview</h2>
+            <p className="text-gray-700 mb-2">{product.desc}</p>
+            <p className="text-gray-700 mb-1">
+              <strong>Material:</strong> {product.type}
+            </p>
+            <p className="text-gray-700 mb-1">
+              <strong>Case Qty:</strong> {product.qtyCase} cups
+            </p>
+            <p className="text-gray-700 mb-3">
+              <strong>Case Price:</strong> ${casePrice.toFixed(2)}
+            </p>
+            <p className="text-sm text-gray-600">Minimum order quantity is 1 case.</p>
+          </div>
+
+          {/* Collapsible Specs - clean with soft border, no black outline */}
           <div className="space-y-4">
             {specs.map(({ label, content }) => (
               <div
                 key={label}
-                className="bg-white rounded-lg transition shadow-sm border border-gray-200"
+                className="bg-white rounded-lg border border-gray-200 shadow-sm transition"
               >
                 <button
                   onClick={() => toggle(label)}
