@@ -200,9 +200,9 @@ export default function CartDrawer() {
           </button>
         </div>
 
-        {/* Items */}
+        {/* Items (added pt-* for top spacing) */}
         <div
-          className="px-4 md:px-5 pb-4 md:pb-5 flex-1 overflow-y-auto space-y-4 overscroll-contain"
+          className="px-4 md:px-5 pt-4 md:pt-5 pb-4 md:pb-5 flex-1 overflow-y-auto space-y-4 overscroll-contain"
           style={{ overscrollBehavior: "contain" }}
         >
           {cartItems.length === 0 ? (
@@ -325,7 +325,7 @@ export default function CartDrawer() {
                             if (raw !== "") {
                               const num = parseInt(raw, 10);
                               if (!isNaN(num) && num >= 1) {
-                                // do not update cart here (wait for blur/Enter) to reduce churn
+                                // deferred update
                               }
                             }
                           }}
@@ -343,7 +343,6 @@ export default function CartDrawer() {
                             if (e.key === "Enter") {
                               e.currentTarget.blur();
                             } else if (e.key === "Escape") {
-                              // revert to currentCases
                               setCaseEdits((prev) => {
                                 const cp = { ...prev };
                                 delete cp[item.key];
@@ -429,7 +428,7 @@ export default function CartDrawer() {
             <span className="font-mono tabular-nums">${total}</span>
           </div>
 
-            <Link
+          <Link
             href="/checkout"
             onClick={() => {
               setActiveEditKey(null);
