@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function AboutPage() {
   return (
@@ -8,6 +9,19 @@ export default function AboutPage() {
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-4xl font-bold mb-2">About Allpac</h1>
       </div>
+      
+      {/* Warehouse Photo */}
+      <div className="w-full rounded-xl overflow-hidden mb-6">
+        <Image 
+          src="/warehouse.jpg" // <-- update this path to your actual file name in /public
+          alt="Allpac warehouse"
+          width={960}
+          height={400}
+          className="w-full h-auto object-cover"
+          priority
+        />
+      </div>
+      
       {/* Hero */}
         <p className="text-lg text-gray-700">
           Based in Windsor, Ontario, Allpac is Canada’s trusted partner for custom-printed paper cups. 
