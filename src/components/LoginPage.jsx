@@ -90,65 +90,67 @@ export default function LoginPage({ mode: initialMode = "login" }) {
 
   // Read the base URL from an env var, fall back to current origin
   const API_BASE =
-    process.env.NEXT_PUBLIC_API_BASE_URL || window.location.origin;
+    process.env.NEXT_PUBLIC_API_BASE_URL || (typeof window !== "undefined" ? window.location.origin : "");
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError("");
-  setSuccess("");
+    e.preventDefault();
+    setError("");
+    setSuccess("");
 
-  const endpoint = mode === "login" ? "login" : "register";
-  const url = `${API_BASE}/api/auth/${endpoint}`;
+    const endpoint = mode === "login" ? "login" : "register";
+    const url = `${API_BASE}/api/auth/${endpoint}`;
 
-  const payload =
-    mode === "login"
-      ? { email, password }
-      : { email, password, name };
+    const payload =
+      mode === "login"
+        ? { email, password }
+        : { email, password, name };
 
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const data = await res.json();
-    console.log("LOGIN RESPONSE:", data);
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      console.log("LOGIN RESPONSE:", data);
 
-    if (res.ok) {
-      if (data.token) {
-        localStorage.setItem("token", data.token);
+      if (res.ok) {
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+        }
+        if (data.user && data.user.name) {
+          localStorage.setItem("name", data.user.name);
+          window.dispatchEvent(new Event("userNameChanged"));
+        }
+        setSuccess(
+          mode === "login"
+            ? "Login successful!"
+            : "Account created! You can now log in."
+        );
+        setError("");
+
+        // Redirect to homepage after successful login
+        if (mode === "login") {
+          setTimeout(() => {
+            router.push("/");
+          }, 500); // short delay for feedback
+        }
+      } else {
+        setError(data.error || "Something went wrong");
       }
-      if (data.user && data.user.name) {
-        localStorage.setItem("name", data.user.name);
-        window.dispatchEvent(new Event("userNameChanged"));
-      }
-      setSuccess(
-        mode === "login"
-          ? "Login successful!"
-          : "Account created! You can now log in."
-      );
-      setError("");
-
-      // Redirect to homepage after successful login
-      if (mode === "login") {
-        setTimeout(() => {
-          router.push("/");
-        }, 500); // short delay for feedback
-      }
-    } else {
-      setError(data.error || "Something went wrong");
+    } catch (err) {
+      console.error("LoginPage error:", err);
+      setError("Failed to reach server");
     }
-  } catch (err) {
-    console.error("LoginPage error:", err);
-    setError("Failed to reach server");
-  }
-};
+  };
 
   return (
     <div style={styles.container}>
       <div style={styles.title}>
         {mode === "login" ? "Login" : "Create Account"}
       </div>
+
+      {/* LOGIN / REGISTER FORM */}
       <form style={styles.form} onSubmit={handleSubmit}>
         {mode === "register" && (
           <input
@@ -191,11 +193,22 @@ export default function LoginPage({ mode: initialMode = "login" }) {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+
+        {/* Keep other actions inside form but move PasswordReset OUTSIDE the form */}
         <div style={{ textAlign: "right" }}>
+          {/* previously PasswordReset was here (nested). Do not put it inside the form */}
+          <button type="submit" style={styles.button}>
+            {mode === "login" ? "Login" : "Register"}
+          </button>
+        </div>
+        {error && <div style={styles.error}>{error}</div>}
+        {success && <div style={styles.success}>{success}</div>}
+      </form>
+
+      {/* --- Place PasswordReset outside the form --- */}
+      <div style={{ textAlign: "right", marginTop: 8 }}>
         <PasswordReset
-          // This is the email API endpoint (see docs)
           apiEndpoint="/api/auth/password-reset"
-          // You can customize button text and styling
           buttonText="Forgot Password?"
           buttonStyle={{
             background: "none",
@@ -214,12 +227,7 @@ export default function LoginPage({ mode: initialMode = "login" }) {
           }}
         />
       </div>
-        <button type="submit" style={styles.button}>
-          {mode === "login" ? "Login" : "Register"}
-        </button>
-        {error && <div style={styles.error}>{error}</div>}
-        {success && <div style={styles.success}>{success}</div>}
-      </form>
+
       <div style={styles.switch}>
         {mode === "login" ? (
           <span>
