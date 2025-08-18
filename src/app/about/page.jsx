@@ -13,7 +13,7 @@ export default function AboutPage() {
       {/* Warehouse Photo */}
       <div className="w-full rounded-xl overflow-hidden mb-6">
         <Image 
-          src="/warehouse.jpg" // <-- update this path to your actual file name in /public
+          src="/images/warehouse.JPG" // <-- update this path to your actual file name in /public
           alt="Allpac warehouse"
           width={960}
           height={400}
