@@ -193,36 +193,37 @@ export default function LoginPage({ mode: initialMode = "login" }) {
           required
         />
 
-        {/* Row with submit button on the left and Forgot Password on the right */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "nowrap" }}>
+        {/* Centered, wider Login button */}
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
           <button
             type="submit"
-            style={{ ...styles.button, flex: "0 0 auto" }}
+            style={{ ...styles.button, width: "70%", maxWidth: 320 }}
           >
             {mode === "login" ? "Login" : "Register"}
           </button>
+        </div>
 
-          <div style={{ marginLeft: 12, flex: "0 0 auto" }}>
-            <PasswordReset
-              apiEndpoint="/api/auth/password-reset"
-              buttonText="Forgot Password?"
-              buttonStyle={{
-                background: "none",
-                border: "none",
-                color: "#0070f3",
-                cursor: "pointer",
-                padding: 0,
-                margin: 0,
-                fontSize: "0.98rem",
-                fontWeight: 500,
-                textDecoration: "underline",
-              }}
-              inputStyle={{
-                ...styles.input,
-                marginTop: 12
-              }}
-            />
-          </div>
+        {/* Forgot Password placed under the button, aligned to the right */}
+        <div style={{ textAlign: "right", marginTop: 8 }}>
+          <PasswordReset
+            apiEndpoint="/api/auth/password-reset"
+            buttonText="Forgot Password?"
+            buttonStyle={{
+              background: "none",
+              border: "none",
+              color: "#0070f3",
+              cursor: "pointer",
+              padding: 0,
+              margin: 0,
+              fontSize: "0.98rem",
+              fontWeight: 500,
+              textDecoration: "underline",
+            }}
+            inputStyle={{
+              ...styles.input,
+              marginTop: 12
+            }}
+          />
         </div>
 
         {error && <div style={styles.error}>{error}</div>}
