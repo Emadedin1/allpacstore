@@ -94,6 +94,7 @@ export default function CupCard({ cup }) {
             hover:shadow-sm focus:outline-none
             focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
             transition-colors
+            cursor-pointer
           "
           aria-label={`Add 1 case of ${cup.size} cups to cart`}
         >
