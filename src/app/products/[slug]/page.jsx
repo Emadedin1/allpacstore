@@ -234,9 +234,9 @@ export default function ProductPage({ params: { slug } }) {
 
   // Description/Material/Dimensions drop-downs
   const specs = [
-    { label: "Description", content: product.desc.split(". ").filter(Boolean) },
-    { label: "Material", content: [product.type] },
-    { label: "Dimensions", content: [product.dimensions || "See size chart or specifications."] },
+    { label: "Description", content: product.specs.Description || [] },
+    { label: "Material", content: product.specs.Material || [] },
+    { label: "Dimensions", content: product.specs.Dimensions || [] },
   ];
   const [openSections, setOpenSections] = useState(
     specs.reduce((acc, s) => ({ ...acc, [s.label]: false }), {})
