@@ -13,8 +13,8 @@ export default function PasswordReset({
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
-  const handleReset = async (e) => {
-    e.preventDefault();
+  // handleReset no longer expects a form submit event
+  const handleReset = async () => {
     console.log("Submitting password reset for:", email);
     setLoading(true);
     setError("");
@@ -33,25 +33,36 @@ export default function PasswordReset({
       } else {
         setError(data.error || "Reset failed.");
       }
-    } catch {
+    } catch (err) {
+      console.error("Password reset fetch error:", err);
       setError("An error occurred.");
     }
     setLoading(false);
   };
-  
+
   return (
     <div>
       {showInput ? (
-        <form onSubmit={handleReset} style={{ display: "flex", flexDirection: "column" }}>
+        // Use a div (not a nested form) so this component works inside another form
+        <div style={{ display: "flex", flexDirection: "column" }}>
           <input
             type="email"
+            name="email" // fix browser warning about missing name/id
             placeholder="Enter your email"
             value={email}
             onChange={e => setEmail(e.target.value)}
             style={inputStyle}
             required
           />
-          <button type="submit" style={{ ...buttonStyle, marginTop: 8 }} disabled={loading}>
+          <button
+            type="button"
+            style={{ ...buttonStyle, marginTop: 8 }}
+            disabled={loading}
+            onClick={() => {
+              console.log("PasswordReset submit button clicked");
+              handleReset();
+            }}
+          >
             {loading ? "Sending..." : "Send Reset Email"}
           </button>
           <button
@@ -63,7 +74,7 @@ export default function PasswordReset({
           </button>
           {error && <div style={{ color: "#e00", fontSize: "0.98rem" }}>{error}</div>}
           {success && <div style={{ color: "#090", fontSize: "0.98rem" }}>{success}</div>}
-        </form>
+        </div>
       ) : (
         <button type="button" style={buttonStyle} onClick={() => setShowInput(true)}>
           {buttonText}
