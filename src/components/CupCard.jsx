@@ -6,11 +6,11 @@ import { useCart } from "../context/CartContext";
 const DEFAULT_DESCRIPTOR = "Blank Single-Walled Paper Cup";
 
 const CASE_PRICE_BY_SIZE = {
-  "10 oz": 41.50,
-  "12 oz": 46.50,
-  "16 oz": 60.00,
-  "22 oz": 78.00,
-  "32 oz": 114.50,
+  "10 oz": 51.50,
+  "12 oz": 56.50,
+  "16 oz": 65.00,
+  "22 oz": 88.00,
+  "32 oz": 124.50,
 };
 
 export default function CupCard({ cup }) {
