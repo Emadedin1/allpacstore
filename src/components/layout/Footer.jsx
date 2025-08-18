@@ -32,7 +32,7 @@ export default function Footer() {
         </div>
 
         {/* Contact Info */}
-        <div className="flex-1 min-w-[200px] pt-2 pb-2">
+        <div className="flex-1 min-w-[200px] pt-2 pb-2 sm:mb-6">
           <h4 className="text-lg font-semibold text-white mb-3">Contact</h4>
           <address className="not-italic text-sm mb-1">
             <a
@@ -50,12 +50,13 @@ export default function Footer() {
             </a>
           </address>
 
-          <p className="text-sm">
+          <p className="text-sm sm:mb-4">
             ✉️{" "}
             <a href="mailto:info@allpacgroup.com" className="hover:text-white">
               info@allpacgroup.com
             </a>
           </p>
+          {/* You can add a Contact button here if you want, with extra margin-bottom on desktop */}
         </div>
       </div>
 
