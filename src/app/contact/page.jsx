@@ -69,7 +69,7 @@ export default function ContactPage() {
             />
           </div>
           <div>
-            <label htmlFor="design" className="block font-medium mb-1">Upload Design (optional)</label>
+            <label htmlFor="design" className="block font-medium mb-1">Upload Image (optional)</label>
             <input
               type="file"
               id="design"
