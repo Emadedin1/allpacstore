@@ -38,7 +38,8 @@ export default function PasswordReset({
     }
     setLoading(false);
   };
-
+  
+  console.log("Rendering PasswordReset. showInput:", showInput);
   return (
     <div>
       {showInput ? (
