@@ -191,7 +191,7 @@ export default function ProductPage({ params: { slug } }) {
             <p className="text-gray-700 mb-3">
               <strong>Case Price:</strong> ${casePrice.toFixed(2)}
             </p>
-            <p className="text-sm text-gray-600">Minimum order quantity is 500 cups.</p>
+            <p className="text-sm text-gray-600">Minimum order quantity is 1 case.</p>
           </div>
           <div className="hidden md:block bg-white rounded-lg p-6 shadow mt-6">
             <h3 className="text-lg font-semibold mb-3">Pricing Breakdown</h3>
