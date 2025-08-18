@@ -19,7 +19,7 @@ export default function ProductsCategoriesPage() {
       <header className="text-center space-y-3">
         <h1 className="text-4xl font-bold tracking-tight">Shop by Category</h1>
         <p className="text-lg text-gray-600">
-          Choose a category to start exploring products.
+          Choose one of our products to start exploring.
         </p>
       </header>
 
