@@ -27,21 +27,21 @@ export default function PaperCupsPage() {
             <span className="text-7xl font-bold leading-none">1</span>
             <div>
               <h3 className="text-xl font-semibold mb-1">Choose Cup Size</h3>
-              <p className="text-sm">Pick from 5 available sizes.</p>
+              <p className="text-sm">Pick from available sizes.</p>
             </div>
           </div>
           <div className="flex gap-4 items-start">
             <span className="text-7xl font-bold leading-none">2</span>
             <div>
               <h3 className="text-xl font-semibold mb-1">Choose Quantity</h3>
-              <p className="text-sm">Select how many cups you need.</p>
+              <p className="text-sm">Select how many cases you need and add them to cart.</p>
             </div>
           </div>
           <div className="flex gap-4 items-start">
             <span className="text-7xl font-bold leading-none">3</span>
             <div>
-              <h3 className="text-xl font-semibold mb-1">Add to Cart</h3>
-              <p className="text-sm">Review your selection and add to your order.</p>
+              <h3 className="text-xl font-semibold mb-1">Checkout</h3>
+              <p className="text-sm">Review your order, complete checkout, and we'll ship it fast.</p>
             </div>
           </div>
         </div>
