@@ -31,22 +31,29 @@ export default function ContactPage() {
       {/* Contact Form */}
       <section>
         <h2 className="text-2xl font-semibold mb-4">Contact Form</h2>
-        <form className="space-y-4">
+        <form
+          action="https://formspree.io/f/xqalonvg"
+          method="POST"
+          className="space-y-4"
+          encType="multipart/form-data"
+        >
           <div>
             <label htmlFor="name" className="block font-medium mb-1">Name</label>
             <input
               type="text"
               id="name"
+              name="name"
               className="w-full border border-gray-300 p-2 rounded"
               placeholder="Your name"
               required
             />
           </div>
           <div>
-            <label htmlFor="company" className="block font-medium mb-1">Company (optional)</label>
+            <label htmlFor="company" className="block font-medium mb-1">Company</label>
             <input
               type="text"
               id="company"
+              name="company"
               className="w-full border border-gray-300 p-2 rounded"
               placeholder="Your business name"
             />
@@ -56,6 +63,7 @@ export default function ContactPage() {
             <input
               type="email"
               id="email"
+              name="email"
               className="w-full border border-gray-300 p-2 rounded"
               placeholder="you@company.com"
               required
@@ -66,6 +74,7 @@ export default function ContactPage() {
             <input
               type="tel"
               id="phone"
+              name="phone"
               className="w-full border border-gray-300 p-2 rounded"
               placeholder="(519) 555-1234"
               required
@@ -76,6 +85,7 @@ export default function ContactPage() {
             <input
               type="file"
               id="design"
+              name="design"
               accept=".png,.jpg,.pdf"
               className="w-full border border-gray-300 p-2 rounded"
             />
@@ -84,6 +94,7 @@ export default function ContactPage() {
             <label htmlFor="message" className="block font-medium mb-1">Message</label>
             <textarea
               id="message"
+              name="message"
               className="w-full border border-gray-300 p-2 rounded h-32"
               placeholder="Tell us about your order or inquiry..."
               required
