@@ -15,9 +15,9 @@ export default function AboutPage() {
         <Image 
           src="/images/warehouse.JPG" // <-- update this path to your actual file name in /public
           alt="Allpac warehouse"
-          width={960}
-          height={400}
-          className="w-full h-auto object-cover"
+          width={800}
+          height={300}
+          className="w-full h-[220px] sm:h-[280px] object-cover rounded-xl"
           priority
         />
       </div>
