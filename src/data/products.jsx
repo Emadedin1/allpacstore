@@ -4,24 +4,22 @@ export const products = [
     slug: "10oz",
     size: "10 oz",
     name: "10 oz Hot Cup",
-    // UPDATED subheader
     desc: "Ideal for small beverages.",
     image: "/cups/10oz.png",
     priceCase: 41.50,
     qtyCase: 1000,
     specs: {
       Description: [
-        // UPDATED subheader/description
         "Ideal for small beverages.",
         "Great for espresso shots or small lattes.",
         "Fits standard cardboard sleeves."
       ],
       Material: [
-        "Single-wall paper (12pt stock)",
-        "FDA-approved food-safe coating",
-        "Recyclable and compostable"
+        "Base: Food-grade paperboard",
+        "Thickness: 250 gsm",
+        "Coating: PLA",
+        "Safety: Compliant with all food-contact safety standards"
       ],
-      // REMOVED "Case Quantity"
       Dimensions: [
         "Height: 90 mm",
         "Top Ø: 88 mm",
@@ -37,23 +35,21 @@ export const products = [
     slug: "12oz",
     size: "12 oz",
     name: "12 oz Hot Cup",
-    // UPDATED subheader
-    desc: "Most popular size, perfect for most drinks.",
+    desc: "Most popular size. Perfect for most drinks.",
     image: "/cups/12oz.png",
     priceCase: 46.50,
     qtyCase: 1000,
     specs: {
       Description: [
-        // UPDATED
         "Most popular size. Perfect for most drinks.",
         "Wrap-around design shows off branding."
       ],
       Material: [
-        "Single-wall paper",
-        "Food-grade PE lining",
-        "Eco-friendly and compostable"
+        "Base: Food-grade paperboard",
+        "Thickness: 280 gsm",
+        "Coating: PLA",
+        "Safety: Compliant with all food-contact safety standards"
       ],
-      // REMOVED "Case Quantity"
       Dimensions: [
         "Height: 100 mm",
         "Top Ø: 90 mm",
@@ -69,22 +65,21 @@ export const products = [
     slug: "16oz",
     size: "16 oz",
     name: "16 oz Hot Cup",
-    // UPDATED subheader
     desc: "Ideal for large drinks.",
     image: "/cups/16oz.png",
     priceCase: 60.00,
     qtyCase: 1000,
     specs: {
       Description: [
-        // UPDATED
         "Ideal for large drinks.",
         "Extra capacity for extra-foamy drinks."
       ],
       Material: [
-        "Double-wall paper for insulation",
-        "Food-safe polyethylene coat"
+        "Base: Food-grade paperboard",
+        "Thickness: 300 gsm",
+        "Coating: PLA",
+        "Safety: Compliant with all food-contact safety standards"
       ],
-      // REMOVED "Case Quantity"
       Dimensions: [
         "Height: 110 mm",
         "Top Ø: 95 mm",
@@ -110,10 +105,11 @@ export const products = [
         "Clear lid compatible."
       ],
       Material: [
-        "PET plastic (recyclable)",
-        "Crystal-clear clarity"
+        "Base: Food-grade paperboard",
+        "Thickness: 320 gsm",
+        "Coating: PLA",
+        "Safety: Compliant with all food-contact safety standards"
       ],
-      // REMOVED "Case Quantity"
       Dimensions: [
         "Height: 120 mm",
         "Top Ø: 96 mm",
@@ -140,10 +136,11 @@ export const products = [
         "Fits large straws."
       ],
       Material: [
-        "PET plastic",
-        "Ultra-clear finish"
+        "Base: Food-grade paperboard",
+        "Thickness: 350 gsm",
+        "Coating: PLA",
+        "Safety: Compliant with all food-contact safety standards"
       ],
-      // REMOVED "Case Quantity"
       Dimensions: [
         "Height: 140 mm",
         "Top Ø: 100 mm",
