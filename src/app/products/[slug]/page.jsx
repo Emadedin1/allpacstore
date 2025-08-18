@@ -100,9 +100,8 @@ function ProductGallery({ imageSrc, imageAlt, slug }) {
         aria-label="Previous image"
         onClick={prev}
         disabled={index === 0}
-        className={`absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-gray-900 rounded-full shadow-md border border-gray-200 w-9 h-9 flex items-center justify-center transition ${
-          index === 0 ? "opacity-60 cursor-not-allowed" : "opacity-100"
-        }`}
+        className={`absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-gray-900 rounded-full shadow-md border border-gray-200 w-9 h-9 flex items-center justify-center transition
+        ${index === 0 ? "opacity-60 cursor-not-allowed" : "opacity-100 cursor-pointer"}`}
         style={{ backdropFilter: "blur(4px)" }}
       >
         <svg width="22" height="22" fill="none" viewBox="0 0 22 22"><path d="M13.75 17.417 8.333 12l5.417-5.417" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -111,9 +110,8 @@ function ProductGallery({ imageSrc, imageAlt, slug }) {
         aria-label="Next image"
         onClick={next}
         disabled={index === slides.length - 1}
-        className={`absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-gray-900 rounded-full shadow-md border border-gray-200 w-9 h-9 flex items-center justify-center transition ${
-          index === slides.length - 1 ? "opacity-60 cursor-not-allowed" : "opacity-100"
-        }`}
+        className={`absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-gray-900 rounded-full shadow-md border border-gray-200 w-9 h-9 flex items-center justify-center transition
+        ${index === slides.length - 1 ? "opacity-60 cursor-not-allowed" : "opacity-100 cursor-pointer"}`}
         style={{ backdropFilter: "blur(4px)" }}
       >
         <svg width="22" height="22" fill="none" viewBox="0 0 22 22"><path d="M8.25 17.417 13.667 12 8.25 6.583" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
