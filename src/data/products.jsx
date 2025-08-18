@@ -38,7 +38,7 @@ export const products = [
     size: "12 oz",
     name: "12 oz Hot Cup",
     // UPDATED subheader
-    desc: "Most popular size. Perfect for most drinks.",
+    desc: "Most popular size, perfect for most drinks.",
     image: "/cups/12oz.png",
     priceCase: 46.50,
     qtyCase: 1000,
