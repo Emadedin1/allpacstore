@@ -25,14 +25,17 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     gap: "16px",
+    alignItems: "stretch", // allow children (inputs & button) to fill the full width
   },
   input: {
+    width: "100%", // make inputs full width of the form
     padding: "10px 12px",
     borderRadius: "6px",
     border: "1px solid #ddd",
     fontSize: "1rem",
     outline: "none",
     transition: "border-color 0.2s",
+    boxSizing: "border-box",
   },
   inputFocus: {
     borderColor: "#0070f3",
@@ -193,11 +196,11 @@ export default function LoginPage({ mode: initialMode = "login" }) {
           required
         />
 
-        {/* Centered, wider Login button */}
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+        {/* Login button now matches the width of the inputs */}
+        <div style={{ width: "100%", marginTop: 6 }}>
           <button
             type="submit"
-            style={{ ...styles.button, width: "70%", maxWidth: 320 }}
+            style={{ ...styles.button, width: "100%" }} // full width to match inputs
           >
             {mode === "login" ? "Login" : "Register"}
           </button>
