@@ -17,7 +17,7 @@ export default function AboutPage() {
         alt="Allpac warehouse"
         width={800}
         height={300}
-        className="w-full h-auto object-cover"
+        className="w-full h-[220px] sm:h-[280px] object-cover rounded-xl"
         priority
       />
       </div>
