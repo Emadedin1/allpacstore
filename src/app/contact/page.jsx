@@ -20,6 +20,8 @@ export default function ContactPage() {
       <section className="space-y-2 text-gray-700 mb-8">
         <p><strong>🏭 Warehouse & Office</strong><br/>
         3324 Marentette Ave, Windsor, ON N8X 4G4</p>
+        <p><strong>📞 Phone</strong><br/>
+        (226) 350-4144</p>
         <p><strong>✉️ Email</strong><br/>
         m.labak@allpacgroup.com</p>
         <p><strong>⏰ Hours</strong><br/>
