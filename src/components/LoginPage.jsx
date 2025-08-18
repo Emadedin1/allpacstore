@@ -38,7 +38,7 @@ const styles = {
     borderColor: "#0070f3",
   },
   button: {
-    padding: "10px 0",
+    padding: "10px 16px",
     borderRadius: "6px",
     border: "none",
     background: "#0070f3",
@@ -47,6 +47,7 @@ const styles = {
     fontSize: "1rem",
     cursor: "pointer",
     transition: "background 0.2s",
+    minWidth: 120,
   },
   buttonSwitch: {
     background: "#fff",
@@ -149,8 +150,6 @@ export default function LoginPage({ mode: initialMode = "login" }) {
       <div style={styles.title}>
         {mode === "login" ? "Login" : "Create Account"}
       </div>
-
-      {/* LOGIN / REGISTER FORM */}
       <form style={styles.form} onSubmit={handleSubmit}>
         {mode === "register" && (
           <input
@@ -194,39 +193,41 @@ export default function LoginPage({ mode: initialMode = "login" }) {
           required
         />
 
-        {/* Keep other actions inside form but move PasswordReset OUTSIDE the form */}
-        <div style={{ textAlign: "right" }}>
-          {/* previously PasswordReset was here (nested). Do not put it inside the form */}
-          <button type="submit" style={styles.button}>
+        {/* Row with submit button on the left and Forgot Password on the right */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "nowrap" }}>
+          <button
+            type="submit"
+            style={{ ...styles.button, flex: "0 0 auto" }}
+          >
             {mode === "login" ? "Login" : "Register"}
           </button>
+
+          <div style={{ marginLeft: 12, flex: "0 0 auto" }}>
+            <PasswordReset
+              apiEndpoint="/api/auth/password-reset"
+              buttonText="Forgot Password?"
+              buttonStyle={{
+                background: "none",
+                border: "none",
+                color: "#0070f3",
+                cursor: "pointer",
+                padding: 0,
+                margin: 0,
+                fontSize: "0.98rem",
+                fontWeight: 500,
+                textDecoration: "underline",
+              }}
+              inputStyle={{
+                ...styles.input,
+                marginTop: 12
+              }}
+            />
+          </div>
         </div>
+
         {error && <div style={styles.error}>{error}</div>}
         {success && <div style={styles.success}>{success}</div>}
       </form>
-
-      {/* --- Place PasswordReset outside the form --- */}
-      <div style={{ textAlign: "right", marginTop: 8 }}>
-        <PasswordReset
-          apiEndpoint="/api/auth/password-reset"
-          buttonText="Forgot Password?"
-          buttonStyle={{
-            background: "none",
-            border: "none",
-            color: "#0070f3",
-            cursor: "pointer",
-            padding: 0,
-            margin: 0,
-            fontSize: "0.98rem",
-            fontWeight: 500,
-            textDecoration: "underline",
-          }}
-          inputStyle={{
-            ...styles.input,
-            marginTop: 12
-          }}
-        />
-      </div>
 
       <div style={styles.switch}>
         {mode === "login" ? (
