@@ -20,10 +20,11 @@ export const products = [
         "Coating: PLA",
         "Safety: Compliant with all food-contact safety standards"
       ],
+      // UPDATED
       Dimensions: [
-        "Height: 90 mm",
-        "Top Ø: 88 mm",
-        "Bottom Ø: 57 mm"
+        "Height: 110 mm",
+        "Top diameter: 90 mm",
+        "Bottom diameter: 60 mm"
       ],
       Usage: [
         "Hot liquids up to 85 °C"
@@ -49,10 +50,11 @@ export const products = [
         "Coating: PLA",
         "Safety: Compliant with all food-contact safety standards"
       ],
+      // UPDATED (standard: ~112mm tall, 90mm top, 60mm bottom)
       Dimensions: [
-        "Height: 100 mm",
-        "Top Ø: 90 mm",
-        "Bottom Ø: 60 mm"
+        "Height: 112 mm",
+        "Top diameter: 90 mm",
+        "Bottom diameter: 60 mm"
       ],
       Usage: [
         "Ideal for hot drinks up to 90 °C"
@@ -79,10 +81,11 @@ export const products = [
         "Coating: PLA",
         "Safety: Compliant with all food-contact safety standards"
       ],
+      // UPDATED (standard: ~135mm tall, 90mm top, 60mm bottom)
       Dimensions: [
-        "Height: 110 mm",
-        "Top Ø: 95 mm",
-        "Bottom Ø: 65 mm"
+        "Height: 135 mm",
+        "Top diameter: 90 mm",
+        "Bottom diameter: 60 mm"
       ],
       Usage: [
         "Keeps drinks warm longer"
@@ -109,10 +112,11 @@ export const products = [
         "Coating: PLA",
         "Safety: Compliant with all food-contact safety standards"
       ],
+      // UPDATED (standard: ~168mm tall, 98mm top, 65mm bottom)
       Dimensions: [
-        "Height: 120 mm",
-        "Top Ø: 96 mm",
-        "Bottom Ø: 60 mm"
+        "Height: 168 mm",
+        "Top diameter: 98 mm",
+        "Bottom diameter: 65 mm"
       ],
       Usage: [
         "Cold liquids only",
@@ -140,10 +144,11 @@ export const products = [
         "Coating: PLA",
         "Safety: Compliant with all food-contact safety standards"
       ],
+      // UPDATED
       Dimensions: [
-        "Height: 140 mm",
-        "Top Ø: 100 mm",
-        "Bottom Ø: 65 mm"
+        "Height: 180 mm",
+        "Top diameter: 100 mm",
+        "Bottom diameter: 70 mm"
       ],
       Usage: [
         "Cold drinks only",
