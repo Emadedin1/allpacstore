@@ -32,7 +32,7 @@ function buildTitle(entity) {
   return `${qtyPerCase} cups | ${sizeText} ${DEFAULT_DESCRIPTOR}`.replace("  ", " ").trim();
 }
 
-// Simple swipeable image/preview gallery for main image + 3D preview
+// Modern swipeable gallery for image/3D with arrows
 function ProductGallery({ imageSrc, imageAlt, slug }) {
   const [index, setIndex] = useState(0);
   const slides = [
@@ -60,15 +60,70 @@ function ProductGallery({ imageSrc, imageAlt, slug }) {
       ),
     },
   ];
+
+  // Touch swipe handlers
+  let touchStartX = null;
+  let touchEndX = null;
+  function onTouchStart(e) {
+    touchStartX = e.changedTouches[0].screenX;
+  }
+  function onTouchEnd(e) {
+    touchEndX = e.changedTouches[0].screenX;
+    if (touchStartX !== null && touchEndX !== null) {
+      if (touchEndX - touchStartX > 40) setIndex((p) => Math.max(0, p - 1));
+      if (touchStartX - touchEndX > 40) setIndex((p) => Math.min(slides.length - 1, p + 1));
+    }
+    touchStartX = null;
+    touchEndX = null;
+  }
+  function goTo(idx) {
+    setIndex(idx);
+  }
+  function prev() {
+    setIndex((i) => Math.max(0, i - 1));
+  }
+  function next() {
+    setIndex((i) => Math.min(slides.length - 1, i + 1));
+  }
+
   return (
-    <div className="relative w-full aspect-square bg-gray-50 rounded-xl ring-1 ring-black/5 overflow-hidden mb-3">
-      <div className="absolute inset-0">{slides[index].content}</div>
-      {/* Controls */}
+    <div className="relative w-full aspect-square bg-gray-50 rounded-xl ring-1 ring-black/5 overflow-hidden mb-3 select-none">
+      <div
+        className="absolute inset-0 flex items-center justify-center"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
+        {slides[index].content}
+      </div>
+      {/* Arrows */}
+      <button
+        aria-label="Previous image"
+        onClick={prev}
+        disabled={index === 0}
+        className={`absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-gray-900 rounded-full shadow-md border border-gray-200 w-9 h-9 flex items-center justify-center transition ${
+          index === 0 ? "opacity-60 cursor-not-allowed" : "opacity-100"
+        }`}
+        style={{ backdropFilter: "blur(4px)" }}
+      >
+        <svg width="22" height="22" fill="none" viewBox="0 0 22 22"><path d="M13.75 17.417 8.333 12l5.417-5.417" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+      </button>
+      <button
+        aria-label="Next image"
+        onClick={next}
+        disabled={index === slides.length - 1}
+        className={`absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-gray-900 rounded-full shadow-md border border-gray-200 w-9 h-9 flex items-center justify-center transition ${
+          index === slides.length - 1 ? "opacity-60 cursor-not-allowed" : "opacity-100"
+        }`}
+        style={{ backdropFilter: "blur(4px)" }}
+      >
+        <svg width="22" height="22" fill="none" viewBox="0 0 22 22"><path d="M8.25 17.417 13.667 12 8.25 6.583" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+      </button>
+      {/* Dots */}
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
         {slides.map((_, i) => (
           <button
             key={i}
-            onClick={() => setIndex(i)}
+            onClick={() => goTo(i)}
             className={`w-3 h-3 rounded-full border border-gray-300 transition ${index === i ? "bg-[#28a745]" : "bg-white"}`}
             aria-label={i === 0 ? "Product image" : "3D Preview"}
           />
@@ -253,7 +308,6 @@ export default function ProductPage({ params: { slug } }) {
                 >
                   −
                 </button>
-
                 <input
                   type="text"
                   inputMode="numeric"
@@ -313,41 +367,49 @@ export default function ProductPage({ params: { slug } }) {
             <p className="text-sm text-gray-600">Minimum order quantity is 1 case.</p>
           </div>
 
-          {/* Collapsible Specs - clean with soft border, no black outline */}
+          {/* Collapsible Specs - clean with fully rounded bottom */}
           <div className="space-y-4">
-            {specs.map(({ label, content }) => (
-              <div
-                key={label}
-                className="bg-white rounded-lg border border-gray-200 shadow-sm transition"
-              >
-                <button
-                  onClick={() => toggle(label)}
-                  className="w-full flex justify-between items-center px-4 py-3 bg-white hover:bg-gray-50 transition text-base rounded-t-lg"
-                  style={{ border: "none" }}
-                >
-                  <span className="font-medium">{label}</span>
-                  <span
-                    className={`transform transition-transform duration-200 ${
-                      openSections[label] ? "rotate-180" : ""
-                    }`}
-                  >
-                    ▼
-                  </span>
-                </button>
+            {specs.map(({ label, content }, idx) => {
+              // rounded-b-lg only on the last open dropdown
+              const isOpen = openSections[label];
+              // find if this is the last open dropdown
+              const openIndexes = specs.map((s, i) => openSections[s.label] ? i : -1).filter(i => i !== -1);
+              const isLastOpen = openIndexes.length > 0 && openIndexes[openIndexes.length - 1] === idx;
+
+              return (
                 <div
-                  className={`px-4 overflow-hidden transition-[max-height] duration-300 text-gray-700 text-sm bg-white ${
-                    openSections[label] ? "max-h-48 py-3" : "max-h-0 py-0"
-                  }`}
-                  style={{
-                    borderTop: "1px solid #f3f4f6",
-                  }}
+                  key={label}
+                  className={`bg-white rounded-lg border border-gray-200 shadow-sm transition ${isOpen && isLastOpen ? "rounded-b-lg" : ""}`}
                 >
-                  {content.map((line, i) => (
-                    <p key={i}>{line}</p>
-                  ))}
+                  <button
+                    onClick={() => toggle(label)}
+                    className={`w-full flex justify-between items-center px-4 py-3 bg-white hover:bg-gray-50 transition text-base rounded-t-lg`}
+                    style={{ border: "none" }}
+                  >
+                    <span className="font-medium">{label}</span>
+                    <span
+                      className={`transform transition-transform duration-200 ${
+                        openSections[label] ? "rotate-180" : ""
+                      }`}
+                    >
+                      ▼
+                    </span>
+                  </button>
+                  <div
+                    className={`px-4 overflow-hidden transition-[max-height] duration-300 text-gray-700 text-sm bg-white ${
+                      openSections[label] ? "max-h-48 py-3 rounded-b-lg" : "max-h-0 py-0"
+                    }`}
+                    style={{
+                      borderTop: "1px solid #f3f4f6",
+                    }}
+                  >
+                    {content.map((line, i) => (
+                      <p key={i}>{line}</p>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Mobile Overview */}
