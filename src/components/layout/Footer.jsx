@@ -12,7 +12,7 @@ export default function Footer() {
         "
       >
         {/* Logo & Tagline */}
-        <div className="flex-1 min-w-[200px] pt-2 pb-2">
+        <div className="flex-1 min-w-[200px] pt-2 pb-6 sm:pb-8">
           <h3 className="text-xl font-bold text-white mb-2">Allpac</h3>
           <p className="text-sm leading-relaxed">
             Wholesale paper cups delivered fast. <br />
@@ -21,7 +21,7 @@ export default function Footer() {
         </div>
 
         {/* Navigation Links */}
-        <div className="flex-1 min-w-[200px] pt-2 pb-2">
+        <div className="flex-1 min-w-[200px] pt-2 pb-6 sm:pb-8">
           <h4 className="text-lg font-semibold text-white mb-3">Quick Links</h4>
           <ul className="space-y-2 text-sm">
             <li><Link href="/" className="hover:text-white">Home</Link></li>
@@ -32,7 +32,7 @@ export default function Footer() {
         </div>
 
         {/* Contact Info */}
-        <div className="flex-1 min-w-[200px] pt-2 pb-2">
+        <div className="flex-1 min-w-[200px] pt-2 pb-6 sm:pb-8">
           <h4 className="text-lg font-semibold text-white mb-3">Contact</h4>
           <address className="not-italic text-sm mb-1">
             <a
@@ -55,8 +55,6 @@ export default function Footer() {
               info@allpacgroup.com
             </a>
           </p>
-          {/* Add blank space at the bottom for breathing room */}
-          <div className="mt-6" />
         </div>
       </div>
 
