@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import PasswordReset from "./PasswordReset";
 import { useRouter } from "next/navigation";
 
 const styles = {
