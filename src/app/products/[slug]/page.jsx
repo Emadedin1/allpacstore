@@ -411,22 +411,6 @@ export default function ProductPage({ params: { slug } }) {
               );
             })}
           </div>
-
-          {/* Mobile Overview */}
-          <div className="md:hidden bg-gray-100 rounded-lg p-4">
-            <h2 className="text-xl font-semibold mb-2">Overview</h2>
-            <p className="text-gray-700 mb-2">{product.desc}</p>
-            <p className="text-gray-700 mb-1">
-              <strong>Material:</strong> {product.type}
-            </p>
-            <p className="text-gray-700 mb-1">
-              <strong>Case Qty:</strong> {product.qtyCase} cups
-            </p>
-            <p className="text-gray-700 mb-3">
-              <strong>Case Price:</strong> ${casePrice.toFixed(2)}
-            </p>
-            <p className="text-sm text-gray-600">Minimum order quantity is 500 cups.</p>
-          </div>
         </div>
       </div>
 
