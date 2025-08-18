@@ -15,6 +15,7 @@ export default function PasswordReset({
 
   const handleReset = async (e) => {
     e.preventDefault();
+    console.log("Submitting password reset for:", email);
     setLoading(true);
     setError("");
     setSuccess("");
