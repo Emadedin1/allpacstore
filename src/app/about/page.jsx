@@ -11,12 +11,12 @@ export default function AboutPage() {
       </div>
       
       {/* Warehouse Photo */}
-      <div className="w-full max-w-3xl mx-auto aspect-[16/7] rounded-xl overflow-hidden mb-6">
+      <div className="w-full max-w-3xl mx-auto aspect-[4/3] rounded-xl overflow-hidden mb-6">
       <Image 
         src="/images/warehouse.JPG" // match the exact name and subfolder
         alt="Allpac warehouse"
-        width={600}
-        height={500}
+        width={800}
+        height={300}
         className="w-full h-[220px] sm:h-[280px] object-cover rounded-xl"
         priority
       />
