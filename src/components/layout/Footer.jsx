@@ -52,7 +52,7 @@ export default function Footer() {
           <p className="text-sm">
             ✉️{" "}
             <a href="mailto:info@allpacgroup.com" className="hover:text-white">
-              info@allpacgroup.com
+              m.labak@allpacgroup.com
             </a>
           </p>
         </div>
