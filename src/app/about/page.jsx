@@ -25,7 +25,7 @@ export default function AboutPage() {
       {/* Hero */}
         <p className="text-lg text-gray-700">
           Based in Windsor, Ontario, Allpac was founded in 1999 and is one of Canada’s most trusted partners for paper cup solutions. 
-          From single cafés to major events, we deliver paper cups quicklu, with low minimums and premium quality.
+          From single cafés to major events, we deliver paper cups quickly, with low minimums and premium quality.
         </p>
 
       {/* Our Mission */}
