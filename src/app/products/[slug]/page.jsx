@@ -9,7 +9,6 @@ import { getProductBySlug, products } from "../../../data/products";
 import Cup3DPreview from "../../../components/Cup3DPreview";
 
 const DEFAULT_DESCRIPTOR = "Blank Single-Walled Paper Cup";
-
 const CASE_PRICE_OVERRIDE = {
   "10 oz": 51.5,
   "12 oz": 56.5,
@@ -46,7 +45,6 @@ export default function ProductPage({ params: { slug } }) {
       : product.priceCase || 0;
 
   const pricePerCup = caseQty ? casePrice / caseQty : 0;
-
   const { addItem, openCart, isOpen } = useCart();
 
   // qty stored in cups
@@ -135,7 +133,7 @@ export default function ProductPage({ params: { slug } }) {
   const pageTitle = buildTitle(product);
 
   return (
-    <main className="max-w-xl mx-auto w-full p-4 sm:p-8 space-y-8">
+    <main className="max-w-3xl mx-auto p-4 md:p-6 space-y-8">
       {/* Product Image */}
       <div className="relative w-full aspect-square bg-gray-50 rounded-2xl ring-1 ring-black/5 overflow-hidden shadow-sm">
         <Image
@@ -149,35 +147,18 @@ export default function ProductPage({ params: { slug } }) {
         />
       </div>
 
-      {/* Title & Price */}
-      <section className="space-y-1 text-center">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-2">{pageTitle}</h1>
-        <div className="flex items-center justify-center gap-3">
+      {/* Title, Price, Quantity, Add to Cart */}
+      <section className="space-y-3">
+        <h1 className="text-3xl sm:text-4xl font-bold">{pageTitle}</h1>
+        <div className="flex items-center gap-2">
           <span className="text-2xl font-extrabold text-[#28a745]">${casePrice.toFixed(2)}</span>
           <span className="text-base font-medium text-gray-500">per case</span>
         </div>
-        <span className="block text-sm text-gray-400">({caseQty} cups per case · ${pricePerCup.toFixed(3)}/cup)</span>
-      </section>
-
-      {/* Description & Specs */}
-      <section className="bg-gray-50 rounded-xl py-6 px-6 shadow flex flex-col gap-3">
-        <p className="text-lg text-gray-800">{product.desc}</p>
-        <ul className="flex flex-col gap-2 mt-3">
-          <li>
-            <span className="font-semibold text-gray-600">Material: </span>
-            <span className="text-gray-900">{product.type}</span>
-          </li>
-          <li>
-            <span className="font-semibold text-gray-600">Case Quantity: </span>
-            <span className="text-gray-900">{product.qtyCase} cups</span>
-          </li>
-        </ul>
-      </section>
-
-      {/* Quantity + Add to Cart */}
-      <section className="bg-white rounded-xl shadow px-6 py-6 flex flex-col gap-4">
-        <div className="flex flex-col items-center gap-2">
-          <label className="block font-medium text-sm mb-1">Quantity (cases)</label>
+        <span className="block text-sm text-gray-400">
+          ({caseQty} cups per case · ${pricePerCup.toFixed(3)}/cup)
+        </span>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 mt-2">
+          <label className="block font-medium text-sm">Quantity (cases)</label>
           <div
             className="inline-flex items-center overflow-hidden rounded-full shadow-sm"
             role="group"
@@ -216,19 +197,58 @@ export default function ProductPage({ params: { slug } }) {
               +
             </button>
           </div>
-          <span className="text-xs text-gray-500 mt-1">
+          <span className="text-xs text-gray-500 mt-1 sm:mt-0 sm:ml-2">
             {caseQty} cups per case (total: {qty.toLocaleString()} cups)
           </span>
-          <span className="font-semibold text-sm text-gray-800">
-            Subtotal: ${subtotal}
-          </span>
         </div>
+        <span className="font-semibold text-sm text-gray-800">
+          Subtotal: ${subtotal}
+        </span>
         <button
           onClick={handleAdd}
-          className="w-full py-3 rounded-lg text-base font-semibold bg-[#28a745] text-white hover:bg-[#218838] active:bg-[#1e7e34] cursor-pointer transition"
+          className="w-full py-3 rounded-lg text-base font-semibold bg-[#28a745] text-white hover:bg-[#218838] active:bg-[#1e7e34] cursor-pointer transition mt-2"
         >
           Add to Cart
         </button>
+      </section>
+
+      {/* Overview Section (was on the left, now here) */}
+      <section className="bg-gray-100 rounded-lg p-6 shadow">
+        <h2 className="text-2xl font-semibold mb-3">Overview</h2>
+        <p className="text-gray-700 mb-2">{product.desc}</p>
+        <p className="text-gray-700 mb-1">
+          <strong>Material:</strong> {product.type}
+        </p>
+        <p className="text-gray-700 mb-1">
+          <strong>Case Qty:</strong> {product.qtyCase} cups
+        </p>
+        <p className="text-gray-700 mb-3">
+          <strong>Case Price:</strong> ${casePrice.toFixed(2)}
+        </p>
+        <p className="text-sm text-gray-600">
+          Minimum order quantity is 1 case.
+        </p>
+      </section>
+
+      {/* Description/Specs Section */}
+      <section className="bg-white rounded-lg p-6 shadow">
+        <h3 className="text-lg font-semibold mb-3">Pricing Breakdown</h3>
+        <table className="w-full table-auto border-collapse">
+          <thead>
+            <tr>
+              <th className="border px-3 py-2 text-left">Size</th>
+              <th className="border px-3 py-2 text-left">Case Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(CASE_PRICE_OVERRIDE).map(([size, value]) => (
+              <tr key={size}>
+                <td className="border px-3 py-2">{size}</td>
+                <td className="border px-3 py-2">${value.toFixed(2)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </section>
 
       {/* 3D Preview */}
