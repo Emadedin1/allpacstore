@@ -45,11 +45,12 @@ export default function ProductPage({ params: { slug } }) {
       : product.priceCase || 0;
 
   const pricePerCup = caseQty ? casePrice / caseQty : 0;
+
   const { addItem, openCart, isOpen } = useCart();
 
   // qty stored in cups
   const [qty, setQty] = useState(caseQty);
-  const [caseInput, setCaseInput] = useState("1");
+  const [caseInput, setCaseInput] = useState("1"); // buffer allowing blank
 
   const selectedCases = Math.max(1, Math.round(qty / caseQty));
   const subtotal = (casePrice * selectedCases).toFixed(2);
@@ -130,144 +131,225 @@ export default function ProductPage({ params: { slug } }) {
     openCart();
   }
 
+  const specs = [
+    { label: "Description", content: product.desc.split(". ").filter(Boolean) },
+    { label: "Material", content: [product.type] },
+    { label: "Case Qty", content: [`${product.qtyCase} cups per case`] },
+  ];
+  const [openSections, setOpenSections] = useState(
+    specs.reduce((acc, s) => ({ ...acc, [s.label]: false }), {})
+  );
+  const toggle = (label) =>
+    setOpenSections((prev) => ({ ...prev, [label]: !prev[label] }));
+
   const pageTitle = buildTitle(product);
 
   return (
-    <main className="max-w-3xl mx-auto p-4 md:p-6 space-y-8">
-      {/* Product Image */}
-      <div className="relative w-full aspect-square bg-gray-50 rounded-2xl overflow-hidden">
-        <Image
-          src={product.imageHiRes || product.image}
-          alt={pageTitle}
-          fill
-          priority
-          quality={100}
-          sizes="(max-width: 640px) 90vw, 600px"
-          className="object-cover w-full h-full select-none transition-opacity duration-300"
-        />
-      </div>
-
-      {/* Title, Price, Quantity, Add to Cart */}
-      <section className="space-y-3">
-        <h1 className="text-3xl sm:text-4xl font-bold">{pageTitle}</h1>
-        <div className="flex items-center gap-2">
-          <span className="text-2xl font-extrabold text-[#28a745]">${casePrice.toFixed(2)}</span>
-          <span className="text-base font-medium text-gray-500">per case</span>
+    <main className="max-w-6xl mx-auto p-4 md:p-6 space-y-8">
+      {/* TOP SECTION */}
+      <div className="flex flex-col md:flex-row gap-8">
+        {/* Left Column */}
+        <div className="md:w-1/2 space-y-4">
+          {/* High-res main image container */}
+          <div
+            className="
+              relative aspect-square w-full
+              rounded-xl bg-gray-50
+              ring-1 ring-black/5
+              overflow-hidden
+            "
+          >
+            <Image
+              src={product.imageHiRes || product.image}
+              alt={pageTitle}
+              fill
+              priority
+              quality={100}
+              sizes="(max-width: 640px) 90vw, (max-width: 1100px) 50vw, 600px"
+              className="
+                object-cover
+                w-full h-full
+                select-none
+                transition-opacity
+                duration-300
+                transform-gpu
+              "
+            />
+          </div>
+          {/* 3D Preview (moved above overview) */}
+          <div className="w-full h-64 md:h-96">
+            <Cup3DPreview
+              modelURL={`/models/${slug}.glb`}
+              textureURL={"/textures/plain-white.png"}
+            />
+          </div>
+          {/* Overview (now below 3D preview) */}
+          <div className="hidden md:block bg-gray-100 rounded-lg p-6 mt-6">
+            <h2 className="text-2xl font-semibold mb-3">Overview</h2>
+            <p className="text-gray-700 mb-2">{product.desc}</p>
+            <p className="text-gray-700 mb-1">
+              <strong>Material:</strong> {product.type}
+            </p>
+            <p className="text-gray-700 mb-1">
+              <strong>Case Qty:</strong> {product.qtyCase} cups
+            </p>
+            <p className="text-gray-700 mb-3">
+              <strong>Case Price:</strong> ${casePrice.toFixed(2)}
+            </p>
+            <p className="text-sm text-gray-600">Minimum order quantity is 1 case.</p>
+          </div>
+          <div className="hidden md:block bg-white rounded-lg p-6 shadow mt-6">
+            <h3 className="text-lg font-semibold mb-3">Pricing Breakdown</h3>
+            <table className="w-full table-auto border-collapse">
+              <thead>
+                <tr>
+                  <th className="border px-3 py-2 text-left">Size</th>
+                  <th className="border px-3 py-2 text-left">Case Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(CASE_PRICE_OVERRIDE).map(([size, value]) => (
+                  <tr key={size}>
+                    <td className="border px-3 py-2">{size}</td>
+                    <td className="border px-3 py-2">${value.toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-        <span className="block text-sm text-gray-400">
-          ({caseQty} cups per case · ${pricePerCup.toFixed(3)}/cup)
-        </span>
 
-        {/* Quantity Selector */}
-        <div className="flex flex-col items-start gap-1 mt-4 w-full max-w-xs">
-          <label className="block font-medium text-sm mb-1">Quantity (cases)</label>
-          <div className="flex items-center gap-2 w-full">
-            <div className="inline-flex items-center rounded-full overflow-hidden border bg-white shadow w-28">
-              <button
-                type="button"
-                aria-label="Decrease quantity (one case)"
-                onClick={() => bump(-1)}
-                disabled={selectedCases <= 1}
-                className={`w-9 h-9 grid place-items-center text-white text-lg select-none ${
-                  selectedCases <= 1
-                    ? "bg-[#28a745]/60 cursor-not-allowed"
-                    : "bg-[#28a745] hover:bg-[#218838] active:bg-[#1e7e34]"
-                } focus:outline-none transition`}
+        {/* Right Column */}
+        <div className="md:w-1/2 space-y-6">
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <h1 className="text-2xl sm:text-3xl font-bold">{pageTitle}</h1>
+              <p className="text-gray-600 text-sm">{product.desc}</p>
+              <p className="text-lg font-semibold">${casePrice.toFixed(2)}/case</p>
+            </div>
+
+            <div className="space-y-1">
+              <label className="block font-medium text-sm">Quantity (cases)</label>
+              <div
+                className="inline-flex items-center overflow-hidden rounded-full shadow-sm"
+                role="group"
+                aria-label="Change quantity in cases"
               >
-                −
-              </button>
-              <input
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                aria-label="Number of cases"
-                value={caseInput}
-                onChange={handleCasesChange}
-                onBlur={handleCasesBlur}
-                onKeyDown={handleCasesKey}
-                className="appearance-none w-10 h-9 text-center bg-white text-[#28a745] font-semibold font-mono tabular-nums text-base outline-none"
-              />
+                <button
+                  type="button"
+                  aria-label="Decrease quantity (one case)"
+                  onClick={() => bump(-1)}
+                  disabled={selectedCases <= 1}
+                  className={`w-10 h-10 grid place-items-center text-white text-lg select-none ${
+                    selectedCases <= 1
+                      ? "bg-[#28a745]/60 cursor-not-allowed"
+                      : "bg-[#28a745] hover:bg-[#218838] active:bg-[#1e7e34]"
+                  } focus:outline-none`}
+                >
+                  −
+                </button>
+
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  aria-label="Number of cases"
+                  value={caseInput}
+                  onChange={handleCasesChange}
+                  onBlur={handleCasesBlur}
+                  onKeyDown={handleCasesKey}
+                  className="
+                    no-spinner appearance-none
+                    w-12 h-10
+                    text-center bg-white text-[#28a745]
+                    font-semibold font-mono tabular-nums text-base
+                    leading-none p-0
+                    outline-none focus:outline-none focus:ring-0
+                    cursor-text
+                    selection:bg-[#28a745]/20
+                  "
+                />
+
+                <button
+                  type="button"
+                  aria-label="Increase quantity (one case)"
+                  onClick={() => bump(1)}
+                  className="w-10 h-10 grid place-items-center bg-[#28a745] text-white text-lg select-none hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer focus:outline-none"
+                >
+                  +
+                </button>
+              </div>
+              <p className="text-xs text-gray-600">
+                {caseQty} cups per case (total cups: {qty.toLocaleString()})
+              </p>
+              <p className="font-semibold text-sm">Subtotal: ${subtotal}</p>
               <button
-                type="button"
-                aria-label="Increase quantity (one case)"
-                onClick={() => bump(1)}
-                className="w-9 h-9 grid place-items-center bg-[#28a745] text-white text-lg select-none hover:bg-[#218838] active:bg-[#1e7e34] cursor-pointer focus:outline-none transition"
+                onClick={handleAdd}
+                className="w-full mt-1 py-2 rounded-lg text-sm font-semibold bg-[#28a745] text-white hover:bg-[#218838] active:bg-[#1e7e34] cursor-pointer"
               >
-                +
+                Add to Cart
               </button>
             </div>
-            {/* Case info beside on desktop, below on mobile */}
-            <span className="hidden sm:inline text-xs text-gray-600">
-              {caseQty} cups per case (total: {qty.toLocaleString()} cups)
-            </span>
           </div>
-          {/* Show case info below controls on mobile */}
-          <span className="sm:hidden text-xs text-gray-600">
-            {caseQty} cups per case (total: {qty.toLocaleString()} cups)
-          </span>
-          <span className="font-semibold text-sm text-gray-800 mt-1">
-            Subtotal: ${subtotal}
-          </span>
-        </div>
 
-        <button
-          onClick={handleAdd}
-          className="w-full mt-3 py-3 rounded-lg text-base font-semibold bg-[#28a745] text-white hover:bg-[#218838] active:bg-[#1e7e34] cursor-pointer transition"
-        >
-          Add to Cart
-        </button>
-      </section>
-
-      {/* Overview Section */}
-      <section className="bg-gray-100 rounded-lg p-6 shadow">
-        <h2 className="text-2xl font-semibold mb-3">Overview</h2>
-        <p className="text-gray-700 mb-2">{product.desc}</p>
-        <p className="text-gray-700 mb-1">
-          <strong>Material:</strong> {product.type}
-        </p>
-        <p className="text-gray-700 mb-1">
-          <strong>Case Qty:</strong> {product.qtyCase} cups
-        </p>
-        <p className="text-gray-700 mb-3">
-          <strong>Case Price:</strong> ${casePrice.toFixed(2)}
-        </p>
-        <p className="text-sm text-gray-600">
-          Minimum order quantity is 1 case.
-        </p>
-      </section>
-
-      {/* Description/Specs Section */}
-      <section className="bg-white rounded-lg p-6 shadow">
-        <h3 className="text-lg font-semibold mb-3">Pricing Breakdown</h3>
-        <table className="w-full table-auto border-collapse">
-          <thead>
-            <tr>
-              <th className="border px-3 py-2 text-left">Size</th>
-              <th className="border px-3 py-2 text-left">Case Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Object.entries(CASE_PRICE_OVERRIDE).map(([size, value]) => (
-              <tr key={size}>
-                <td className="border px-3 py-2">{size}</td>
-                <td className="border px-3 py-2">${value.toFixed(2)}</td>
-              </tr>
+          {/* Collapsible Specs - CLEAN, MODERN */}
+          <div className="space-y-4">
+            {specs.map(({ label, content }) => (
+              <div
+                key={label}
+                className="bg-white rounded-lg transition shadow-sm border border-gray-200"
+              >
+                <button
+                  onClick={() => toggle(label)}
+                  className="w-full flex justify-between items-center px-4 py-3 bg-white hover:bg-gray-50 transition text-base rounded-t-lg"
+                  style={{ border: "none" }}
+                >
+                  <span className="font-medium">{label}</span>
+                  <span
+                    className={`transform transition-transform duration-200 ${
+                      openSections[label] ? "rotate-180" : ""
+                    }`}
+                  >
+                    ▼
+                  </span>
+                </button>
+                <div
+                  className={`px-4 overflow-hidden transition-[max-height] duration-300 text-gray-700 text-sm bg-white ${
+                    openSections[label] ? "max-h-48 py-3" : "max-h-0 py-0"
+                  }`}
+                  style={{
+                    borderTop: "1px solid #f3f4f6",
+                  }}
+                >
+                  {content.map((line, i) => (
+                    <p key={i}>{line}</p>
+                  ))}
+                </div>
+              </div>
             ))}
-          </tbody>
-        </table>
-      </section>
+          </div>
 
-      {/* 3D Preview */}
-      <section className="rounded-xl bg-gray-50 p-0 min-h-[200px] flex items-center justify-center shadow">
-        <Cup3DPreview
-          modelURL={`/models/${slug}.glb`}
-          textureURL={"/textures/plain-white.png"}
-        />
-      </section>
+          {/* Mobile Overview */}
+          <div className="md:hidden bg-gray-100 rounded-lg p-4">
+            <h2 className="text-xl font-semibold mb-2">Overview</h2>
+            <p className="text-gray-700 mb-2">{product.desc}</p>
+            <p className="text-gray-700 mb-1">
+              <strong>Material:</strong> {product.type}
+            </p>
+            <p className="text-gray-700 mb-1">
+              <strong>Case Qty:</strong> {product.qtyCase} cups
+            </p>
+            <p className="text-gray-700 mb-3">
+              <strong>Case Price:</strong> ${casePrice.toFixed(2)}
+            </p>
+            <p className="text-sm text-gray-600">Minimum order quantity is 500 cups.</p>
+          </div>
+        </div>
+      </div>
 
-      {/* Other Products */}
-      <section className="mt-10">
-        <h2 className="text-2xl font-bold mb-4 text-center">Other Products</h2>
+      {/* OTHER PRODUCTS SLIDER */}
+      <div>
+        <h2 className="text-2xl font-bold mb-4">Other Products</h2>
         <div
           className="
             flex gap-5
@@ -316,7 +398,12 @@ export default function ProductPage({ params: { slug } }) {
                         fill
                         quality={100}
                         sizes="230px"
-                        className="object-cover w-full h-full transform-gpu transition-transform duration-300"
+                        className="
+                          object-cover
+                          w-full h-full
+                          transform-gpu
+                          transition-transform duration-300
+                        "
                         priority={false}
                       />
                     </div>
@@ -337,7 +424,15 @@ export default function ProductPage({ params: { slug } }) {
                         e.stopPropagation();
                         addCaseToCart(p);
                       }}
-                      className="inline-flex h-10 w-full items-center justify-center rounded-md bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633] text-white text-sm font-medium hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1 transition-colors cursor-pointer"
+                      className="
+                        inline-flex h-10 w-full items-center justify-center
+                        rounded-md bg-[#1F8248] hover:bg-[#196D3D] active:bg-[#145633]
+                        text-white text-sm font-medium
+                        hover:shadow-sm
+                        focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
+                        transition-colors
+                        cursor-pointer
+                      "
                       aria-label={`Add 1 case of ${sizeTextInner} cups to cart`}
                     >
                       Add to Cart
@@ -347,7 +442,7 @@ export default function ProductPage({ params: { slug } }) {
               );
             })}
         </div>
-      </section>
+      </div>
     </main>
   );
 }
