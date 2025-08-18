@@ -54,7 +54,7 @@ export default function AboutPage() {
         <div className="grid md:grid-cols-3 gap-6 text-gray-700">
           <div className="space-y-2">
             <h3 className="font-semibold">1. Choose Cup Size</h3>
-            <p>Pick from 5 available sizes.</p>
+            <p>Pick from available sizes.</p>
           </div>
           <div className="space-y-2">
             <h3 className="font-semibold">2. Choose Quantity</h3>
