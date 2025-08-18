@@ -81,7 +81,7 @@ export default function ContactPage() {
               />
             </div>
             <div>
-              <label htmlFor="company" className="block font-medium mb-1">Company</label>
+              <label htmlFor="company" className="block font-medium mb-1">Company (optional)</label>
               <input
                 type="text"
                 id="company"
