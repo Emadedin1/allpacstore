@@ -135,7 +135,7 @@ export default function ProductPage({ params: { slug } }) {
   return (
     <main className="max-w-3xl mx-auto p-4 md:p-6 space-y-8">
       {/* Product Image */}
-      <div className="relative w-full aspect-square bg-gray-50 rounded-2xl ring-1 ring-black/5 overflow-hidden shadow-sm">
+      <div className="relative w-full aspect-square bg-gray-50 rounded-2xl overflow-hidden">
         <Image
           src={product.imageHiRes || product.image}
           alt={pageTitle}
@@ -157,62 +157,68 @@ export default function ProductPage({ params: { slug } }) {
         <span className="block text-sm text-gray-400">
           ({caseQty} cups per case · ${pricePerCup.toFixed(3)}/cup)
         </span>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 mt-2">
-          <label className="block font-medium text-sm">Quantity (cases)</label>
-          <div
-            className="inline-flex items-center overflow-hidden rounded-full shadow-sm"
-            role="group"
-            aria-label="Change quantity in cases"
-          >
-            <button
-              type="button"
-              aria-label="Decrease quantity (one case)"
-              onClick={() => bump(-1)}
-              disabled={selectedCases <= 1}
-              className={`w-10 h-10 grid place-items-center text-white text-lg select-none ${
-                selectedCases <= 1
-                  ? "bg-[#28a745]/60 cursor-not-allowed"
-                  : "bg-[#28a745] hover:bg-[#218838] active:bg-[#1e7e34]"
-              } focus:outline-none`}
-            >
-              −
-            </button>
-            <input
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              aria-label="Number of cases"
-              value={caseInput}
-              onChange={handleCasesChange}
-              onBlur={handleCasesBlur}
-              onKeyDown={handleCasesKey}
-              className="no-spinner appearance-none w-12 h-10 text-center bg-white text-[#28a745] font-semibold font-mono tabular-nums text-base leading-none p-0 outline-none focus:outline-none focus:ring-0 cursor-text selection:bg-[#28a745]/20"
-            />
-            <button
-              type="button"
-              aria-label="Increase quantity (one case)"
-              onClick={() => bump(1)}
-              className="w-10 h-10 grid place-items-center bg-[#28a745] text-white text-lg select-none hover:bg-[#196D3D] active:bg-[#145633] cursor-pointer focus:outline-none"
-            >
-              +
-            </button>
+
+        {/* Quantity Selector */}
+        <div className="flex flex-col items-start gap-1 mt-4 w-full max-w-xs">
+          <label className="block font-medium text-sm mb-1">Quantity (cases)</label>
+          <div className="flex items-center gap-2 w-full">
+            <div className="inline-flex items-center rounded-full overflow-hidden border bg-white shadow w-28">
+              <button
+                type="button"
+                aria-label="Decrease quantity (one case)"
+                onClick={() => bump(-1)}
+                disabled={selectedCases <= 1}
+                className={`w-9 h-9 grid place-items-center text-white text-lg select-none ${
+                  selectedCases <= 1
+                    ? "bg-[#28a745]/60 cursor-not-allowed"
+                    : "bg-[#28a745] hover:bg-[#218838] active:bg-[#1e7e34]"
+                } focus:outline-none transition`}
+              >
+                −
+              </button>
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                aria-label="Number of cases"
+                value={caseInput}
+                onChange={handleCasesChange}
+                onBlur={handleCasesBlur}
+                onKeyDown={handleCasesKey}
+                className="appearance-none w-10 h-9 text-center bg-white text-[#28a745] font-semibold font-mono tabular-nums text-base outline-none"
+              />
+              <button
+                type="button"
+                aria-label="Increase quantity (one case)"
+                onClick={() => bump(1)}
+                className="w-9 h-9 grid place-items-center bg-[#28a745] text-white text-lg select-none hover:bg-[#218838] active:bg-[#1e7e34] cursor-pointer focus:outline-none transition"
+              >
+                +
+              </button>
+            </div>
+            {/* Case info beside on desktop, below on mobile */}
+            <span className="hidden sm:inline text-xs text-gray-600">
+              {caseQty} cups per case (total: {qty.toLocaleString()} cups)
+            </span>
           </div>
-          <span className="text-xs text-gray-500 mt-1 sm:mt-0 sm:ml-2">
+          {/* Show case info below controls on mobile */}
+          <span className="sm:hidden text-xs text-gray-600">
             {caseQty} cups per case (total: {qty.toLocaleString()} cups)
           </span>
+          <span className="font-semibold text-sm text-gray-800 mt-1">
+            Subtotal: ${subtotal}
+          </span>
         </div>
-        <span className="font-semibold text-sm text-gray-800">
-          Subtotal: ${subtotal}
-        </span>
+
         <button
           onClick={handleAdd}
-          className="w-full py-3 rounded-lg text-base font-semibold bg-[#28a745] text-white hover:bg-[#218838] active:bg-[#1e7e34] cursor-pointer transition mt-2"
+          className="w-full mt-3 py-3 rounded-lg text-base font-semibold bg-[#28a745] text-white hover:bg-[#218838] active:bg-[#1e7e34] cursor-pointer transition"
         >
           Add to Cart
         </button>
       </section>
 
-      {/* Overview Section (was on the left, now here) */}
+      {/* Overview Section */}
       <section className="bg-gray-100 rounded-lg p-6 shadow">
         <h2 className="text-2xl font-semibold mb-3">Overview</h2>
         <p className="text-gray-700 mb-2">{product.desc}</p>
