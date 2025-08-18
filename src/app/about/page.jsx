@@ -24,16 +24,16 @@ export default function AboutPage() {
       
       {/* Hero */}
         <p className="text-lg text-gray-700">
-          Based in Windsor, Ontario, Allpac is Canada’s trusted partner for custom-printed paper cups. 
-          From single cafés to major events, we help brands stand out—one sustainable cup at a time.
+          Based in Windsor, Ontario, Allpac was founded in 1999 and is one of Canada’s most trusted partners for paper cup solutions. 
+          From single cafés to major events, we deliver paper cups quicklu, with low minimums and premium quality.
         </p>
 
       {/* Our Mission */}
       <section>
         <h2 className="text-2xl font-semibold mb-2">Our Mission</h2>
         <p className="text-gray-700">
-          To replace single-use plastic with eco-friendly paper packaging, while empowering local businesses
-          with vibrant, on-brand designs and reliable Canadian manufacturing.
+          We aim to replace single-use plastic with eco-friendly paper packaging, while
+          empowering local businesses with just-in-time delivery, and reliable Canadian manufacturing.
         </p>
       </section>
 
@@ -41,10 +41,10 @@ export default function AboutPage() {
       <section>
         <h2 className="text-2xl font-semibold mb-2">What We Do</h2>
         <ul className="list-disc list-inside text-gray-700 space-y-1">
-          <li>Produce 10 oz, 12 oz & 16 oz hot cups; 22 oz & 32 oz cold cups.</li>
-          <li>Custom-print full-color artwork at up to 2 cups/sec on a state-of-the-art forming line.</li>
-          <li>Offer both plain white stock and fully branded designs—EPR-compliant materials included.</li>
-          <li>Fast turnaround: Orders typically ship within 1–2 business days from our Ontario warehouse.</li>
+          <li>Produce 10 oz, 12 oz & 16 oz, 22 oz, and 32oz blank single-walled paper cups.</li>
+          <li>High-volume manufacturing capacity with state-of-the-art lines producing up to 2 cups per second.</li>
+          <li>Offer plain white stock designs made with EPR-compliant materials.</li>
+          <li>Fast turnaround: most orders ship within 1–2 business days from our Windsor, ON warehouse.</li>
         </ul>
       </section>
 
@@ -53,16 +53,16 @@ export default function AboutPage() {
         <h2 className="text-2xl font-semibold mb-4">How It Works</h2>
         <div className="grid md:grid-cols-3 gap-6 text-gray-700">
           <div className="space-y-2">
-            <h3 className="font-semibold">1. Upload Your Design</h3>
-            <p>Use our online uploader or email your print-ready file.</p>
+            <h3 className="font-semibold">1. Choose Cup Size</h3>
+            <p>Pick from 5 available sizes.</p>
           </div>
           <div className="space-y-2">
-            <h3 className="font-semibold">2. We Print & Inspect</h3>
-            <p>Our team checks layout, color, and performs a sample proof.</p>
+            <h3 className="font-semibold">2. Choose Quantity</h3>
+            <p>Select how many cases you need and add them to cart.</p>
           </div>
           <div className="space-y-2">
-            <h3 className="font-semibold">3. Delivery to You</h3>
-            <p>Get fast, reliable shipping anywhere in Canada—right to your door.</p>
+            <h3 className="font-semibold">3. Checkout</h3>
+            <p>Review your order, complete checkout, and we'll ship it fast.</p>
           </div>
         </div>
       </section>
@@ -81,7 +81,7 @@ export default function AboutPage() {
         <h2 className="text-2xl font-semibold mb-2">Community & Support</h2>
         <p className="text-gray-700">
           We’re passionate about Windsor’s local economy.
-          Whether you’re a new café or an established chain, our team is here to guide you every step of the way.
+          Whether you’re a new café or an established chain, we'll guide you in finding the right paper cup solutions.
         </p>
       </section>
     </div>
