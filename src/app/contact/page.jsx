@@ -12,7 +12,7 @@ export default function ContactPage() {
       {/* Hero */}
       <section className="mb-8">
         <p className="text-lg text-gray-700">
-          Questions about custom orders, pricing, or just want to say hi? Our Allpac team is here to help.
+          For questions about orders, pricing, or general inquiries, our team is here to help.
         </p>
       </section>
 
@@ -82,7 +82,7 @@ export default function ContactPage() {
             <textarea
               id="message"
               className="w-full border border-gray-300 p-2 rounded h-32"
-              placeholder="Tell us about your project..."
+              placeholder="Tell us about your order or inquiry..."
             ></textarea>
           </div>
           <button
