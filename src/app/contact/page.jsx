@@ -39,10 +39,11 @@ export default function ContactPage() {
               id="name"
               className="w-full border border-gray-300 p-2 rounded"
               placeholder="Your name"
+              required
             />
           </div>
           <div>
-            <label htmlFor="company" className="block font-medium mb-1">Company</label>
+            <label htmlFor="company" className="block font-medium mb-1">Company (optional)</label>
             <input
               type="text"
               id="company"
@@ -57,6 +58,7 @@ export default function ContactPage() {
               id="email"
               className="w-full border border-gray-300 p-2 rounded"
               placeholder="you@company.com"
+              required
             />
           </div>
           <div>
@@ -66,6 +68,7 @@ export default function ContactPage() {
               id="phone"
               className="w-full border border-gray-300 p-2 rounded"
               placeholder="(519) 555-1234"
+              required
             />
           </div>
           <div>
@@ -83,6 +86,7 @@ export default function ContactPage() {
               id="message"
               className="w-full border border-gray-300 p-2 rounded h-32"
               placeholder="Tell us about your order or inquiry..."
+              required
             ></textarea>
           </div>
           <button
