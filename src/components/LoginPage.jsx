@@ -190,6 +190,29 @@ export default function LoginPage({ mode: initialMode = "login" }) {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+        <div style={{ textAlign: "right" }}>
+        <PasswordReset
+          // This is the email API endpoint (see docs)
+          apiEndpoint="/api/auth/password-reset"
+          // You can customize button text and styling
+          buttonText="Forgot Password?"
+          buttonStyle={{
+            background: "none",
+            border: "none",
+            color: "#0070f3",
+            cursor: "pointer",
+            padding: 0,
+            margin: 0,
+            fontSize: "0.98rem",
+            fontWeight: 500,
+            textDecoration: "underline",
+          }}
+          inputStyle={{
+            ...styles.input,
+            marginTop: 12
+          }}
+        />
+      </div>
         <button type="submit" style={styles.button}>
           {mode === "login" ? "Login" : "Register"}
         </button>
