@@ -42,7 +42,6 @@ export const products = [
     specs: {
       Description: [
         "Most popular size, perfect for most drinks.",
-        "Wrap-around design shows off branding."
       ],
       Material: [
         "Base: Food-grade paperboard",
