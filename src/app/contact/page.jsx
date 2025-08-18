@@ -37,6 +37,9 @@ export default function ContactPage() {
           className="space-y-4"
           encType="multipart/form-data"
         >
+          {/* Redirect to home on success */}
+          <input type="hidden" name="_redirect" value="/" />
+
           <div>
             <label htmlFor="name" className="block font-medium mb-1">Name</label>
             <input
