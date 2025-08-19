@@ -1,95 +1,65 @@
-/* Tailwind directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* =========================================
-   Base CSS variables & global styles
-   ========================================= */
-@layer base {
-  :root {
-    --background: #ffffff;
-    --foreground: #171717;
 
-    /* Optional semantic tokens */
-    --surface: #ffffff;
-    --surface-alt: #f7f9fb;
-    --border-color: #e5e7eb;
-  }
-
-  html {
-    scroll-behavior: smooth;
-  }
-
-  body {
-    @apply bg-white text-gray-900 font-sans antialiased;
-    background: var(--background);
-    color: var(--foreground);
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-  }
-
-  a {
-    @apply text-inherit no-underline;
-  }
-
-  button {
-    @apply font-medium;
-  }
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
 }
 
-/* =========================================
-   Utilities / custom classes
-   ========================================= */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
 
-/* Paper Cups page grid */
+html {
+  scroll-behavior: smooth;
+}
+
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ==== Paper Cups page grid: match homepage density exactly ==== */
+/* Ensure your cups page section uses: <section id="cups-grid"> ... </section> */
 #cups-grid {
-  font-size: 1rem;
+  font-size: 1rem; /* normalize base font in case a parent sets text-sm */
 }
+
 #cups-grid .grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem; /* gap-3 */
+  gap: 0.75rem; /* Tailwind gap-3 */
 }
+
 @media (min-width: 1024px) {
   #cups-grid .grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1.5rem; /* gap-6 */
+    gap: 1.5rem; /* Tailwind gap-6 */
   }
 }
 
-/* Hide horizontal/any scrollbar (opt-in) */
+/* Hide horizontal scrollbar utility */
 .hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  -ms-overflow-style: none;       /* IE/Edge */
+  scrollbar-width: none;          /* Firefox */
 }
 .hide-scrollbar::-webkit-scrollbar {
-  display: none;
+  display: none;                  /* Chrome/Safari */
 }
 
-/* Remove number input spinners */
+/* NEW: remove number input spinner arrows cross‑browser */
 .no-spinner::-webkit-outer-spin-button,
 .no-spinner::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-.no-spinner[type="number"] {
-  -moz-appearance: textfield;
+.no-spinner[type=number] {
+  -moz-appearance: textfield; /* Firefox */
   appearance: textfield;
-}
-
-/* Hero blur helper (if you need a reusable class) */
-.hero-blur-overlay {
-  @apply absolute inset-0 bg-white/40 backdrop-blur-md;
-}
-
-/* Green primary button utility (matches cart) */
-.btn-primary {
-  @apply inline-flex items-center justify-center rounded-full h-11 px-6
-    bg-[#28a745] text-white font-semibold shadow-sm
-    hover:bg-[#218838] active:bg-[#1e7e34]
-    focus:outline-none focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
-    transition-colors;
-}
-.btn-primary:disabled {
-  @apply opacity-60 cursor-not-allowed;
 }
