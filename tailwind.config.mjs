@@ -9,7 +9,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        allpac: "#0d5694",
+        allpac: "#000000",
       },
     },
   },
