@@ -354,7 +354,7 @@ export default function ProductPage({ params: { slug } }) {
             <h2 className="text-2xl font-semibold mb-3">Overview</h2>
             <p className="text-gray-700 mb-2">{product.desc}</p>
             <p className="text-gray-700 mb-1">
-              <strong>Material:</strong> {product.type}
+              <strong>Material:</strong> Food-grade paperboard with PLA lining
             </p>
             <p className="text-gray-700 mb-1">
               <strong>Case Qty:</strong> {product.qtyCase} cups
