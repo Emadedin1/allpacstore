@@ -1,19 +1,23 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
+  const [token, setToken] = useState("");
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Get token from the URL query string
-  let token = "";
-  if (typeof window !== "undefined") {
-    const params = new URLSearchParams(window.location.search);
-    token = params.get("token") || "";
-  }
+  // Read token from URL in an effect (safer for SSR)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const t = params.get("token") || "";
+      setToken(t);
+      console.log("Reset page token:", t);
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,21 +32,43 @@ export default function ResetPasswordPage() {
     }
 
     try {
-      const res = await fetch("/api/auth/reset-password", {
+      console.log("Submitting password reset", { token, password });
+
+      // POST to your existing API route name (password-reset)
+      const res = await fetch("/api/auth/password-reset", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, password }),
       });
-      const data = await res.json();
+
+      const contentType = res.headers.get("content-type") || "";
+      let data;
+      if (contentType.includes("application/json")) {
+        data = await res.json();
+      } else {
+        data = await res.text();
+      }
+
+      console.log("Reset response:", res.status, data);
+
       if (res.ok) {
         setSuccess("Password reset successfully! You can now log in.");
+        setError("");
       } else {
-        setError(data.error || "Reset failed.");
+        // Surface helpful error messages from the server where possible
+        if (typeof data === "string") {
+          // sometimes servers return HTML/text for 4xx/5xx - show a short friendly message
+          setError(data || `Reset failed (status ${res.status}).`);
+        } else {
+          setError(data?.error || `Reset failed (status ${res.status}).`);
+        }
       }
     } catch (err) {
-      setError("An error occurred.");
+      console.error("Reset password fetch error:", err);
+      setError(err?.message || "An error occurred while contacting the server.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -63,7 +89,8 @@ export default function ResetPasswordPage() {
             padding: "10px 12px",
             borderRadius: 6,
             border: "1px solid #ddd",
-            fontSize: "1rem"
+            fontSize: "1rem",
+            boxSizing: "border-box"
           }}
           required
         />
@@ -83,9 +110,14 @@ export default function ResetPasswordPage() {
         >
           {loading ? "Resetting..." : "Reset Password"}
         </button>
+
         {error && <div style={{ color: "#e00", textAlign: "center" }}>{error}</div>}
         {success && <div style={{ color: "#090", textAlign: "center" }}>{success}</div>}
       </form>
+
+      <div style={{ marginTop: 10, fontSize: 12, color: "#777" }}>
+        Debug: token = {token ? token.slice(0, 8) + "…" : "<none>"}
+      </div>
     </div>
   );
 }
