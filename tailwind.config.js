@@ -4,6 +4,7 @@ module.exports = {
 
   content: [
     "./src/**/*.{js,ts,jsx,tsx}", // already included in your config
+    "./src/components/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {
