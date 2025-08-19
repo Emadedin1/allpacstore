@@ -206,10 +206,10 @@ export default function LoginPage({ mode: initialMode = "login" }) {
           </button>
         </div>
 
-        {/* Forgot Password placed under the button, aligned to the right */}
+                {/* Forgot Password placed under the button, aligned to the right */}
         <div style={{ textAlign: "right", marginTop: 8 }}>
           <PasswordReset
-            apiEndpoint="/api/auth/password-reset"
+            apiEndpoint="/api/auth/password-reset-request"
             buttonText="Forgot Password?"
             buttonStyle={{
               background: "none",
