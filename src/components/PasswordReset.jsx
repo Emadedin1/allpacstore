@@ -65,7 +65,7 @@ export default function PasswordReset({
       if (res.ok) {
         setSuccess(
           data?.message ||
-            "If that email is registered we sent a reset link. Check your inbox."
+            "Reset link has been sent to your email."
         );
         setError("");
       } else {
