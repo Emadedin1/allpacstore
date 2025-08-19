@@ -4,11 +4,14 @@ import React, { useState } from "react";
 
 /**
  * PasswordReset component (collapsed by default)
- * Props:
- *  - apiEndpoint: endpoint to POST { email } for sending the reset email
- *                 (default "/api/auth/password-reset-request")
- *  - buttonText: visible link text to open the reset UI (default "Forgot Password?")
- *  - buttonStyle, inputStyle: optional inline style overrides
+ * - Renders as a block that fills the parent column so the input matches other fields.
+ * - Does NOT use a nested <form> so it won't break the parent Login form.
+ * - POSTs { email } to the apiEndpoint you pass (default: /api/auth/password-reset-request).
+ *
+ * Usage:
+ *  <div style={{ marginTop: 12 }}>
+ *    <PasswordReset apiEndpoint="/api/auth/password-reset-request" />
+ *  </div>
  */
 export default function PasswordReset({
   apiEndpoint = "/api/auth/password-reset-request",
@@ -50,8 +53,6 @@ export default function PasswordReset({
 
     setLoading(true);
     try {
-      console.log("PasswordReset: sending reset request to", apiEndpoint, "email:", email);
-
       const res = await fetch(apiEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -61,12 +62,10 @@ export default function PasswordReset({
       const contentType = res.headers.get("content-type") || "";
       const data = contentType.includes("application/json") ? await res.json() : await res.text();
 
-      console.log("PasswordReset response:", res.status, data);
-
       if (res.ok) {
         setSuccess(
           data?.message ||
-            "If that email is registered we sent a reset link. Check your inbox."
+            "Reset link has been sent to your email."
         );
         setError("");
       } else {
@@ -85,27 +84,31 @@ export default function PasswordReset({
   };
 
   return (
-    <div style={{ display: "inline-block" }}>
+    // Use a block-level container that fills the form column
+    <div style={{ display: "block", width: "100%" }}>
       {!open && (
-        <button
-          type="button"
-          onClick={handleOpen}
-          style={{
-            background: "none",
-            border: "none",
-            color: "#0070f3",
-            cursor: "pointer",
-            textDecoration: "underline",
-            padding: 0,
-            fontSize: "0.98rem",
-            ...buttonStyle,
-          }}
-        >
-          {buttonText}
-        </button>
+        <div style={{ textAlign: "right" }}>
+          <button
+            type="button"
+            onClick={handleOpen}
+            style={{
+              background: "none",
+              border: "none",
+              color: "#0070f3",
+              cursor: "pointer",
+              textDecoration: "underline",
+              padding: 0,
+              fontSize: "0.98rem",
+              ...buttonStyle,
+            }}
+          >
+            {buttonText}
+          </button>
+        </div>
       )}
 
       {open && (
+        // Keep the reset UI in the same width/flow as other inputs
         <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
           <input
             type="email"
@@ -119,12 +122,13 @@ export default function PasswordReset({
               }
             }}
             style={{
-              padding: "8px 10px",
+              padding: "10px 12px",
               borderRadius: 6,
-              border: "1px solid #ccc",
+              border: "1px solid #ddd",
               fontSize: "0.95rem",
               boxSizing: "border-box",
-              width: "100%",         // <-- full width to match other inputs
+              width: "100%",            // ensure full width to match other inputs
+              maxWidth: "100%",
               ...inputStyle,
             }}
             required

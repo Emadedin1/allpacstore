@@ -3,17 +3,7 @@ import { MongoClient, ObjectId } from "mongodb";
 
 const client = new MongoClient(process.env.MONGODB_URI);
 
-/**
- * POST /api/auth/password-reset
- * Body: { token, password, email? }
- *
- * Behavior:
- * - Prefer the email stored on the password reset record (reset.email).
- * - If reset.email is missing but reset.userId exists, look up the user by _id and use their email.
- * - If neither is available, fall back to the email provided in the request body (bodyEmail).
- * - Hash the new password and update the user's document. If update fails but reset.userId exists,
- *   try updating by _id as a fallback.
- */
+
 export async function POST(req) {
   try {
     const { token, password, email: bodyEmail } = await req.json();
@@ -31,7 +21,7 @@ export async function POST(req) {
       return new Response(JSON.stringify({ error: "Invalid or expired token." }), { status: 400 });
     }
 
-    // Expiry check (if your records use expires as a timestamp)
+    // Expiry check
     if (reset.expires && Date.now() > reset.expires) {
       await db.collection("passwordResets").deleteOne({ token });
       return new Response(JSON.stringify({ error: "Token expired." }), { status: 400 });
@@ -50,11 +40,10 @@ export async function POST(req) {
         }
       } catch (err) {
         console.warn("Could not resolve reset.userId to a user:", err?.message || err);
-        // continue to other fallbacks
       }
     }
 
-    // Fallback to email supplied by client (less ideal but supported)
+    // Fallback to email supplied by client (supported but less ideal)
     if (!email && bodyEmail) {
       email = bodyEmail;
     }
@@ -95,7 +84,6 @@ export async function POST(req) {
     console.error("reset-password error:", err);
     return new Response(JSON.stringify({ error: "Server error." }), { status: 500 });
   } finally {
-    // keep DB connection open for reuse in serverless environments, or close if you prefer:
-    // await client.close();
+    // keep DB connection open for reuse if desired
   }
 }
