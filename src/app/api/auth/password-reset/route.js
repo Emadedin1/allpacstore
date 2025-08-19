@@ -1,85 +1,99 @@
-import { MongoClient } from "mongodb";
-import crypto from "crypto";
+import bcrypt from "bcryptjs";
+import { MongoClient, ObjectId } from "mongodb";
 
 const client = new MongoClient(process.env.MONGODB_URI);
 
 /**
- * POST /api/auth/password-reset-request
- * Body: { email }
+ * POST /api/auth/password-reset
+ * Body: { token, password, email? }
  *
- * - Creates/updates a passwordResets record { token, email, userId?, expires }
- * - Logs the reset URL when no mailer is configured, or tries to send via SendGrid if configured.
- * - Returns a generic success message so the API does not reveal whether the email exists.
+ * Behavior:
+ * - Look up the token in passwordResets.
+ * - Verify expiry.
+ * - Resolve the user's email (prefer reset.email, then reset.userId lookup, then client-supplied email).
+ * - Hash the new password and update the user document.
+ * - Delete the passwordResets token record to prevent reuse.
  */
 export async function POST(req) {
   try {
-    const { email } = await req.json();
+    const { token, password, email: bodyEmail } = await req.json();
 
-    if (!email || typeof email !== "string") {
-      return new Response(JSON.stringify({ error: "Valid email is required." }), { status: 400 });
+    if (!token || !password) {
+      return new Response(JSON.stringify({ error: "Token and new password are required." }), { status: 400 });
     }
 
     await client.connect();
     const db = client.db();
 
-    // Normalize email
-    const normalizedEmail = email.trim().toLowerCase();
-
-    // Try to find the user to optionally attach userId
-    const user = await db.collection("users").findOne({ email: normalizedEmail });
-
-    // Create a secure token and expiry
-    const token = crypto.randomBytes(32).toString("hex");
-    const expires = Date.now() + 1000 * 60 * 60; // 1 hour
-
-    const resetDoc = {
-      token,
-      email: normalizedEmail,
-      expires,
-      createdAt: Date.now(),
-    };
-    if (user && user._id) resetDoc.userId = user._id;
-
-    // Upsert reset record by email (replace any existing one)
-    await db.collection("passwordResets").updateOne(
-      { email: normalizedEmail },
-      { $set: resetDoc },
-      { upsert: true }
-    );
-
-    // Build reset URL for sending/logging
-    const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || "http://localhost:3000").replace(/\/$/, "");
-    const resetUrl = `${baseUrl}/reset-password?token=${encodeURIComponent(token)}`;
-
-    // Try to send email via SendGrid if configured (adapt if you use a different provider)
-    if (process.env.SENDGRID_API_KEY) {
-      try {
-        // dynamic import avoids require() ESLint errors
-        const sgMailModule = await import("@sendgrid/mail");
-        const sgMail = sgMailModule?.default || sgMailModule;
-        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-        await sgMail.send({
-          to: normalizedEmail,
-          from: process.env.EMAIL_FROM || "no-reply@example.com",
-          subject: "Reset your password",
-          text: `Reset your password using this link:\n\n${resetUrl}`,
-          html: `<p>Reset your password using this link:</p><p><a href="${resetUrl}">${resetUrl}</a></p>`,
-        });
-        console.log("Password reset email sent to", normalizedEmail);
-      } catch (err) {
-        console.warn("SendGrid send failed:", err?.message || err);
-      }
-    } else {
-      // No mailer configured: log the URL so you can test manually
-      console.log("Password reset link (no mailer configured):", resetUrl);
+    // Find reset record by token
+    const reset = await db.collection("passwordResets").findOne({ token });
+    if (!reset) {
+      return new Response(JSON.stringify({ error: "Invalid or expired token." }), { status: 400 });
     }
 
-    // Always return a generic message
-    return new Response(JSON.stringify({ message: "If that email is registered we sent a reset link." }), { status: 200 });
+    // Expiry check
+    if (reset.expires && Date.now() > reset.expires) {
+      await db.collection("passwordResets").deleteOne({ token });
+      return new Response(JSON.stringify({ error: "Token expired." }), { status: 400 });
+    }
+
+    // Determine email to use
+    let email = reset.email || null;
+
+    // If no email on reset record, try to resolve from reset.userId
+    if (!email && reset.userId) {
+      try {
+        const userId = typeof reset.userId === "string" ? new ObjectId(reset.userId) : reset.userId;
+        const user = await db.collection("users").findOne({ _id: userId });
+        if (user && user.email) {
+          email = user.email;
+        }
+      } catch (err) {
+        console.warn("Could not resolve reset.userId to a user:", err?.message || err);
+      }
+    }
+
+    // Fallback to email supplied by client (supported but less ideal)
+    if (!email && bodyEmail) {
+      email = bodyEmail;
+    }
+
+    if (!email) {
+      return new Response(JSON.stringify({ error: "Email is required and token is not linked to a user." }), { status: 400 });
+    }
+
+    // Hash new password and update user by email
+    const hashed = await bcrypt.hash(password, 10);
+    let updateRes = await db.collection("users").updateOne(
+      { email },
+      { $set: { password: hashed } }
+    );
+
+    // If no user matched by email but we have a userId, try updating by _id
+    if (updateRes.matchedCount === 0 && reset.userId) {
+      try {
+        const userId = typeof reset.userId === "string" ? new ObjectId(reset.userId) : reset.userId;
+        updateRes = await db.collection("users").updateOne(
+          { _id: userId },
+          { $set: { password: hashed } }
+        );
+      } catch (err) {
+        console.warn("Fallback update by userId failed:", err?.message || err);
+      }
+    }
+
+    if (updateRes.matchedCount === 0) {
+      return new Response(JSON.stringify({ error: "User not found." }), { status: 404 });
+    }
+
+    // Delete token record to prevent reuse
+    await db.collection("passwordResets").deleteOne({ token });
+
+    return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (err) {
-    console.error("password-reset-request error:", err);
+    console.error("reset-password error:", err);
     return new Response(JSON.stringify({ error: "Server error." }), { status: 500 });
   } finally {
-    // optional: keep DB connection open for reuse
+    // keep DB connection open for reuse if desired
   }
 }
