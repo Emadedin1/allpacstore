@@ -5,8 +5,9 @@ import React, { useState } from "react";
 /**
  * PasswordReset component (collapsed by default)
  * Props:
- *  - apiEndpoint: endpoint to POST { email } for sending the reset email (default "/api/auth/password-reset-request")
- *  - buttonText: visible link/button text to open the reset UI (default "Forgot Password?")
+ *  - apiEndpoint: endpoint to POST { email } for sending the reset email
+ *                 (default "/api/auth/password-reset-request")
+ *  - buttonText: visible link text to open the reset UI (default "Forgot Password?")
  *  - buttonStyle, inputStyle: optional inline style overrides
  */
 export default function PasswordReset({
@@ -123,7 +124,7 @@ export default function PasswordReset({
               border: "1px solid #ccc",
               fontSize: "0.95rem",
               boxSizing: "border-box",
-              width: 260,
+              width: "100%",         // <-- full width to match other inputs
               ...inputStyle,
             }}
             required
