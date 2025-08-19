@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import PasswordReset from "./PasswordReset";
 import { useRouter } from "next/navigation";
 
 const styles = {
@@ -24,20 +25,23 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     gap: "16px",
+    alignItems: "stretch", // allow children (inputs & button) to fill the full width
   },
   input: {
+    width: "100%", // make inputs full width of the form
     padding: "10px 12px",
     borderRadius: "6px",
     border: "1px solid #ddd",
     fontSize: "1rem",
     outline: "none",
     transition: "border-color 0.2s",
+    boxSizing: "border-box",
   },
   inputFocus: {
     borderColor: "#0070f3",
   },
   button: {
-    padding: "10px 0",
+    padding: "10px 16px",
     borderRadius: "6px",
     border: "none",
     background: "#0070f3",
@@ -46,6 +50,7 @@ const styles = {
     fontSize: "1rem",
     cursor: "pointer",
     transition: "background 0.2s",
+    minWidth: 120,
   },
   buttonSwitch: {
     background: "#fff",
@@ -89,59 +94,59 @@ export default function LoginPage({ mode: initialMode = "login" }) {
 
   // Read the base URL from an env var, fall back to current origin
   const API_BASE =
-    process.env.NEXT_PUBLIC_API_BASE_URL || window.location.origin;
+    process.env.NEXT_PUBLIC_API_BASE_URL || (typeof window !== "undefined" ? window.location.origin : "");
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError("");
-  setSuccess("");
+    e.preventDefault();
+    setError("");
+    setSuccess("");
 
-  const endpoint = mode === "login" ? "login" : "register";
-  const url = `${API_BASE}/api/auth/${endpoint}`;
+    const endpoint = mode === "login" ? "login" : "register";
+    const url = `${API_BASE}/api/auth/${endpoint}`;
 
-  const payload =
-    mode === "login"
-      ? { email, password }
-      : { email, password, name };
+    const payload =
+      mode === "login"
+        ? { email, password }
+        : { email, password, name };
 
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const data = await res.json();
-    console.log("LOGIN RESPONSE:", data);
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      console.log("LOGIN RESPONSE:", data);
 
-    if (res.ok) {
-      if (data.token) {
-        localStorage.setItem("token", data.token);
+      if (res.ok) {
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+        }
+        if (data.user && data.user.name) {
+          localStorage.setItem("name", data.user.name);
+          window.dispatchEvent(new Event("userNameChanged"));
+        }
+        setSuccess(
+          mode === "login"
+            ? "Login successful!"
+            : "Account created! You can now log in."
+        );
+        setError("");
+
+        // Redirect to homepage after successful login
+        if (mode === "login") {
+          setTimeout(() => {
+            router.push("/");
+          }, 500); // short delay for feedback
+        }
+      } else {
+        setError(data.error || "Something went wrong");
       }
-      if (data.user && data.user.name) {
-        localStorage.setItem("name", data.user.name);
-        window.dispatchEvent(new Event("userNameChanged"));
-      }
-      setSuccess(
-        mode === "login"
-          ? "Login successful!"
-          : "Account created! You can now log in."
-      );
-      setError("");
-
-      // Redirect to homepage after successful login
-      if (mode === "login") {
-        setTimeout(() => {
-          router.push("/");
-        }, 500); // short delay for feedback
-      }
-    } else {
-      setError(data.error || "Something went wrong");
+    } catch (err) {
+      console.error("LoginPage error:", err);
+      setError("Failed to reach server");
     }
-  } catch (err) {
-    console.error("LoginPage error:", err);
-    setError("Failed to reach server");
-  }
-};
+  };
 
   return (
     <div style={styles.container}>
@@ -190,35 +195,44 @@ export default function LoginPage({ mode: initialMode = "login" }) {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <div style={{ textAlign: "right" }}>
-        <PasswordReset
-          // This is the email API endpoint (see docs)
-          apiEndpoint="/api/auth/password-reset"
-          // You can customize button text and styling
-          buttonText="Forgot Password?"
-          buttonStyle={{
-            background: "none",
-            border: "none",
-            color: "#0070f3",
-            cursor: "pointer",
-            padding: 0,
-            margin: 0,
-            fontSize: "0.98rem",
-            fontWeight: 500,
-            textDecoration: "underline",
-          }}
-          inputStyle={{
-            ...styles.input,
-            marginTop: 12
-          }}
-        />
-      </div>
-        <button type="submit" style={styles.button}>
-          {mode === "login" ? "Login" : "Register"}
-        </button>
+
+        {/* Login button now matches the width of the inputs */}
+        <div style={{ width: "100%", marginTop: 6 }}>
+          <button
+            type="submit"
+            style={{ ...styles.button, width: "100%" }} // full width to match inputs
+          >
+            {mode === "login" ? "Login" : "Register"}
+          </button>
+        </div>
+
+        {/* Forgot Password placed under the button, aligned to the right */}
+        <div style={{ textAlign: "right", marginTop: 8 }}>
+          <PasswordReset
+            apiEndpoint="/api/auth/password-reset"
+            buttonText="Forgot Password?"
+            buttonStyle={{
+              background: "none",
+              border: "none",
+              color: "#0070f3",
+              cursor: "pointer",
+              padding: 0,
+              margin: 0,
+              fontSize: "0.98rem",
+              fontWeight: 500,
+              textDecoration: "underline",
+            }}
+            inputStyle={{
+              ...styles.input,
+              marginTop: 12
+            }}
+          />
+        </div>
+
         {error && <div style={styles.error}>{error}</div>}
         {success && <div style={styles.success}>{success}</div>}
       </form>
+
       <div style={styles.switch}>
         {mode === "login" ? (
           <span>
