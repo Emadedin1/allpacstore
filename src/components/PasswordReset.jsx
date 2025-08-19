@@ -1,85 +1,121 @@
 "use client";
+
 import React, { useState } from "react";
 
+/**
+ * PasswordReset component
+ * Props:
+ *  - apiEndpoint: path for "send reset email" endpoint (default: /api/auth/password-reset-request)
+ *  - buttonText: text for the submit button
+ *  - buttonStyle, inputStyle: optional inline styles
+ */
 export default function PasswordReset({
-  apiEndpoint = "/api/auth/password-reset",
-  buttonText = "Forgot Password?",
+  apiEndpoint = "/api/auth/password-reset-request",
+  buttonText = "Send Reset Email",
   buttonStyle = {},
   inputStyle = {},
 }) {
-  const [showInput, setShowInput] = useState(false);
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  // handleReset no longer expects a form submit event
-  const handleReset = async () => {
-    console.log("Submitting password reset for:", email);
+  const handleSend = async (e) => {
+    e && e.preventDefault();
     setLoading(true);
     setError("");
     setSuccess("");
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Please enter a valid email.");
+      setLoading(false);
+      return;
+    }
+
     try {
+      console.log("Sending reset email to", email, "endpoint:", apiEndpoint);
+
       const res = await fetch(apiEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      const data = await res.json();
-      if (res.ok) {
-        setSuccess("Password reset email sent!");
-        setEmail("");
-        setShowInput(false);
+
+      const contentType = res.headers.get("content-type") || "";
+      let data;
+      if (contentType.includes("application/json")) {
+        data = await res.json();
       } else {
-        setError(data.error || "Reset failed.");
+        data = await res.text();
+      }
+
+      console.log("PasswordReset response:", res.status, data);
+
+      if (res.ok) {
+        // Be generic for security: do not reveal whether the email exists
+        setSuccess(
+          data?.message ||
+            "If that email is registered we sent a reset link. Check your inbox."
+        );
+        setError("");
+      } else {
+        // Surface server-provided error when helpful
+        if (typeof data === "string") {
+          setError(data || `Request failed (status ${res.status})`);
+        } else {
+          setError(data?.error || `Request failed (status ${res.status})`);
+        }
       }
     } catch (err) {
-      console.error("Password reset fetch error:", err);
-      setError("An error occurred.");
+      console.error("PasswordReset fetch error:", err);
+      setError(err?.message || "Failed to contact the server.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
-    <div>
-      {showInput ? (
-        // Use a div (not a nested form) so this component works inside another form
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <input
-            type="email"
-            name="email" // fix browser warning about missing name/id
-            placeholder="Enter your email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            style={inputStyle}
-            required
-          />
-          <button
-            type="button"
-            style={{ ...buttonStyle, marginTop: 8 }}
-            disabled={loading}
-            onClick={() => {
-              console.log("PasswordReset submit button clicked");
-              handleReset();
-            }}
-          >
-            {loading ? "Sending..." : "Send Reset Email"}
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowInput(false)}
-            style={{ ...buttonStyle, marginTop: 4 }}
-          >
-            Cancel
-          </button>
-          {error && <div style={{ color: "#e00", fontSize: "0.98rem" }}>{error}</div>}
-          {success && <div style={{ color: "#090", fontSize: "0.98rem" }}>{success}</div>}
-        </div>
-      ) : (
-        <button type="button" style={buttonStyle} onClick={() => setShowInput(true)}>
-          {buttonText}
+    <form
+      onSubmit={handleSend}
+      style={{ display: "flex", flexDirection: "column", gap: 8 }}
+    >
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        style={{
+          padding: "8px 10px",
+          borderRadius: 6,
+          border: "1px solid #ccc",
+          fontSize: "0.95rem",
+          boxSizing: "border-box",
+          ...inputStyle,
+        }}
+        required
+      />
+      <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            background: "none",
+            border: "none",
+            color: "#0070f3",
+            cursor: "pointer",
+            textDecoration: "underline",
+            padding: 0,
+            fontSize: "0.95rem",
+            ...buttonStyle,
+          }}
+        >
+          {loading ? "Sending..." : buttonText}
         </button>
-      )}
-    </div>
+        {/* Optional cancel could be handled by parent; left out for portability */}
+      </div>
+
+      {error && <div style={{ color: "#e00", fontSize: 13 }}>{error}</div>}
+      {success && <div style={{ color: "#090", fontSize: 13 }}>{success}</div>}
+    </form>
   );
 }
