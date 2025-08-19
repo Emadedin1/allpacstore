@@ -1,200 +1,164 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCart } from "@/context/CartContext"; // adjust alias if needed
 
-const styles = {
-  wrapper: {
-    maxWidth: 900,
-    margin: "40px auto",
-    padding: "32px",
-    background: "#fff",
-    borderRadius: "16px",
-    boxShadow: "0 8px 32px rgba(0,0,0,0.10)",
-    fontFamily: "Segoe UI, Roboto, Arial, sans-serif",
-  },
-  title: {
-    fontSize: "2rem",
-    fontWeight: 700,
-    marginBottom: 14,
-    color: "#222",
-    textAlign: "center",
-  },
-  desc: {
-    marginBottom: 32,
-    color: "#666",
-    textAlign: "center",
-    fontSize: "1.08rem",
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-    marginBottom: 10,
-  },
-  th: {
-    background: "#f4f7fa",
-    color: "#222",
-    padding: "14px 10px",
-    fontWeight: 600,
-    borderBottom: "2px solid #e2e8f0",
-    textAlign: "left",
-  },
-  tr: {
-    borderBottom: "1px solid #f2f2f2",
-    transition: "background 0.2s",
-  },
-  td: {
-    padding: "14px 10px",
-    fontSize: "1.01rem",
-    color: "#444",
-    verticalAlign: "top",
-  },
-  status: {
-    padding: "5px 14px",
-    borderRadius: "16px",
-    fontWeight: 600,
-    display: "inline-block",
-  },
-  statusPaid: {
-    background: "#e7f9ed",
-    color: "#1a9850",
-  },
-  statusPending: {
-    background: "#fff4e5",
-    color: "#e65c00",
-  },
-  statusCancelled: {
-    background: "#ffe3e3",
-    color: "#d7263d",
-  },
-  empty: {
-    padding: "40px",
-    color: "#bbb",
-    textAlign: "center",
-    fontSize: "1.1rem",
-    fontStyle: "italic",
-  },
-  ordersContainer: {
-    overflowX: "auto",
-  },
+// Map sizes to slugs you use in /products/[slug]
+const SIZE_TO_SLUG = {
+  "10 oz": "10oz-hot-cup",
+  "12 oz": "12oz-hot-cup",
+  "16 oz": "16oz-hot-cup",
+  "22 oz": "22oz-cold-cup",
+  "32 oz": "32oz-cold-cup",
 };
-
-function formatDate(dateString) {
-  const date = new Date(dateString);
-  return date.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
-}
-
-function getStatusStyle(status) {
-  if (status === "Paid") return { ...styles.status, ...styles.statusPaid };
-  if (status === "Pending") return { ...styles.status, ...styles.statusPending };
-  if (status === "Cancelled") return { ...styles.status, ...styles.statusCancelled };
-  return styles.status;
-}
-
-// MOCK DATA - replace with API call!
-const MOCK_ORDERS = [
-  {
-    id: "O123456",
-    date: "2025-07-13T15:30:00Z",
-    total: 89.99,
-    status: "Paid",
-    items: [
-      { name: "Wireless Headphones", qty: 1, price: 59.99 },
-      { name: "USB-C Cable", qty: 2, price: 15 },
-    ],
-  },
-  {
-    id: "O123457",
-    date: "2025-06-28T18:00:00Z",
-    total: 24.99,
-    status: "Pending",
-    items: [
-      { name: "Bluetooth Mouse", qty: 1, price: 24.99 },
-    ],
-  },
-  {
-    id: "O123458",
-    date: "2025-05-12T12:20:00Z",
-    total: 39.90,
-    status: "Cancelled",
-    items: [
-      { name: "Desk Lamp", qty: 2, price: 19.95 },
-    ],
-  },
-];
 
 export default function OrderHistoryPage() {
   const router = useRouter();
-  const [orders, setOrders] = useState(null);
+  const { addItem, openCart } = useCart();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      router.replace("/login");
-    } else {
-      // TODO: Replace with real API call!
-      setTimeout(() => {
-        setOrders(MOCK_ORDERS);
-      }, 500);
-      // Example for real API:
-      // fetch("/api/orders", { headers: { Authorization: "Bearer " + token } })
-      //   .then(res => res.json())
-      //   .then(data => setOrders(data.orders))
-      //   .catch(() => setOrders([]));
+  const [orders, setOrders] = useState([]);
+  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const limit = 20;
+
+  const load = async (p = 1) => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch(`/api/orders?mine=1&page=${p}&limit=${limit}`, {
+        credentials: "include",
+      });
+      if (res.status === 401) {
+        router.push("/login?error=" + encodeURIComponent("Please log in to view your orders"));
+        return;
+      }
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error || "Failed to load orders");
+      setOrders(Array.isArray(data?.orders) ? data.orders : []);
+      setPages(Number(data?.pages || 1));
+    } catch (e) {
+      setError(e.message || "Failed to load orders");
+    } finally {
+      setLoading(false);
     }
-  }, [router]);
+  };
+
+  useEffect(() => { load(page); /* eslint-disable-next-line */ }, [page]);
+
+  const reorder = (order) => {
+    try {
+      (order.items || []).forEach((it) => {
+        const isCustom = String(it.designType || "").toLowerCase() === "custom";
+        const slug = SIZE_TO_SLUG[it.size] || "paper-cup"; // fallback slug if needed
+        const qtyCups = Number(it.quantity || 0) || 1000; // fallback 1 case = 1000 cups
+        const unit = Number(it.unitPrice || 0) || undefined; // per-cup price if available
+
+        // Minimal product stub for CartContext
+        const productStub = {
+          slug,
+          size: it.size,
+          image: "", // optional; keep empty if unknown
+          priceCase: unit ? unit * 1000 : undefined,
+          qtyCase: 1000,
+        };
+
+        const uploadedDesign = isCustom && it.designName
+          ? { name: it.designName }
+          : null;
+
+        addItem(
+          productStub,
+          qtyCups,
+          uploadedDesign,
+          "", // previewURL
+          isCustom ? "Custom" : "Plain White",
+          unit
+        );
+      });
+      openCart();
+    } catch (e) {
+      console.error("reorder error", e);
+      alert("Could not add items to cart.");
+    }
+  };
 
   return (
-    <div style={styles.wrapper}>
-      <div style={styles.title}>Order History</div>
-      <div style={styles.desc}>
-        Here you can review your past and current orders.
-      </div>
-      <div style={styles.ordersContainer}>
-        {!orders ? (
-          <div style={styles.empty}>Loading...</div>
-        ) : orders.length === 0 ? (
-          <div style={styles.empty}>You have not placed any orders yet.</div>
-        ) : (
-          <table style={styles.table}>
-            <thead>
+    <div className="p-6 space-y-4">
+      <h1 className="text-2xl font-bold">Your Orders</h1>
+
+      {loading ? (
+        <div>Loading…</div>
+      ) : error ? (
+        <div className="text-red-600">{error}</div>
+      ) : orders.length === 0 ? (
+        <div>You have no orders yet.</div>
+      ) : (
+        <div className="overflow-x-auto border rounded-2xl">
+          <table className="min-w-[920px] w-full">
+            <thead className="bg-gray-50">
               <tr>
-                <th style={styles.th}>Order #</th>
-                <th style={styles.th}>Date</th>
-                <th style={styles.th}>Items</th>
-                <th style={styles.th}>Total</th>
-                <th style={styles.th}>Status</th>
+                <th className="text-left p-3">Date</th>
+                <th className="text-left p-3">Items</th>
+                <th className="text-left p-3">Total</th>
+                <th className="text-left p-3">Status</th>
+                <th className="text-left p-3">Action</th>
               </tr>
             </thead>
             <tbody>
-              {orders.map((order) => (
-                <tr key={order.id} style={styles.tr}>
-                  <td style={styles.td}>{order.id}</td>
-                  <td style={styles.td}>{formatDate(order.date)}</td>
-                  <td style={styles.td}>
-                    <ul style={{ paddingLeft: 17, margin: 0 }}>
-                      {order.items.map((item, i) => (
-                        <li key={i}>
-                          <span style={{ fontWeight: 500 }}>{item.name}</span>
-                          {" × "}{item.qty}
-                          <span style={{ color: "#aaa", fontSize: "0.94em" }}>
-                            {" "}- ${item.price.toFixed(2)}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
+              {orders.map((o) => (
+                <tr key={o._id} className="border-t">
+                  <td className="p-3">{o.createdAt ? new Date(o.createdAt).toLocaleString() : "-"}</td>
+                  <td className="p-3">
+                    <div className="text-sm truncate max-w-[520px]">
+                      {Array.isArray(o.items)
+                        ? o.items
+                            .map((i) =>
+                              `${i.quantity}× ${i.size} ${String(i.designType).toLowerCase() === "custom" ? `(Custom: ${i.designName || ""})` : "Plain"}`
+                            )
+                            .join(", ")
+                        : "-"}
+                    </div>
                   </td>
-                  <td style={styles.td}>
-                    <span style={{ fontWeight: 600 }}>${order.total.toFixed(2)}</span>
+                  <td className="p-3">{o.totals?.grandTotal?.toFixed?.(2) ?? o.total ?? "-"} {o.totals?.currency || "CAD"}</td>
+                  <td className="p-3">
+                    <span className="px-2 py-1 text-sm rounded bg-gray-100">{o.status || "-"}</span>
                   </td>
-                  <td style={styles.td}>
-                    <span style={getStatusStyle(order.status)}>{order.status}</span>
+                  <td className="p-3">
+                    <button
+                      className="rounded px-3 py-1 border hover:shadow"
+                      onClick={() => reorder(o)}
+                    >
+                      Reorder
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        )}
+        </div>
+      )}
+
+      <div className="flex gap-2 items-center">
+        <button
+          disabled={page <= 1}
+          className="px-3 py-1 border rounded disabled:opacity-50"
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+        >
+          Prev
+        </button>
+        <div>
+          Page {page} / {pages}
+        </div>
+        <button
+          disabled={page >= pages}
+          className="px-3 py-1 border rounded disabled:opacity-50"
+          onClick={() => setPage((p) => p + 1)}
+        >
+          Next
+        </button>
       </div>
     </div>
   );

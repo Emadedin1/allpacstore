@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import PasswordReset from "./PasswordReset";
 import { useRouter } from "next/navigation";
 
+// Consistent style object (only longhand border props)
 const styles = {
   container: {
     maxWidth: 400,
@@ -24,19 +25,23 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     gap: "16px",
-    alignItems: "stretch", // allow children (inputs & button) to fill the full width
+    alignItems: "stretch",
   },
   input: {
-    width: "100%", // make inputs full width of the form
+    width: "100%",
     padding: "10px 12px",
     borderRadius: "6px",
-    border: "1px solid #ddd",
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: "#ddd",
     fontSize: "1rem",
     outline: "none",
     transition: "border-color 0.2s",
     boxSizing: "border-box",
   },
   inputFocus: {
+    borderWidth: 1,
+    borderStyle: "solid",
     borderColor: "#0070f3",
   },
   button: {
@@ -54,7 +59,9 @@ const styles = {
   buttonSwitch: {
     background: "#fff",
     color: "#0070f3",
-    border: "1px solid #0070f3",
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: "#0070f3",
     fontWeight: 500,
     padding: "8px 18px",
     borderRadius: "6px",
@@ -91,9 +98,9 @@ export default function LoginPage({ mode: initialMode = "login" }) {
   const [focus, setFocus] = useState(null);
   const router = useRouter();
 
-  // Read the base URL from an env var, fall back to current origin
   const API_BASE =
-    process.env.NEXT_PUBLIC_API_BASE_URL || (typeof window !== "undefined" ? window.location.origin : "");
+    process.env.NEXT_PUBLIC_API_BASE_URL ||
+    (typeof window !== "undefined" ? window.location.origin : "");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -102,42 +109,26 @@ export default function LoginPage({ mode: initialMode = "login" }) {
 
     const endpoint = mode === "login" ? "login" : "register";
     const url = `${API_BASE}/api/auth/${endpoint}`;
-
-    const payload =
-      mode === "login"
-        ? { email, password }
-        : { email, password, name };
+    const payload = mode === "login" ? { email, password } : { email, password, name };
 
     try {
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(payload),
       });
-      const data = await res.json();
-      console.log("LOGIN RESPONSE:", data);
+      const data = await res.json().catch(() => ({}));
 
       if (res.ok) {
-        if (data.token) {
-          localStorage.setItem("token", data.token);
-        }
-        if (data.user && data.user.name) {
+        if (data.token) localStorage.setItem("token", data.token);
+        if (data.user?.name) {
           localStorage.setItem("name", data.user.name);
           window.dispatchEvent(new Event("userNameChanged"));
         }
-        setSuccess(
-          mode === "login"
-            ? "Login successful!"
-            : "Account created! You can now log in."
-        );
+        setSuccess(mode === "login" ? "Login successful!" : "Account created! You can now log in.");
         setError("");
-
-        // Redirect to homepage after successful login
-        if (mode === "login") {
-          setTimeout(() => {
-            router.push("/");
-          }, 500); // short delay for feedback
-        }
+        if (mode === "login") setTimeout(() => router.push("/"), 500);
       } else {
         setError(data.error || "Something went wrong");
       }
@@ -149,19 +140,14 @@ export default function LoginPage({ mode: initialMode = "login" }) {
 
   return (
     <div style={styles.container}>
-      <div style={styles.title}>
-        {mode === "login" ? "Login" : "Create Account"}
-      </div>
+      <div style={styles.title}>{mode === "login" ? "Login" : "Create Account"}</div>
       <form style={styles.form} onSubmit={handleSubmit}>
         {mode === "register" && (
           <input
             type="text"
             placeholder="Name"
             value={name}
-            style={{
-              ...styles.input,
-              ...(focus === "name" ? styles.inputFocus : {}),
-            }}
+            style={{ ...styles.input, ...(focus === "name" ? styles.inputFocus : {}) }}
             onFocus={() => setFocus("name")}
             onBlur={() => setFocus(null)}
             onChange={(e) => setName(e.target.value)}
@@ -172,10 +158,8 @@ export default function LoginPage({ mode: initialMode = "login" }) {
           type="email"
           placeholder="Email"
           value={email}
-          style={{
-            ...styles.input,
-            ...(focus === "email" ? styles.inputFocus : {}),
-          }}
+          autoComplete="username"
+          style={{ ...styles.input, ...(focus === "email" ? styles.inputFocus : {}) }}
           onFocus={() => setFocus("email")}
           onBlur={() => setFocus(null)}
           onChange={(e) => setEmail(e.target.value)}
@@ -185,53 +169,39 @@ export default function LoginPage({ mode: initialMode = "login" }) {
           type="password"
           placeholder="Password"
           value={password}
-          style={{
-            ...styles.input,
-            ...(focus === "password" ? styles.inputFocus : {}),
-          }}
+          autoComplete="current-password"
+          style={{ ...styles.input, ...(focus === "password" ? styles.inputFocus : {}) }}
           onFocus={() => setFocus("password")}
           onBlur={() => setFocus(null)}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-
-        {/* Login button now matches the width of the inputs */}
         <div style={{ width: "100%", marginTop: 6 }}>
-          <button
-            type="submit"
-            style={{ ...styles.button, width: "100%" }} // full width to match inputs
-          >
+          <button type="submit" style={{ ...styles.button, width: "100%" }}>
             {mode === "login" ? "Login" : "Register"}
           </button>
         </div>
-
-                {/* Forgot Password placed under the button, aligned to the right */}
         <div style={{ textAlign: "right", marginTop: 8 }}>
-                  <PasswordReset
-          apiEndpoint="/api/auth/password-reset-request"
-          buttonText="Forgot Password?"
-          buttonStyle={{
-            background: "none",
-            border: "none",
-            color: "#0070f3",
-            cursor: "pointer",
-            padding: 0,
-            margin: 0,
-            fontSize: "0.98rem",
-            fontWeight: 500,
-            textDecoration: "underline",
-          }}
-          inputStyle={{
-            ...styles.input,
-            marginTop: 12
-          }}
-        />
+          <PasswordReset
+            apiEndpoint="/api/auth/password-reset-request"
+            buttonText="Forgot Password?"
+            buttonStyle={{
+              background: "none",
+              border: "none",
+              color: "#0070f3",
+              cursor: "pointer",
+              padding: 0,
+              margin: 0,
+              fontSize: "0.98rem",
+              fontWeight: 500,
+              textDecoration: "underline",
+            }}
+            inputStyle={{ ...styles.input, marginTop: 12 }}
+          />
         </div>
-
         {error && <div style={styles.error}>{error}</div>}
         {success && <div style={styles.success}>{success}</div>}
       </form>
-
       <div style={styles.switch}>
         {mode === "login" ? (
           <span>
