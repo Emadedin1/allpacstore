@@ -54,7 +54,7 @@ export async function POST(req) {
     // Try to send email via SendGrid if configured (adapt if you use a different provider)
     if (process.env.SENDGRID_API_KEY) {
       try {
-        // Use dynamic import instead of require() so ESLint doesn't complain
+        // dynamic import avoids require() ESLint errors
         const sgMailModule = await import("@sendgrid/mail");
         const sgMail = sgMailModule?.default || sgMailModule;
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -80,7 +80,6 @@ export async function POST(req) {
     console.error("password-reset-request error:", err);
     return new Response(JSON.stringify({ error: "Server error." }), { status: 500 });
   } finally {
-    // keep DB connection open for reuse; close if you prefer:
-    // await client.close();
+    // optional: keep DB connection open for reuse
   }
 }
