@@ -13,10 +13,7 @@ export default function Navbar() {
   const { openCart } = useCart();
 
   useEffect(() => {
-    function updateUserName() {
-      const name = localStorage.getItem("name");
-      setUserName(name || "");
-    }
+    const updateUserName = () => setUserName(localStorage.getItem("name") || "");
     updateUserName();
     window.addEventListener("storage", updateUserName);
     window.addEventListener("focus", updateUserName);
@@ -31,62 +28,47 @@ export default function Navbar() {
   useEffect(() => {
     if (!userMenuOpen) return;
     function handleClickOutside(e) {
-      const isInMenu = menuRef.current && menuRef.current.contains(e.target);
-      const isInDesktopBtn =
-        desktopUserButtonRef.current &&
-        desktopUserButtonRef.current.contains(e.target);
-      const isInMobileBtn =
-        mobileUserButtonRef.current &&
-        mobileUserButtonRef.current.contains(e.target);
-      if (!isInMenu && !isInDesktopBtn && !isInMobileBtn) {
+      const insideMenu = menuRef.current?.contains(e.target);
+      const insideDesktopBtn = desktopUserButtonRef.current?.contains(e.target);
+      const insideMobileBtn = mobileUserButtonRef.current?.contains(e.target);
+      if (!insideMenu && !insideDesktopBtn && !insideMobileBtn) {
         setUserMenuOpen(false);
       }
     }
     document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
+    return () => document.removeEventListener("click", handleClickOutside);
   }, [userMenuOpen]);
 
   const toggleUserMenu = (e) => {
     e.stopPropagation();
-    setUserMenuOpen((prev) => !prev);
+    setUserMenuOpen((p) => !p);
   };
 
   function UserDropdown() {
-    const dropdownItemClass =
-      "block px-4 py-2 text-gray-700 hover:bg-gray-100 cursor-pointer rounded-md focus:outline-none focus-visible:bg-gray-100";
+    const itemCls =
+      "block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100 rounded-md cursor-pointer focus:outline-none focus-visible:bg-gray-100";
     return (
       <div
         ref={menuRef}
-        onClick={(e) => e.stopPropagation()}
-        className="absolute z-50 right-0 mt-2 w-48 rounded-md shadow-lg bg-white"
+        className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black/5 z-50"
         style={{ top: "100%" }}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="py-1 flex flex-col" role="menu" aria-label="User menu">
           {!userName && (
             <>
-              <Link
-                href="/login"
-                className={dropdownItemClass}
-                onClick={() => setUserMenuOpen(false)}
-                role="menuitem"
-              >
+              <Link href="/login" className={itemCls} role="menuitem" onClick={() => setUserMenuOpen(false)}>
                 Login
               </Link>
-              <Link
-                href="/register"
-                className={dropdownItemClass}
-                onClick={() => setUserMenuOpen(false)}
-                role="menuitem"
-              >
+              <Link href="/register" className={itemCls} role="menuitem" onClick={() => setUserMenuOpen(false)}>
                 Create Account
               </Link>
             </>
           )}
           {userName && (
             <button
-              className={`${dropdownItemClass} text-left w-full`}
+              type="button"
+              className={`${itemCls} text-left w-full`}
               onClick={() => {
                 localStorage.removeItem("token");
                 localStorage.removeItem("name");
@@ -95,16 +77,15 @@ export default function Navbar() {
                 window.dispatchEvent(new Event("userNameChanged"));
               }}
               role="menuitem"
-              type="button"
             >
               Logout
             </button>
           )}
           <Link
             href="/order-history"
-            className={dropdownItemClass}
-            onClick={() => setUserMenuOpen(false)}
+            className={itemCls}
             role="menuitem"
+            onClick={() => setUserMenuOpen(false)}
           >
             Order History
           </Link>
@@ -113,75 +94,51 @@ export default function Navbar() {
     );
   }
 
-  // Small vertical adjustment for nav links (push down by 2px)
-  const navFontClass = "font-medium tracking-tight text-[1.08rem]";
-  // Light brand-green hover with rounded background
+  // Explicit black base text + subtle hover
+  const navFontClass = "font-medium tracking-tight text-[1.08rem] text-black";
   const navBtnClass =
-    "px-3 py-1 rounded-lg flex items-center transition-colors hover:bg-[#1F8248]/10 hover:text-[#1F8248] focus-visible:bg-[#1F8248]/15 focus-visible:text-[#1F8248] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1F8248]/40";
-  const navLinkStyle = { position: "relative", top: "2px" }; // pushes links down by 2px
+    "px-3 py-1 rounded-lg flex items-center transition-colors text-black hover:text-black/70 hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/30";
 
   return (
-    <header
-      className="bg-white shadow-md relative"
-      style={{ fontFamily: "Inter, Arial, Helvetica, sans-serif" }}
-    >
+    <header className="bg-white/70 backdrop-blur-md shadow-sm">
       <div className="max-w-7xl mx-auto px-4 py-4">
-        {/* Desktop navbar - logo, then right section */}
-        <div className="hidden sm:flex items-center justify-between w-full relative">
-          {/* Left: logo */}
+        {/* Desktop */}
+        <div className="hidden sm:flex items-center justify-between">
           <Link href="/">
-            <img
-              src="/images/allpac-logo.png"
-              alt="Allpac Logo"
-              className="h-12 w-auto"
-            />
+            <img src="/images/allpac-logo.png" alt="Allpac Logo" className="h-12 w-auto" />
           </Link>
-
-          {/* Right: nav links, cart, user */}
-          <div className="flex items-center gap-x-8">
-            <Link
-              href="/products"
-              className={`${navFontClass} ${navBtnClass}`}
-              style={navLinkStyle}
-            >
+          <div className="flex items-center gap-6">
+            <Link href="/products" className={`${navFontClass} ${navBtnClass} relative top-[2px]`}>
               Products
             </Link>
-            <Link
-              href="/about"
-              className={`${navFontClass} ${navBtnClass}`}
-              style={navLinkStyle}
-            >
+            <Link href="/about" className={`${navFontClass} ${navBtnClass} relative top-[2px]`}>
               About
             </Link>
-            <Link
-              href="/contact"
-              className={`${navFontClass} ${navBtnClass}`}
-              style={navLinkStyle}
-            >
+            <Link href="/contact" className={`${navFontClass} ${navBtnClass} relative top-[2px]`}>
               Contact
             </Link>
 
             <button
               onClick={openCart}
-              className="text-allpac hover:text-red-600 cursor-pointer flex items-center"
               aria-label="View cart"
               type="button"
+              className="text-black hover:text-black/70 transition-colors"
             >
               <ShoppingCart size={24} />
             </button>
 
-            <div className="relative flex items-center">
+            <div className="relative">
               <button
                 ref={desktopUserButtonRef}
                 onClick={toggleUserMenu}
-                className="group text-allpac hover:text-red-600 cursor-pointer flex items-center"
                 aria-label="Account"
                 type="button"
+                className="group text-black hover:text-black/70 transition-colors flex items-center"
               >
                 <User size={24} />
                 {userName && (
                   <span
-                    className="ml-2 font-semibold text-gray-800 max-w-[120px] truncate group-hover:text-red-600"
+                    className="ml-2 font-semibold text-gray-800 max-w-[140px] truncate group-hover:text-black/70"
                     title={userName}
                   >
                     {userName}
@@ -193,38 +150,33 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile navbar */}
-        <div className="flex flex-col sm:hidden w-full relative">
-          {/* Top row: logo, cart, user */}
-          <div className="flex items-center justify-between w-full">
+        {/* Mobile */}
+        <div className="flex flex-col sm:hidden">
+          <div className="flex items-center justify-between">
             <Link href="/">
-              <img
-                src="/images/allpac-logo.png"
-                alt="Allpac Logo"
-                className="h-12 w-auto"
-              />
+              <img src="/images/allpac-logo.png" alt="Allpac Logo" className="h-12 w-auto" />
             </Link>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center gap-4">
               <button
                 onClick={openCart}
-                className="text-allpac hover:text-red-600 cursor-pointer flex items-center"
                 aria-label="View cart"
                 type="button"
+                className="text-black hover:text-black/70 transition-colors"
               >
                 <ShoppingCart size={24} />
               </button>
-              <div className="relative flex items-center">
+              <div className="relative">
                 <button
                   ref={mobileUserButtonRef}
                   onClick={toggleUserMenu}
-                  className="group text-allpac hover:text-red-600 cursor-pointer flex items-center"
                   aria-label="Account"
                   type="button"
+                  className="group text-black hover:text-black/70 transition-colors flex items-center"
                 >
                   <User size={24} />
                   {userName && (
                     <span
-                      className="ml-2 font-semibold text-gray-800 max-w-[80px] truncate group-hover:text-red-600"
+                      className="ml-2 font-semibold text-gray-800 max-w-[80px] truncate group-hover:text-black/70"
                       title={userName}
                     >
                       {userName}
@@ -235,12 +187,8 @@ export default function Navbar() {
               </div>
             </div>
           </div>
-
-          {/* Thin horizontal line for mobile only */}
-          <hr className="border-t border-gray-300 mt-4 mb-0" />
-
-          {/* Second row: main nav links */}
-          <nav className="flex justify-center space-x-7 mt-2 text-allpac w-full">
+          <hr className="border-gray-200 mt-4" />
+          <nav className="flex justify-center gap-6 mt-2">
             <Link href="/products" className={`${navFontClass} ${navBtnClass}`}>
               Products
             </Link>
