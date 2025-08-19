@@ -208,25 +208,25 @@ export default function LoginPage({ mode: initialMode = "login" }) {
 
                 {/* Forgot Password placed under the button, aligned to the right */}
         <div style={{ textAlign: "right", marginTop: 8 }}>
-          <PasswordReset
-            apiEndpoint="/api/auth/password-reset-request"
-            buttonText="Forgot Password?"
-            buttonStyle={{
-              background: "none",
-              border: "none",
-              color: "#0070f3",
-              cursor: "pointer",
-              padding: 0,
-              margin: 0,
-              fontSize: "0.98rem",
-              fontWeight: 500,
-              textDecoration: "underline",
-            }}
-            inputStyle={{
-              ...styles.input,
-              marginTop: 12
-            }}
-          />
+                  <PasswordReset
+          apiEndpoint="/api/auth/password-reset-request"
+          buttonText="Forgot Password?"
+          buttonStyle={{
+            background: "none",
+            border: "none",
+            color: "#0070f3",
+            cursor: "pointer",
+            padding: 0,
+            margin: 0,
+            fontSize: "0.98rem",
+            fontWeight: 500,
+            textDecoration: "underline",
+          }}
+          inputStyle={{
+            ...styles.input,
+            marginTop: 12
+          }}
+        />
         </div>
 
         {error && <div style={styles.error}>{error}</div>}
