@@ -9,7 +9,7 @@ export default function Home() {
     <main className="min-h-screen bg-white text-allpac">
       {/* Hero Section */}
       <section
-        className="relative text-center py-14 px-4 bg-cover bg-[30%_center] sm:bg-center bg-no-repeat"
+        className="relative text-center py-14 px-4 bg-cover bg-[40%_center] sm:bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/hero-cups.png')" }}
       >
         <div className="absolute inset-0 bg-white/80 sm:bg-white/60 backdrop-blur-sm" />
