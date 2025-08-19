@@ -1,35 +1,32 @@
 "use client";
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 
-export default function AdminLoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const router = useRouter();
-  const from = useSearchParams().get("from") || "/admin";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-  async function onSubmit(e) {
-    e.preventDefault();
-    setError("");
-    const res = await fetch("/api/admin/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-    if (res.ok) router.push(from);
-    else setError("Invalid email or password");
-  }
+function LoginContent() {
+  const searchParams = useSearchParams();
+  const error = searchParams.get("error");
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
-      <form onSubmit={onSubmit} className="w-full max-w-sm space-y-4 border p-6 rounded-2xl shadow">
-        <h1 className="text-2xl font-semibold">Allpac Admin</h1>
-        <input className="w-full border rounded px-3 py-2" placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)} />
-        <input className="w-full border rounded px-3 py-2" type="password" placeholder="Password" value={password} onChange={(e)=>setPassword(e.target.value)} />
-        {error && <p className="text-red-600 text-sm">{error}</p>}
-        <button className="w-full rounded-2xl px-4 py-2 border hover:shadow">Sign in</button>
-      </form>
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="w-full max-w-md rounded bg-white p-6 shadow">
+        <h1 className="mb-4 text-xl font-bold">Admin Login</h1>
+        {error && (
+          <p className="mb-4 text-red-600">
+            {decodeURIComponent(error)}
+          </p>
+        )}
+        <input className="w-full border rounded px-3 py-2" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <input className="w-full border rounded px-3 py-2" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }
