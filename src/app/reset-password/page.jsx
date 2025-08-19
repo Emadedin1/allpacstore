@@ -3,19 +3,22 @@
 import React, { useState, useEffect } from "react";
 
 export default function ResetPasswordPage() {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [token, setToken] = useState("");
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Read token from URL in an effect (safer for SSR)
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const t = params.get("token") || "";
       setToken(t);
-      console.log("Reset page token:", t);
+      // Optionally pre-fill the email if you encode it in the reset link
+      const e = params.get("email") || "";
+      if (e) setEmail(e);
+      console.log("Reset page token:", t, "email:", e);
     }
   }, []);
 
@@ -30,15 +33,19 @@ export default function ResetPasswordPage() {
       setLoading(false);
       return;
     }
+    if (!email) {
+      setError("Please enter your email.");
+      setLoading(false);
+      return;
+    }
 
     try {
-      console.log("Submitting password reset", { token, password });
+      console.log("Submitting password reset", { token, email, password });
 
-      // POST to your existing API route name (password-reset)
       const res = await fetch("/api/auth/password-reset", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, password }),
+        body: JSON.stringify({ token, email, password }),
       });
 
       const contentType = res.headers.get("content-type") || "";
@@ -55,9 +62,7 @@ export default function ResetPasswordPage() {
         setSuccess("Password reset successfully! You can now log in.");
         setError("");
       } else {
-        // Surface helpful error messages from the server where possible
         if (typeof data === "string") {
-          // sometimes servers return HTML/text for 4xx/5xx - show a short friendly message
           setError(data || `Reset failed (status ${res.status}).`);
         } else {
           setError(data?.error || `Reset failed (status ${res.status}).`);
@@ -79,7 +84,21 @@ export default function ResetPasswordPage() {
       fontFamily: "Segoe UI, Roboto, Arial, sans-serif"
     }}>
       <h1 style={{ fontSize: "1.5rem", fontWeight: 600, marginBottom: 24 }}>Reset Password</h1>
-      <form style={{ display: "flex", flexDirection: "column", gap: 16 }} onSubmit={handleSubmit}>
+      <form style={{ display: "flex", flexDirection: "column", gap: 12 }} onSubmit={handleSubmit}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          style={{
+            padding: "10px 12px",
+            borderRadius: 6,
+            border: "1px solid #ddd",
+            fontSize: "1rem",
+            boxSizing: "border-box"
+          }}
+          required
+        />
         <input
           type="password"
           placeholder="New password"
