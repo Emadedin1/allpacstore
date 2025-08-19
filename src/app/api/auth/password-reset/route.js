@@ -1,101 +1,84 @@
-import bcrypt from "bcryptjs";
-import { MongoClient, ObjectId } from "mongodb";
+import { MongoClient } from "mongodb";
+import crypto from "crypto";
 
 const client = new MongoClient(process.env.MONGODB_URI);
 
 /**
- * POST /api/auth/password-reset
- * Body: { token, password, email? }
+ * POST /api/auth/password-reset-request
+ * Body: { email }
  *
- * Behavior:
- * - Prefer the email stored on the password reset record (reset.email).
- * - If reset.email is missing but reset.userId exists, look up the user by _id and use their email.
- * - If neither is available, fall back to the email provided in the request body (bodyEmail).
- * - Hash the new password and update the user's document. If update fails but reset.userId exists,
- *   try updating by _id as a fallback.
+ * - Creates/updates a passwordResets record { token, email, userId?, expires }
+ * - Logs the reset URL when no mailer is configured, or tries to send via SendGrid if configured.
+ * - Returns a generic success message so the API does not reveal whether the email exists.
  */
 export async function POST(req) {
   try {
-    const { token, password, email: bodyEmail } = await req.json();
+    const { email } = await req.json();
 
-    if (!token || !password) {
-      return new Response(JSON.stringify({ error: "Token and new password are required." }), { status: 400 });
+    if (!email || typeof email !== "string") {
+      return new Response(JSON.stringify({ error: "Valid email is required." }), { status: 400 });
     }
 
     await client.connect();
     const db = client.db();
 
-    // Find reset record by token
-    const reset = await db.collection("passwordResets").findOne({ token });
-    if (!reset) {
-      return new Response(JSON.stringify({ error: "Invalid or expired token." }), { status: 400 });
-    }
+    // Normalize email
+    const normalizedEmail = email.trim().toLowerCase();
 
-    // Expiry check (if your records use expires as a timestamp)
-    if (reset.expires && Date.now() > reset.expires) {
-      await db.collection("passwordResets").deleteOne({ token });
-      return new Response(JSON.stringify({ error: "Token expired." }), { status: 400 });
-    }
+    // Try to find the user to optionally attach userId
+    const user = await db.collection("users").findOne({ email: normalizedEmail });
 
-    // Determine email to use
-    let email = reset.email || null;
+    // Create a secure token and expiry
+    const token = crypto.randomBytes(32).toString("hex");
+    const expires = Date.now() + 1000 * 60 * 60; // 1 hour
 
-    // If no email on reset record, try to resolve from reset.userId
-    if (!email && reset.userId) {
-      try {
-        const userId = typeof reset.userId === "string" ? new ObjectId(reset.userId) : reset.userId;
-        const user = await db.collection("users").findOne({ _id: userId });
-        if (user && user.email) {
-          email = user.email;
-        }
-      } catch (err) {
-        console.warn("Could not resolve reset.userId to a user:", err?.message || err);
-        // continue to other fallbacks
-      }
-    }
+    const resetDoc = {
+      token,
+      email: normalizedEmail,
+      expires,
+      createdAt: Date.now(),
+    };
+    if (user && user._id) resetDoc.userId = user._id;
 
-    // Fallback to email supplied by client (less ideal but supported)
-    if (!email && bodyEmail) {
-      email = bodyEmail;
-    }
-
-    if (!email) {
-      return new Response(JSON.stringify({ error: "Email is required and token is not linked to a user." }), { status: 400 });
-    }
-
-    // Hash new password and update user by email
-    const hashed = await bcrypt.hash(password, 10);
-    let updateRes = await db.collection("users").updateOne(
-      { email },
-      { $set: { password: hashed } }
+    // Upsert reset record by email (replace any existing one)
+    await db.collection("passwordResets").updateOne(
+      { email: normalizedEmail },
+      { $set: resetDoc },
+      { upsert: true }
     );
 
-    // If no user matched by email but we have a userId, try updating by _id
-    if (updateRes.matchedCount === 0 && reset.userId) {
+    // Build reset URL for sending/logging
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || "http://localhost:3000";
+    const resetUrl = `${baseUrl.replace(/\/$/, "")}/reset-password?token=${encodeURIComponent(token)}`;
+
+    // Try to send email via SendGrid if configured (adapt if you use a different provider)
+    if (process.env.SENDGRID_API_KEY) {
       try {
-        const userId = typeof reset.userId === "string" ? new ObjectId(reset.userId) : reset.userId;
-        updateRes = await db.collection("users").updateOne(
-          { _id: userId },
-          { $set: { password: hashed } }
-        );
+        const sgMail = require("@sendgrid/mail");
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+        await sgMail.send({
+          to: normalizedEmail,
+          from: process.env.EMAIL_FROM || "no-reply@example.com",
+          subject: "Reset your password",
+          text: `Reset your password using this link:\n\n${resetUrl}`,
+          html: `<p>Reset your password using this link:</p><p><a href="${resetUrl}">${resetUrl}</a></p>`,
+        });
+        console.log("Password reset email sent to", normalizedEmail);
       } catch (err) {
-        console.warn("Fallback update by userId failed:", err?.message || err);
+        console.warn("SendGrid send failed:", err?.message || err);
       }
+    } else {
+      // No mailer configured: log the URL so you can test manually
+      console.log("Password reset link (no mailer configured):", resetUrl);
     }
 
-    if (updateRes.matchedCount === 0) {
-      return new Response(JSON.stringify({ error: "User not found." }), { status: 404 });
-    }
-
-    // Delete token record to prevent reuse
-    await db.collection("passwordResets").deleteOne({ token });
-
-    return new Response(JSON.stringify({ success: true }), { status: 200 });
+    // Always return a generic message
+    return new Response(JSON.stringify({ message: "If that email is registered we sent a reset link." }), { status: 200 });
   } catch (err) {
-    console.error("reset-password error:", err);
+    console.error("password-reset-request error:", err);
     return new Response(JSON.stringify({ error: "Server error." }), { status: 500 });
   } finally {
-    // keep DB connection open for reuse in serverless environments, or close if you prefer:
+    // keep DB connection open for reuse; close if you prefer:
     // await client.close();
   }
 }
