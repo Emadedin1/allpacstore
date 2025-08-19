@@ -1,9 +1,10 @@
+// File: src/components/LoginPage.jsx
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PasswordReset from "./PasswordReset";
 import { useRouter } from "next/navigation";
 
-// Consistent style object (only longhand border props)
+// Consistent style object (longhand only, no shorthand conflicts)
 const styles = {
   container: {
     maxWidth: 400,
@@ -102,6 +103,14 @@ export default function LoginPage({ mode: initialMode = "login" }) {
     process.env.NEXT_PUBLIC_API_BASE_URL ||
     (typeof window !== "undefined" ? window.location.origin : "");
 
+  // Auto-redirect if logged in
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token && mode === "login") {
+      router.push("/");
+    }
+  }, [mode, router]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -181,24 +190,26 @@ export default function LoginPage({ mode: initialMode = "login" }) {
             {mode === "login" ? "Login" : "Register"}
           </button>
         </div>
-        <div style={{ textAlign: "right", marginTop: 8 }}>
-          <PasswordReset
-            apiEndpoint="/api/auth/password-reset-request"
-            buttonText="Forgot Password?"
-            buttonStyle={{
-              background: "none",
-              border: "none",
-              color: "#0070f3",
-              cursor: "pointer",
-              padding: 0,
-              margin: 0,
-              fontSize: "0.98rem",
-              fontWeight: 500,
-              textDecoration: "underline",
-            }}
-            inputStyle={{ ...styles.input, marginTop: 12 }}
-          />
-        </div>
+        {mode === "login" && (
+          <div style={{ textAlign: "right", marginTop: 8 }}>
+            <PasswordReset
+              apiEndpoint="/api/auth/password-reset-request"
+              buttonText="Forgot Password?"
+              buttonStyle={{
+                background: "none",
+                border: "none",
+                color: "#0070f3",
+                cursor: "pointer",
+                padding: 0,
+                margin: 0,
+                fontSize: "0.98rem",
+                fontWeight: 500,
+                textDecoration: "underline",
+              }}
+              inputStyle={{ ...styles.input, marginTop: 12 }}
+            />
+          </div>
+        )}
         {error && <div style={styles.error}>{error}</div>}
         {success && <div style={styles.success}>{success}</div>}
       </form>
