@@ -1,6 +1,6 @@
 // File: src/components/LoginPage.jsx
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import PasswordReset from "./PasswordReset";
 import { useRouter } from "next/navigation";
 
@@ -103,14 +103,6 @@ export default function LoginPage({ mode: initialMode = "login" }) {
     process.env.NEXT_PUBLIC_API_BASE_URL ||
     (typeof window !== "undefined" ? window.location.origin : "");
 
-  // Auto-redirect if logged in
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token && mode === "login") {
-      router.push("/");
-    }
-  }, [mode, router]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -124,20 +116,28 @@ export default function LoginPage({ mode: initialMode = "login" }) {
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        credentials: "include", // ensure httpOnly cookies are set/sent
         body: JSON.stringify(payload),
       });
       const data = await res.json().catch(() => ({}));
 
       if (res.ok) {
-        if (data.token) localStorage.setItem("token", data.token);
-        if (data.user?.name) {
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+        }
+        if (data.user && data.user.name) {
           localStorage.setItem("name", data.user.name);
           window.dispatchEvent(new Event("userNameChanged"));
         }
         setSuccess(mode === "login" ? "Login successful!" : "Account created! You can now log in.");
         setError("");
-        if (mode === "login") setTimeout(() => router.push("/"), 500);
+
+        if (mode === "login") {
+          const next = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("next") : null;
+          setTimeout(() => {
+            router.push(next || "/");
+          }, 400);
+        }
       } else {
         setError(data.error || "Something went wrong");
       }
@@ -156,7 +156,10 @@ export default function LoginPage({ mode: initialMode = "login" }) {
             type="text"
             placeholder="Name"
             value={name}
-            style={{ ...styles.input, ...(focus === "name" ? styles.inputFocus : {}) }}
+            style={{
+              ...styles.input,
+              ...(focus === "name" ? styles.inputFocus : {}),
+            }}
             onFocus={() => setFocus("name")}
             onBlur={() => setFocus(null)}
             onChange={(e) => setName(e.target.value)}
@@ -168,7 +171,10 @@ export default function LoginPage({ mode: initialMode = "login" }) {
           placeholder="Email"
           value={email}
           autoComplete="username"
-          style={{ ...styles.input, ...(focus === "email" ? styles.inputFocus : {}) }}
+          style={{
+            ...styles.input,
+            ...(focus === "email" ? styles.inputFocus : {}),
+          }}
           onFocus={() => setFocus("email")}
           onBlur={() => setFocus(null)}
           onChange={(e) => setEmail(e.target.value)}
@@ -179,17 +185,22 @@ export default function LoginPage({ mode: initialMode = "login" }) {
           placeholder="Password"
           value={password}
           autoComplete="current-password"
-          style={{ ...styles.input, ...(focus === "password" ? styles.inputFocus : {}) }}
+          style={{
+            ...styles.input,
+            ...(focus === "password" ? styles.inputFocus : {}),
+          }}
           onFocus={() => setFocus("password")}
           onBlur={() => setFocus(null)}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+
         <div style={{ width: "100%", marginTop: 6 }}>
           <button type="submit" style={{ ...styles.button, width: "100%" }}>
             {mode === "login" ? "Login" : "Register"}
           </button>
         </div>
+
         {mode === "login" && (
           <div style={{ textAlign: "right", marginTop: 8 }}>
             <PasswordReset
@@ -206,13 +217,18 @@ export default function LoginPage({ mode: initialMode = "login" }) {
                 fontWeight: 500,
                 textDecoration: "underline",
               }}
-              inputStyle={{ ...styles.input, marginTop: 12 }}
+              inputStyle={{
+                ...styles.input,
+                marginTop: 12,
+              }}
             />
           </div>
         )}
+
         {error && <div style={styles.error}>{error}</div>}
         {success && <div style={styles.success}>{success}</div>}
       </form>
+
       <div style={styles.switch}>
         {mode === "login" ? (
           <span>
