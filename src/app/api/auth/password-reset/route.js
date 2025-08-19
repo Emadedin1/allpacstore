@@ -48,13 +48,15 @@ export async function POST(req) {
     );
 
     // Build reset URL for sending/logging
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || "http://localhost:3000";
-    const resetUrl = `${baseUrl.replace(/\/$/, "")}/reset-password?token=${encodeURIComponent(token)}`;
+    const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || "http://localhost:3000").replace(/\/$/, "");
+    const resetUrl = `${baseUrl}/reset-password?token=${encodeURIComponent(token)}`;
 
     // Try to send email via SendGrid if configured (adapt if you use a different provider)
     if (process.env.SENDGRID_API_KEY) {
       try {
-        const sgMail = require("@sendgrid/mail");
+        // Use dynamic import instead of require() so ESLint doesn't complain
+        const sgMailModule = await import("@sendgrid/mail");
+        const sgMail = sgMailModule?.default || sgMailModule;
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
         await sgMail.send({
           to: normalizedEmail,
