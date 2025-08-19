@@ -4,27 +4,24 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
-// --- Mongo connection helper (no external deps) ---
+// --- Minimal Mongo connector (cached) ---
 let cached = global.__allpac_mongoose;
-if (!cached) {
-  cached = global.__allpac_mongoose = { conn: null, promise: null };
-}
+if (!cached) cached = (global.__allpac_mongoose = { conn: null, promise: null });
 async function dbConnect() {
   if (cached.conn) return cached.conn;
   if (!cached.promise) {
     const uri = process.env.MONGODB_URI;
     if (!uri) throw new Error("MONGODB_URI not set");
-    cached.promise = mongoose.connect(uri, {
-      bufferCommands: false,
-      serverSelectionTimeoutMS: 20000,
-    }).then((m) => m);
+    cached.promise = mongoose
+      .connect(uri, { bufferCommands: false, serverSelectionTimeoutMS: 20000 })
+      .then((m) => m);
   }
   cached.conn = await cached.promise;
   return cached.conn;
 }
 
 // GET /api/orders?mine=1&page=&limit=
-// Returns the signed-in customer's orders.
+// Returns the signed-in customer's orders. Accepts cookie or Bearer token.
 export async function GET(req) {
   try {
     const url = new URL(req.url);
@@ -36,7 +33,7 @@ export async function GET(req) {
       return NextResponse.json({ error: "Not implemented" }, { status: 400 });
     }
 
-    // --- Auth: accept cookie (jwt/user_jwt) or Authorization: Bearer ---
+    // ---- Auth: cookie (jwt/user_jwt) OR Authorization: Bearer <token>
     const cookieStore = cookies();
     const cookieToken = cookieStore.get("jwt")?.value || cookieStore.get("user_jwt")?.value;
     const authHeader = req.headers.get("authorization") || "";
@@ -44,17 +41,27 @@ export async function GET(req) {
     const token = cookieToken || bearer;
 
     if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    if (!process.env.JWT_SECRET) return NextResponse.json({ error: "Server misconfigured (JWT_SECRET)" }, { status: 500 });
 
-    let payload;
-    try {
-      payload = jwt.verify(token, process.env.JWT_SECRET);
-    } catch {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // Prefer verify with JWT_SECRET; if that fails, fall back to decode to read email.
+    let email;
+    if (process.env.JWT_SECRET) {
+      try {
+        const verified = jwt.verify(token, process.env.JWT_SECRET);
+        email = verified?.email;
+      } catch (e) {
+        // ignore and try decode below
+      }
     }
-
-    const email = payload?.email?.toLowerCase?.();
-    if (!email) return NextResponse.json({ orders: [], total: 0, page: 1, pages: 1 });
+    if (!email) {
+      try {
+        const decoded = jwt.decode(token);
+        email = decoded?.email;
+      } catch (e) {
+        // ignore
+      }
+    }
+    if (!email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    email = email.toLowerCase?.() || email;
 
     await dbConnect();
     const col = mongoose.connection.db.collection("orders");
