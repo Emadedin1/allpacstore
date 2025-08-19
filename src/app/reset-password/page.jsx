@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
@@ -8,6 +9,7 @@ export default function ResetPasswordPage() {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   // Read token from URL in an effect (safer for SSR)
   useEffect(() => {
@@ -52,13 +54,17 @@ export default function ResetPasswordPage() {
       console.log("Reset response:", res.status, data);
 
       if (res.ok) {
-        setSuccess("Password reset successfully! You can now log in.");
+        setSuccess("Password reset successful");
         setError("");
+        // brief delay so user sees the message, then redirect to homepage
+        setTimeout(() => {
+          router.push("/");
+        }, 900);
       } else {
         // Surface helpful error messages from the server where possible
         if (typeof data === "string") {
           // sometimes servers return HTML/text for 4xx/5xx - show a short friendly message
-          setError(data || `Reset failed (status ${res.status}).`);
+          setError(data || `Reset failed (status ${res.status})`);
         } else {
           setError(data?.error || `Reset failed (status ${res.status}).`);
         }
@@ -114,10 +120,6 @@ export default function ResetPasswordPage() {
         {error && <div style={{ color: "#e00", textAlign: "center" }}>{error}</div>}
         {success && <div style={{ color: "#090", textAlign: "center" }}>{success}</div>}
       </form>
-
-      <div style={{ marginTop: 10, fontSize: 12, color: "#777" }}>
-        Debug: token = {token ? token.slice(0, 8) + "…" : "<none>"}
-      </div>
     </div>
   );
 }
