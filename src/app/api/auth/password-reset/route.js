@@ -3,17 +3,7 @@ import { MongoClient, ObjectId } from "mongodb";
 
 const client = new MongoClient(process.env.MONGODB_URI);
 
-/**
- * POST /api/auth/password-reset
- * Body: { token, password, email? }
- *
- * Behavior:
- * - Look up the token in passwordResets.
- * - Verify expiry.
- * - Resolve the user's email (prefer reset.email, then reset.userId lookup, then client-supplied email).
- * - Hash the new password and update the user document.
- * - Delete the passwordResets token record to prevent reuse.
- */
+
 export async function POST(req) {
   try {
     const { token, password, email: bodyEmail } = await req.json();
