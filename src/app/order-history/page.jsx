@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useCart } from "@/context/CartContext"; // adjust alias if needed
+import { useCart } from "@/context/CartContext";
 
-// Map sizes to slugs you use in /products/[slug]
+// Optional: map sizes to your known product slugs for Reorder
 const SIZE_TO_SLUG = {
   "10 oz": "10oz-hot-cup",
   "12 oz": "12oz-hot-cup",
@@ -15,7 +15,7 @@ const SIZE_TO_SLUG = {
 
 export default function OrderHistoryPage() {
   const router = useRouter();
-  const { addItem, openCart } = useCart();
+  const { addItem, openCart } = useCart?.() || { addItem: () => {}, openCart: () => {} };
 
   const [orders, setOrders] = useState([]);
   const [page, setPage] = useState(1);
@@ -28,15 +28,27 @@ export default function OrderHistoryPage() {
     setLoading(true);
     setError("");
     try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
       const res = await fetch(`/api/orders?mine=1&page=${p}&limit=${limit}`, {
         credentials: "include",
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
+
       if (res.status === 401) {
-        router.push("/login?error=" + encodeURIComponent("Please log in to view your orders"));
+        // --- Key fix: remember where to go back, and pass ?next= ---
+        try {
+          if (typeof window !== "undefined") {
+            localStorage.setItem("redirectAfterLogin", "/order-history");
+          }
+        } catch {}
+        router.push("/login?next=/order-history");
         return;
       }
+
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error || "Failed to load orders");
+
       setOrders(Array.isArray(data?.orders) ? data.orders : []);
       setPages(Number(data?.pages || 1));
     } catch (e) {
@@ -46,37 +58,30 @@ export default function OrderHistoryPage() {
     }
   };
 
-  useEffect(() => { load(page); /* eslint-disable-next-line */ }, [page]);
+  useEffect(() => {
+    load(page);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
 
   const reorder = (order) => {
     try {
       (order.items || []).forEach((it) => {
         const isCustom = String(it.designType || "").toLowerCase() === "custom";
-        const slug = SIZE_TO_SLUG[it.size] || "paper-cup"; // fallback slug if needed
-        const qtyCups = Number(it.quantity || 0) || 1000; // fallback 1 case = 1000 cups
-        const unit = Number(it.unitPrice || 0) || undefined; // per-cup price if available
+        const slug = SIZE_TO_SLUG[it.size] || "paper-cup";
+        const qtyCups = Number(it.quantity || 0) || 1000;
+        const unit = Number(it.unitPrice || 0) || undefined;
 
-        // Minimal product stub for CartContext
         const productStub = {
           slug,
           size: it.size,
-          image: "", // optional; keep empty if unknown
+          image: "",
           priceCase: unit ? unit * 1000 : undefined,
           qtyCase: 1000,
         };
 
-        const uploadedDesign = isCustom && it.designName
-          ? { name: it.designName }
-          : null;
+        const uploadedDesign = isCustom && it.designName ? { name: it.designName } : null;
 
-        addItem(
-          productStub,
-          qtyCups,
-          uploadedDesign,
-          "", // previewURL
-          isCustom ? "Custom" : "Plain White",
-          unit
-        );
+        addItem(productStub, qtyCups, uploadedDesign, "", isCustom ? "Custom" : "Plain White", unit);
       });
       openCart();
     } catch (e) {
@@ -110,21 +115,30 @@ export default function OrderHistoryPage() {
             <tbody>
               {orders.map((o) => (
                 <tr key={o._id} className="border-t">
-                  <td className="p-3">{o.createdAt ? new Date(o.createdAt).toLocaleString() : "-"}</td>
+                  <td className="p-3">
+                    {o.createdAt ? new Date(o.createdAt).toLocaleString() : "-"}
+                  </td>
                   <td className="p-3">
                     <div className="text-sm truncate max-w-[520px]">
-                      {Array.isArray(o.items)
-                        ? o.items
-                            .map((i) =>
-                              `${i.quantity}× ${i.size} ${String(i.designType).toLowerCase() === "custom" ? `(Custom: ${i.designName || ""})` : "Plain"}`
-                            )
-                            .join(", ")
-                        : "-"}
+                      {(o.items || [])
+                        .map((i) =>
+                          `${i.quantity}× ${i.size} ${
+                            String(i.designType).toLowerCase() === "custom"
+                              ? `(Custom: ${i.designName || ""})`
+                              : "Plain"
+                          }`
+                        )
+                        .join(", ")}
                     </div>
                   </td>
-                  <td className="p-3">{o.totals?.grandTotal?.toFixed?.(2) ?? o.total ?? "-"} {o.totals?.currency || "CAD"}</td>
                   <td className="p-3">
-                    <span className="px-2 py-1 text-sm rounded bg-gray-100">{o.status || "-"}</span>
+                    {o.totals?.grandTotal?.toFixed?.(2) ?? o.total ?? "-"}{" "}
+                    {o.totals?.currency || "CAD"}
+                  </td>
+                  <td className="p-3">
+                    <span className="px-2 py-1 text-sm rounded bg-gray-100">
+                      {o.status || "-"}
+                    </span>
                   </td>
                   <td className="p-3">
                     <button
@@ -149,9 +163,7 @@ export default function OrderHistoryPage() {
         >
           Prev
         </button>
-        <div>
-          Page {page} / {pages}
-        </div>
+        <div>Page {page} / {pages}</div>
         <button
           disabled={page >= pages}
           className="px-3 py-1 border rounded disabled:opacity-50"
