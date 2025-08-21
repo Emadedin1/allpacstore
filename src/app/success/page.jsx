@@ -1,10 +1,10 @@
 // File: src/app/success/page.jsx
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
-export default function SuccessPage() {
+function SuccessPageInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const calledRef = useRef(false);
@@ -38,7 +38,6 @@ export default function SuccessPage() {
         setOrderId(data?.order?._id || null);
         setMessage("Payment confirmed! Your order has been recorded.");
 
-        // Optional: auto-redirect to Order History after a short delay
         const t = setTimeout(() => {
           router.replace("/order-history");
         }, 2000);
@@ -99,5 +98,13 @@ export default function SuccessPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div className="mx-auto max-w-xl p-6 text-center">Finalizing checkout…</div>}>
+      <SuccessPageInner />
+    </Suspense>
   );
 }
