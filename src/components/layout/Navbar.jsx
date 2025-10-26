@@ -132,7 +132,7 @@ export default function Navbar() {
           <Link href="/">
             <img
               src="/images/allpac-logo.png"
-              alt="Allpac Logo"
+              alt="Allpac Store"
               className="h-12 w-auto"
             />
           </Link>
@@ -200,7 +200,7 @@ export default function Navbar() {
             <Link href="/">
               <img
                 src="/images/allpac-logo.png"
-                alt="Allpac Logo"
+                alt="Allpac Store"
                 className="h-12 w-auto"
               />
             </Link>
