@@ -5,7 +5,9 @@ const nextConfig = {
     optimizeCss: false,
   },
   reactStrictMode: true,
+  
 };
 
+console.log('✅ SANITY PROJECT ID:', process.env.NEXT_PUBLIC_SANITY_PROJECT_ID)
 
 module.exports = nextConfig;

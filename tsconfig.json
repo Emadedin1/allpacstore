@@ -1,5 +1,11 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@sanity/*": [
+        "src/sanity/*"
+      ]
+    },
     "target": "ES2017",
     "lib": [
       "dom",
@@ -11,7 +17,7 @@
     "strict": false,
     "noEmit": true,
     "incremental": true,
-    "module": "esnext",
+    "module": "commonjs",
     "esModuleInterop": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
@@ -26,8 +32,8 @@
   "include": [
     "next-env.d.ts",
     ".next/types/**/*.ts",
-    "**/*.ts",
-    "**/*.tsx"
+    "src/**/*",
+    "scripts/**/*"
   ],
   "exclude": [
     "node_modules"

@@ -7,6 +7,8 @@ import { pricing } from "../../../utils/pricing";
 import { useCart } from "../../../context/CartContext";
 import { getProductBySlug, products } from "../../../data/products";
 import Cup3DPreview from "../../../components/Cup3DPreview";
+import { use } from "react";
+
 
 const DEFAULT_DESCRIPTOR = "Blank Single-Walled Paper Cup";
 const CASE_PRICE_OVERRIDE = {
@@ -104,7 +106,7 @@ function ProductGallery({ imageSrc, imageAlt, slug }) {
         ${index === 0 ? "opacity-60 cursor-not-allowed" : "opacity-100 cursor-pointer"}`}
         style={{ backdropFilter: "blur(4px)" }}
       >
-        <svg width="22" height="22" fill="none" viewBox="0 0 22 22"><path d="M13.75 17.417 8.333 12l5.417-5.417" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        <svg width="22" height="22" fill="none" viewBox="0 0 22 22"><path d="M13.75 17.417 8.333 12l5.417-5.417" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
       </button>
       <button
         aria-label="Next image"
@@ -114,7 +116,7 @@ function ProductGallery({ imageSrc, imageAlt, slug }) {
         ${index === slides.length - 1 ? "opacity-60 cursor-not-allowed" : "opacity-100 cursor-pointer"}`}
         style={{ backdropFilter: "blur(4px)" }}
       >
-        <svg width="22" height="22" fill="none" viewBox="0 0 22 22"><path d="M8.25 17.417 13.667 12 8.25 6.583" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        <svg width="22" height="22" fill="none" viewBox="0 0 22 22"><path d="M8.25 17.417 13.667 12 8.25 6.583" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
       </button>
       {/* Dots */}
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
@@ -131,7 +133,10 @@ function ProductGallery({ imageSrc, imageAlt, slug }) {
   );
 }
 
-export default function ProductPage({ params: { slug } }) {
+export default function ProductPage({ params }) {
+  // ✅ unwrap params promise (React 19 style)
+const { slug } = use(params);
+ // ✅ unwrap the promise
   const product = getProductBySlug(slug);
   if (!product) return <div className="p-4">Product not found.</div>;
 
@@ -298,11 +303,10 @@ export default function ProductPage({ params: { slug } }) {
                   aria-label="Decrease quantity (one case)"
                   onClick={() => bump(-1)}
                   disabled={selectedCases <= 1}
-                  className={`w-10 h-10 grid place-items-center text-white text-lg select-none ${
-                    selectedCases <= 1
+                  className={`w-10 h-10 grid place-items-center text-white text-lg select-none ${selectedCases <= 1
                       ? "bg-[#28a745]/60 cursor-not-allowed"
                       : "bg-[#28a745] hover:bg-[#218838] active:bg-[#1e7e34]"
-                  } focus:outline-none`}
+                    } focus:outline-none`}
                 >
                   −
                 </button>
@@ -366,48 +370,45 @@ export default function ProductPage({ params: { slug } }) {
           </div>
 
           {/* Collapsible Specs - clean with fully rounded bottom */}
-<div className="space-y-4">
-  {specs.map(({ label, content }) => {
-    const isOpen = openSections[label];
-    return (
-      <div
-        key={label}
-        className={`bg-white border border-gray-200 shadow-sm transition ${
-          isOpen
-            ? "rounded-t-lg rounded-b-lg"
-            : "rounded-lg"
-        }`}
-      >
-        <button
-          onClick={() => toggle(label)}
-          className="w-full flex justify-between items-center px-4 py-3 bg-white hover:bg-gray-50 transition text-base rounded-lg"
-          style={{ border: "none" }}
-        >
-          <span className="font-medium">{label}</span>
-          <span
-            className={`transform transition-transform duration-200 ${
-              isOpen ? "rotate-180" : ""
-            }`}
-          >
-            ▼
-          </span>
-        </button>
-        <div
-          className={`px-4 overflow-hidden transition-[max-height] duration-300 text-gray-700 text-sm bg-white ${
-            isOpen ? "max-h-48 py-3 rounded-b-lg" : "max-h-0 py-0"
-          }`}
-          style={{
-            borderTop: "1px solid #f3f4f6",
-          }}
-        >
-          {content.map((line, i) => (
-            <p key={i}>{line}</p>
-          ))}
-        </div>
-      </div>
-    );
-  })}
-</div>
+          <div className="space-y-4">
+            {specs.map(({ label, content }) => {
+              const isOpen = openSections[label];
+              return (
+                <div
+                  key={label}
+                  className={`bg-white border border-gray-200 shadow-sm transition ${isOpen
+                      ? "rounded-t-lg rounded-b-lg"
+                      : "rounded-lg"
+                    }`}
+                >
+                  <button
+                    onClick={() => toggle(label)}
+                    className="w-full flex justify-between items-center px-4 py-3 bg-white hover:bg-gray-50 transition text-base rounded-lg"
+                    style={{ border: "none" }}
+                  >
+                    <span className="font-medium">{label}</span>
+                    <span
+                      className={`transform transition-transform duration-200 ${isOpen ? "rotate-180" : ""
+                        }`}
+                    >
+                      ▼
+                    </span>
+                  </button>
+                  <div
+                    className={`px-4 overflow-hidden transition-[max-height] duration-300 text-gray-700 text-sm bg-white ${isOpen ? "max-h-48 py-3 rounded-b-lg" : "max-h-0 py-0"
+                      }`}
+                    style={{
+                      borderTop: "1px solid #f3f4f6",
+                    }}
+                  >
+                    {content.map((line, i) => (
+                      <p key={i}>{line}</p>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
