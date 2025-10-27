@@ -1,4 +1,4 @@
-ues"use client";
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -82,7 +82,7 @@ export default function AboutPage() {
         <h2 className="text-2xl font-semibold mb-2">Community & Support</h2>
         <p className="text-gray-700">
           We’re proud to support businesses worldwide. Whether you’re a distributor, food manufacturer, or enterprise buyer,
-          we’ll help you findthe right large-volume paper packaging solutions—delivered globally with reliable service.
+          we’ll help you find the right large-volume paper packaging solutions—delivered globally with reliable service.
         </p>
       </section>
     </div>
