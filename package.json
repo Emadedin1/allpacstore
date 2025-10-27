@@ -35,7 +35,7 @@
     "three": "^0.179.1",
     "tsconfig-paths": "^4.2.0"
   },
-  "devDependencies": {
+  "Dependencies": {
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
     "@types/react": "^19",
