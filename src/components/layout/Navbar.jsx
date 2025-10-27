@@ -1,7 +1,6 @@
 "use client";
 import Link from "next/link";
-import { ShoppingCart, User } from "lucide-react";
-import { useCart } from "../../context/CartContext";
+import { User } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
 export default function Navbar() {
@@ -10,7 +9,6 @@ export default function Navbar() {
   const desktopUserButtonRef = useRef(null);
   const mobileUserButtonRef = useRef(null);
   const menuRef = useRef(null);
-  const { openCart } = useCart();
 
   useEffect(() => {
     function updateUserName() {
@@ -137,7 +135,7 @@ export default function Navbar() {
             />
           </Link>
 
-          {/* Right: nav links, cart, user */}
+          {/* Right: nav links and user (cart removed) */}
           <div className="flex items-center gap-x-8">
             <Link
               href="/products"
@@ -160,15 +158,6 @@ export default function Navbar() {
             >
               Contact
             </Link>
-
-            <button
-              onClick={openCart}
-              className="text-allpac hover:text-red-600 cursor-pointer flex items-center"
-              aria-label="View cart"
-              type="button"
-            >
-              <ShoppingCart size={24} />
-            </button>
 
             <div className="relative flex items-center">
               <button
@@ -195,7 +184,7 @@ export default function Navbar() {
 
         {/* Mobile navbar */}
         <div className="flex flex-col sm:hidden w-full relative">
-          {/* Top row: logo, cart, user */}
+          {/* Top row: logo, user (cart removed) */}
           <div className="flex items-center justify-between w-full">
             <Link href="/">
               <img
@@ -205,14 +194,6 @@ export default function Navbar() {
               />
             </Link>
             <div className="flex items-center space-x-4">
-              <button
-                onClick={openCart}
-                className="text-allpac hover:text-red-600 cursor-pointer flex items-center"
-                aria-label="View cart"
-                type="button"
-              >
-                <ShoppingCart size={24} />
-              </button>
               <div className="relative flex items-center">
                 <button
                   ref={mobileUserButtonRef}
