@@ -2,10 +2,19 @@
 const path = require('path');
 
 const nextConfig = {
-  experimental: {
-    optimizeCss: false,
-  },
   reactStrictMode: true,
+  experimental: { optimizeCss: false },
+
+  transpilePackages: [
+    'sanity',
+    'next-sanity',
+    '@sanity/vision',
+    '@sanity/schema',
+    '@sanity/types',
+    '@sanity/diff-match-patch',
+    '@portabletext/editor',
+    '@portabletext/patches'
+  ],
 
   webpack: (config) => {
     config.resolve.alias = {
