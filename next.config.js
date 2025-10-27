@@ -1,13 +1,24 @@
 /** @type {import('next').NextConfig} */
+const path = require('path');
+
 const nextConfig = {
   experimental: {
-    // Avoid native lightningcss in case it creeps back via tooling
     optimizeCss: false,
   },
   reactStrictMode: true,
-  
-};
 
-console.log('✅ SANITY PROJECT ID:', process.env.NEXT_PUBLIC_SANITY_PROJECT_ID)
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      '@': path.resolve(__dirname, 'src'),
+      '@lib': path.resolve(__dirname, 'src/lib'),
+      '@context': path.resolve(__dirname, 'src/context'),
+      '@components': path.resolve(__dirname, 'src/components'),
+      '@models': path.resolve(__dirname, 'src/models'),
+      '@sanity': path.resolve(__dirname, 'src/sanity'),
+    };
+    return config;
+  },
+};
 
 module.exports = nextConfig;
