@@ -17,9 +17,6 @@
       "@models/*": [
         "src/models/*"
       ],
-      "@sanity/*": [
-        "src/sanity/*"
-      ]
     },
     "target": "ES2017",
     "lib": [
