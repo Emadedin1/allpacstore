@@ -23,3 +23,7 @@ export const sanityConfig = {
   useCdn: false,
   token: process.env.SANITY_WRITE_TOKEN,
 }
+
+export const projectId = sanityConfig.projectId
+export const dataset = sanityConfig.dataset
+export const apiVersion = sanityConfig.apiVersion

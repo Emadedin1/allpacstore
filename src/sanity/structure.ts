@@ -1,7 +1,8 @@
-import type {StructureResolver} from 'sanity/structure'
-
-// https://www.sanity.io/docs/structure-builder-cheat-sheet
-export const structure: StructureResolver = (S) =>
-  S.list()
-    .title('Content')
-    .items(S.documentTypeListItems())
+import {StructureResolver} from 'sanity/structure'
+// ... your desk builder code
+export const structure: StructureResolver = (S) => {
+  // build your desk here
+  return S.list().title('Content').items([
+    // ...
+  ])
+}

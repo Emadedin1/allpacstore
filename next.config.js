@@ -24,7 +24,9 @@ const nextConfig = {
       '@context': path.resolve(__dirname, 'src/context'),
       '@components': path.resolve(__dirname, 'src/components'),
       '@models': path.resolve(__dirname, 'src/models'),
-      '@sanity': path.resolve(__dirname, 'src/sanity'),
+      '@sanity/types$': require.resolve('@sanity/types'),
+      '@sanity/schema$': require.resolve('@sanity/schema'),
+      '@sanity/diff-match-patch$': require.resolve('@sanity/diff-match-patch'),
     };
     return config;
   },
