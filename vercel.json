@@ -1,0 +1,9 @@
+{
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_SANITY_PROJECT_ID": "2dusfyis",
+      "NEXT_PUBLIC_SANITY_DATASET": "production",
+      "SANITY_API_VERSION": "2025-01-01"
+    }
+  }
+}
