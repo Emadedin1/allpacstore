@@ -41,12 +41,12 @@ export default function AboutPage() {
       {/* What We Do */}
       <section>
         <h2 className="text-2xl font-semibold mb-2">What We Do</h2>
-        <ul className="list-disc list-inside text-gray-700 space-y-1">
-          <li>Produce 10 oz, 12 oz & 16 oz, 22 oz, and 32oz blank single-walled paper cups.</li>
-          <li>High-volume manufacturing capacity with state-of-the-art lines producing up to 2 cups per second.</li>
-          <li>Offer plain white stock designs made with EPR-compliant materials.</li>
-          <li>Fast turnaround: most orders ship within 1–2 business days from our Windsor, ON warehouse.</li>
-        </ul>
+          <ul className="list-disc list-inside text-gray-700 space-y-1">
+            <li>Paper cup production — single-wall and double-wall — available in common sizes (10, 12, 16, 22, 32 oz).</li>
+            <li>Foodservice packaging: pizza boxes, soup containers, and takeout boxes.</li>
+            <li>Food-safe, recyclable stock (FSC® certified options) and EPR‑registered materials.</li>
+            <li>High-volume manufacturing and fast turnaround for bulk and repeat orders.</li>
+          </ul>
       </section>
 
       {/* How It Works */}
