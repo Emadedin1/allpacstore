@@ -12,7 +12,7 @@ export default function Home() {
     async function fetchProducts() {
       try {
         const data = await client.fetch(`
-          *[_type == "product"] | order(_createdAt desc)[0...3]{
+          *[_type == "product"] | order(title desc)[0...3]{
             _id,
             title,
             desc,
