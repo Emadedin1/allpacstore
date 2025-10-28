@@ -69,11 +69,6 @@ export default defineType({
                 "Add details like GSM: 300, Material: PET, or Case Qty: 1000",
             },
             {
-              name: "priceCase",
-              title: "Price per Case ($)",
-              type: "number",
-            },
-            {
               name: "qtyCase",
               title: "Quantity per Case",
               type: "number",

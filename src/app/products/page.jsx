@@ -1,17 +1,18 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
+import { client } from "@/sanity/lib/client";
 
-export default function ProductsCategoriesPage() {
-  const categories = [
-    {
-      slug: "cups",
-      title: "Paper Cups",
-      image: "/cups/12oz.png", // Ensure this is >= 660px square for retina sharpness
-    },
-    // Add more categories here...
-  ];
+
+export default async function ProductsCategoriesPage() {
+  // Fetch all categories from Sanity
+  const categories = await client.fetch(`
+    *[_type == "category"] | order(title asc) {
+      _id,
+      title,
+      "slug": slug.current,
+      "image": thumbnail.asset->url
+    }
+  `);
 
   return (
     <main className="max-w-7xl mx-auto p-6 md:p-8 space-y-10">
@@ -23,11 +24,11 @@ export default function ProductsCategoriesPage() {
         </p>
       </header>
 
-      {/* Category Grid: 2 columns mobile, 4 columns large */}
+      {/* Category Grid */}
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {categories.map((cat) => (
           <Link
-            key={cat.slug}
+            key={cat._id}
             href={`/products/${cat.slug}`}
             aria-label={`Browse ${cat.title}`}
             className="
@@ -39,11 +40,11 @@ export default function ProductsCategoriesPage() {
           >
             <div className="relative w-full aspect-square bg-gray-50">
               <Image
-                src={cat.image}
+                src={cat.image || "/placeholder.png"}
                 alt={cat.title}
                 fill
                 priority
-                quality={100}
+                quality={90}
                 sizes="(max-width:640px) 45vw, (max-width:1024px) 30vw, 330px"
                 className="
                   object-cover
@@ -52,9 +53,7 @@ export default function ProductsCategoriesPage() {
                   transform-gpu
                 "
               />
-              {/* Softer gradient (reduced opacity & darkness) */}
               <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/5 bg-gradient-to-t from-black/50 to-transparent" />
-              {/* Title with lighter shadow/glow */}
               <div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3 flex justify-center">
                 <span
                   className="
