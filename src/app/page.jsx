@@ -1,10 +1,33 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
-import HomeProductPreview from '../components/HomeProductPreview'
+import Image from 'next/image'
+import { client } from '@/sanity/lib/client'
 
 export default function Home() {
+  const [products, setProducts] = useState([])
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const data = await client.fetch(`
+          *[_type == "product"] | order(_createdAt desc)[0...3]{
+            _id,
+            title,
+            desc,
+            "slug": slug.current,
+            "image": image.asset->url
+          }
+        `)
+        setProducts(data)
+      } catch (err) {
+        console.error('Error fetching Sanity products:', err)
+      }
+    }
+    fetchProducts()
+  }, [])
+
   return (
     <main className="min-h-screen bg-white text-allpac">
       {/* Hero Section */}
@@ -21,7 +44,6 @@ export default function Home() {
             Based in Windsor, ON 🇨🇦 — Paper cups delivered fast, with low minimums and premium quality.
           </p>
 
-          {/* Flat, modern CTA (now bold) */}
           <Link
             href="/products/cups"
             className="inline-flex h-11 px-6 items-center justify-center rounded-md
@@ -52,9 +74,54 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Home preview grid wrapped with the same gutters */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <HomeProductPreview />
+        {/* Sanity Products + Original See More Card */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          {products.map((p) => (
+            <Link
+              key={p._id}
+              href={`/products/cups/${p.slug}`}
+              className="flex flex-col justify-between rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition"
+            >
+              {p.image && (
+                <Image
+                  src={p.image}
+                  alt={p.title}
+                  width={400}
+                  height={400}
+                  className="w-full h-72 object-cover"
+                />
+              )}
+              <div className="p-4 text-center">
+                <h2 className="font-semibold text-lg">{p.title}</h2>
+                <p className="text-gray-600 text-sm mt-1 line-clamp-2">{p.desc}</p>
+              </div>
+            </Link>
+          ))}
+
+          {/* 🟢 Original “See More” Card (arrow beside text, old colors) */}
+          <Link
+            href="/products"
+            className="flex flex-col items-center justify-center bg-[#F2F8F5]
+             rounded-2xl border border-[#DCEFE4] text-center
+             hover:bg-[#E7F3ED] transition-all p-6"
+          >
+            <h3 className="flex items-center gap-2 text-lg font-semibold text-[#0D1B2A] mb-1">
+              See More
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="#239356"
+                className="w-5 h-5"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </h3>
+            <p className="text-sm text-[#0D1B2A]/70">See all paper cup sizes</p>
+          </Link>
+
+
         </div>
       </section>
     </main>
