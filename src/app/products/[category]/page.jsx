@@ -18,14 +18,15 @@ export default async function CategoryProductsPage({ params }) {
   }
 
   const products = await client.fetch(`
-    *[_type == "product" && references($catId)]{
-      _id,
-      title,
-      desc,
-      "slug": slug.current,
-      "image": image.asset->url
-    }
-  `, { catId: categoryData._id });
+  *[_type == "product" && references($catId)] | order(title desc){
+    _id,
+    title,
+    desc,
+    "slug": slug.current,
+    "image": image.asset->url
+  }
+`, { catId: categoryData._id });
+
 
   return (
     <main className="bg-white min-h-screen">
