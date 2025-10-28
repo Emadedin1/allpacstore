@@ -54,16 +54,16 @@ export default function AboutPage() {
         <h2 className="text-2xl font-semibold mb-4">How It Works</h2>
         <div className="grid md:grid-cols-3 gap-6 text-gray-700">
           <div className="space-y-2">
-            <h3 className="font-semibold">1. Choose Cup Size</h3>
-            <p>Pick from available sizes.</p>
+            <h3 className="font-semibold">1. Request a Quote</h3>
+            <p>Fill out the contact form.</p>
           </div>
           <div className="space-y-2">
-            <h3 className="font-semibold">2. Choose Quantity</h3>
-            <p>Select how many cases you need and add them to cart.</p>
+            <h3 className="font-semibold">2. Get a Response</h3>
+            <p>Our team will contact you shortly to confirm details and provide pricing.</p>
           </div>
           <div className="space-y-2">
-            <h3 className="font-semibold">3. Checkout</h3>
-            <p>Review your order, complete checkout, and we'll ship it fast.</p>
+            <h3 className="font-semibold">3. Production & Delivery</h3>
+            <p>Once approved, we manufacture and deliver your packaging on time.</p>
           </div>
         </div>
       </section>
@@ -72,8 +72,8 @@ export default function AboutPage() {
       <section>
         <h2 className="text-2xl font-semibold mb-2">Our Eco Commitment</h2>
         <p className="text-gray-700">
-          Allpac cups are made from FSC-certified paper and lined with a plant-based PLA coating—
-          fully recyclable in curbside programs. We continuously optimize to reduce waste and energy usage.
+           Allpac paper packaging is crafted from FSC-certified materials and designed with sustainability in mind. 
+           We continuously optimize production to reduce waste and energy usage while maintaining quality.
         </p>
       </section>
 
@@ -81,8 +81,8 @@ export default function AboutPage() {
       <section>
         <h2 className="text-2xl font-semibold mb-2">Community & Support</h2>
         <p className="text-gray-700">
-          We’re passionate about Windsor’s local economy.
-          Whether you’re a new café or an established chain, we'll guide you in finding the right paper cup solutions.
+          We’re proud to support businesses worldwide. Whether you’re a distributor, food manufacturer, or enterprise buyer,
+          we’ll help you find the right large-volume paper packaging solutions—delivered globally with reliable service.
         </p>
       </section>
     </div>
