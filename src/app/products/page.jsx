@@ -1,71 +1,44 @@
+import { client } from "@/sanity/lib/client";
 import Link from "next/link";
 import Image from "next/image";
-import { client } from "@/sanity/lib/client";
-
 
 export default async function ProductsCategoriesPage() {
-  // Fetch all categories from Sanity
   const categories = await client.fetch(`
-    *[_type == "category"] | order(title asc) {
+    *[_type == "category"]{
       _id,
       title,
       "slug": slug.current,
-      "image": thumbnail.asset->url
+      "thumbnail": thumbnail.asset->url
     }
   `);
 
   return (
-    <main className="max-w-7xl mx-auto p-6 md:p-8 space-y-10">
-      {/* Heading */}
-      <header className="text-center space-y-3">
-        <h1 className="text-4xl font-bold tracking-tight">Shop by Category</h1>
-        <p className="text-lg text-gray-600">
-          Choose one of our products to start exploring.
+    <main className="bg-white min-h-screen">
+      <div className="text-center py-10">
+        <h1 className="text-4xl font-bold">Shop by Category</h1>
+        <p className="text-gray-600 mt-2">
+          Choose one of our product categories to start exploring.
         </p>
-      </header>
+      </div>
 
-      {/* Category Grid */}
-      <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+      <section className="max-w-6xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 pb-20">
         {categories.map((cat) => (
           <Link
             key={cat._id}
             href={`/products/${cat.slug}`}
-            aria-label={`Browse ${cat.title}`}
-            className="
-              group bg-white rounded-2xl shadow-sm hover:shadow-md transition
-              flex flex-col cursor-pointer focus:outline-none
-              focus-visible:ring-2 focus-visible:ring-black/10
-              overflow-hidden
-            "
+            className="group block rounded-xl overflow-hidden shadow-md hover:shadow-lg transition"
           >
-            <div className="relative w-full aspect-square bg-gray-50">
+            {cat.thumbnail && (
               <Image
-                src={cat.image || "/placeholder.png"}
+                src={cat.thumbnail}
                 alt={cat.title}
-                fill
-                priority
-                quality={90}
-                sizes="(max-width:640px) 45vw, (max-width:1024px) 30vw, 330px"
-                className="
-                  object-cover
-                  transition-transform duration-500
-                  group-hover:scale-[1.02]
-                  transform-gpu
-                "
+                width={400}
+                height={400}
+                className="w-full h-80 object-cover group-hover:scale-105 transition-transform"
               />
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/5 bg-gradient-to-t from-black/50 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 p-2.5 sm:p-3 flex justify-center">
-                <span
-                  className="
-                    text-white text-sm sm:text-base font-semibold tracking-tight
-                    drop-shadow-[0_1px_4px_rgba(0,0,0,0.35)]
-                    [text-shadow:0_1px_2px_rgba(0,0,0,0.55)]
-                    text-center select-none
-                  "
-                >
-                  {cat.title}
-                </span>
-              </div>
+            )}
+            <div className="bg-gray-50 py-3 text-center font-semibold text-lg">
+              {cat.title}
             </div>
           </Link>
         ))}
