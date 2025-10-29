@@ -38,10 +38,16 @@ export default function Home() {
         <div className="absolute inset-0 bg-white/80 sm:bg-white/60 backdrop-blur-sm" />
         <div className="relative z-10 max-w-3xl mx-auto">
           <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-black">
-            Wholesale Paper Cups Delivered&nbsp;Fast
+            Canadian Paper Cup Manufacturer — Wholesale Delivered Fast
           </h1>
           <p className="text-lg mb-6 max-w-xl mx-auto text-black">
-            Based in Windsor, ON 🇨🇦 — Paper cups delivered fast, with low minimums and premium quality.
+            Based in Windsor, ON
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/c/cf/Flag_of_Canada.svg"
+              alt="Canadian Flag"
+              className="inline-block w-5 h-5 sm:w-6 sm:h-6 object-contain"
+            />
+            — Paper cups delivered fast, with low minimums and premium quality.
           </p>
 
           <Link
