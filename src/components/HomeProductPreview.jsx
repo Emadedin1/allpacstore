@@ -6,31 +6,35 @@ import CupCard from "./CupCard";
 import { cups } from "../data/cups";
 
 export default function HomeProductPreview() {
-  // First 4 items: 3 real cards + 1 "See more"
-  const preview = cups.slice(0, 4);
+  const preview = cups.slice(0, 4); // Show first 4 items
 
   return (
-    <div className="max-w-7xl mx-auto px-4">
+    <div className="max-w-6xl mx-auto px-2 sm:px-4">
       <div
         className="
           grid
           grid-cols-2
-          lg:grid-cols-4
-          gap-3 lg:gap-6
-          lg:auto-rows-fr
+          sm:grid-cols-2
+          lg:grid-cols-3
+          gap-2 sm:gap-3 lg:gap-5
+          justify-items-center
         "
       >
         {preview.map((cup, i) => {
           if (i < 3) {
-            return <CupCard key={cup.slug} cup={cup} />;
+            return (
+              <div key={cup.slug} className="w-full max-w-[170px] sm:max-w-[200px]">
+                <CupCard cup={cup} />
+              </div>
+            );
           }
 
-          // 4th tile: subtle brand-tinted "See more" card with mobile-first vertical layout
+          // 4th tile: "See More" card
           return (
             <Link
               key="see-more"
-              href="/products/cups" // change to "/products" for the full catalog
-              aria-label="See all paper cup sizes"
+              href="/products"
+              aria-label="See all packaging products"
               className="
                 group relative block h-full
                 rounded-2xl border border-[#1F8248]/20
@@ -39,23 +43,20 @@ export default function HomeProductPreview() {
                 transition-all duration-200 hover:-translate-y-0.5
                 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1F8248]/30
                 cursor-pointer
+                w-full max-w-[170px] sm:max-w-[200px]
               "
               style={{ touchAction: "manipulation" }}
             >
-              {/* Keep a sensible minimum height so it doesn't feel cramped on phones */}
-              <div className="relative flex h-full min-h-[140px] sm:min-h-[160px] items-center justify-center p-5 sm:p-6">
+              <div className="relative flex h-full min-h-[140px] items-center justify-center p-4 sm:p-6">
                 <div className="flex flex-col items-center text-center gap-2">
-                  {/* On mobile: 'See more' on one line, arrow underneath.
-                      On large screens: place arrow to the right of the text. */}
                   <div className="flex flex-col items-center gap-2 lg:flex-row lg:gap-3">
-                    <span className="text-lg font-semibold text-gray-900">
+                    <span className="text-base sm:text-lg font-semibold text-gray-900">
                       See More
                     </span>
 
-                    {/* Arrow in a white pill for contrast */}
                     <span
                       className="
-                        inline-flex h-9 w-9 items-center justify-center rounded-full
+                        inline-flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full
                         bg-white text-[#1F8248] ring-1 ring-[#1F8248]/20
                         transition-transform duration-200
                         group-hover:translate-x-0.5
@@ -63,7 +64,7 @@ export default function HomeProductPreview() {
                       aria-hidden="true"
                     >
                       <svg
-                        className="h-5 w-5"
+                        className="h-4 w-4 sm:h-5 sm:w-5"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -77,9 +78,8 @@ export default function HomeProductPreview() {
                     </span>
                   </div>
 
-                  {/* Subheader clarifying destination */}
                   <span className="text-xs sm:text-[13px] text-gray-700">
-                    See all paper cup sizes
+                    Explore all products
                   </span>
                 </div>
               </div>
