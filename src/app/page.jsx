@@ -79,7 +79,7 @@ export default function Home() {
     {products.map((p) => (
       <Link
         key={p._id}
-        href={`/products/cups/${p.slug}`}
+        href={`/catalog/cups/${p.slug}`}
         className="flex flex-col justify-between rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition"
       >
         {p.image && (
