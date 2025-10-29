@@ -21,23 +21,28 @@ export default async function ProductsCategoriesPage() {
         </p>
       </div>
 
-      <section className="max-w-6xl mx-auto px-6 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-8 pb-20">
+      <section className="max-w-6xl mx-auto px-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 pb-20">
         {categories.map((cat) => (
           <Link
             key={cat._id}
             href={`/products/${cat.slug}`}
-            className="group block rounded-xl overflow-hidden shadow-md hover:shadow-lg transition"
+            className="group block rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all bg-gray-50"
           >
-            {cat.thumbnail && (
-              <Image
-                src={cat.thumbnail}
-                alt={cat.title}
-                width={400}
-                height={400}
-                className="w-full h-48 sm:h-56 object-contain bg-gray-50 group-hover:scale-[1.03] transition-transform"
-              />
-            )}
-            <div className="bg-gray-50 py-3 text-center font-semibold text-lg">
+            <div className="flex items-center justify-center h-40 sm:h-48 md:h-52 bg-white">
+              {cat.thumbnail ? (
+                <Image
+                  src={cat.thumbnail}
+                  alt={cat.title}
+                  width={300}
+                  height={300}
+                  className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105"
+                />
+              ) : (
+                <div className="text-gray-400 text-sm">No Image</div>
+              )}
+            </div>
+
+            <div className="py-3 text-center font-semibold text-base sm:text-lg bg-gray-50 border-t border-gray-100">
               {cat.title}
             </div>
           </Link>
