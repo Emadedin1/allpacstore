@@ -138,7 +138,7 @@ export default function Navbar() {
           {/* Right: nav links and user (cart removed) */}
           <div className="flex items-center gap-x-8">
             <Link
-              href="/products"
+              href="/catalog"
               className={`${navFontClass} ${navBtnClass}`}
               style={navLinkStyle}
             >
