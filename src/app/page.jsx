@@ -100,7 +100,7 @@ export default function Home() {
 
     {/* “See More” Card */}
     <Link
-      href="/products"
+      href="/catalog/paper-cups"
       className="flex flex-col items-center justify-center bg-[#F2F8F5]
        rounded-2xl border border-[#DCEFE4] text-center
        hover:bg-[#E7F3ED] transition-all p-6"
