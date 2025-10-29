@@ -41,13 +41,13 @@ export default function Home() {
             Canadian Paper Cup Manufacturer — Wholesale Delivered Fast
           </h1>
           <p className="text-lg mb-6 max-w-xl mx-auto text-black">
-            Based in Windsor, ON 
+             Based in Windsor, ON
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/c/cf/Flag_of_Canada.svg"
               alt="Canadian Flag"
-              className="inline-block w-5 h-5 sm:w-6 sm:h-6 object-contain"
+              className="inline-block w-5 h-5 sm:w-6 sm:h-6 object-contain mx-1"
             />
-             — Paper cups delivered fast, with low minimums and premium quality.
+            — Paper cups delivered fast, with low minimums and premium quality.
           </p>
 
           <Link
