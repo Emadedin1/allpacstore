@@ -80,7 +80,7 @@ export default function SiteBanner() {
         lineHeight: 1.5,
       }}
     >
-      Free Shipping on All Orders in Windsor, ON
+      Request a Quote Today — Our Team Replies Within 24 Hours.
     </div>
   );
 }
