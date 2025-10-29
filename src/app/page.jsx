@@ -45,7 +45,7 @@ export default function Home() {
           </p>
 
           <Link
-            href="/products/cups"
+            href="/catalog"
             className="inline-flex h-11 px-6 items-center justify-center rounded-md
                        bg-[#239356] text-white text-base font-bold
                        hover:bg-[#1F844C] active:bg-[#176C3F]
