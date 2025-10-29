@@ -41,7 +41,7 @@ export default async function CategoryProductsPage({ params }) {
         {products.map((p) => (
           <Link
             key={p._id}
-            href={`/products/${category}/${p.slug}`}
+            href={`/catalog/${category}/${p.slug}`}
             className="block border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition"
           >
             {p.image && (
