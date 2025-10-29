@@ -118,7 +118,7 @@ export default function Home() {
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
         </svg>
       </h3>
-      <p className="text-sm text-[#0D1B2A]/70">See all paper cup sizes</p>
+      <p className="text-sm text-[#0D1B2A]/70">See all paper cup options</p>
     </Link>
   </div>
 </section>
