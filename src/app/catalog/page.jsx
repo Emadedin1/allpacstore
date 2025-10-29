@@ -34,7 +34,7 @@ export default async function ProductsCategoriesPage() {
                 alt={cat.title}
                 width={400}
                 height={400}
-                className="w-full h-80 object-cover group-hover:scale-105 transition-transform"
+                className="w-full h-48 sm:h-56 object-contain bg-gray-50 group-hover:scale-[1.03] transition-transform"
               />
             )}
             <div className="bg-gray-50 py-3 text-center font-semibold text-lg">
