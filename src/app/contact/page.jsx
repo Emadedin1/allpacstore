@@ -37,12 +37,12 @@ export default function ContactPage() {
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-8">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-4xl font-bold mb-2">Get in Touch</h1>
+        <h1 className="text-4xl font-bold mb-2">Request a Quote</h1>
       </div>
 
       <section className="mb-8">
         <p className="text-lg text-gray-700">
-          For questions about orders, pricing, or general inquiries, our team is here to help.
+          For pricing, bulk orders, or custom packaging inquiries, our team will respond within 24 hours.
         </p>
       </section>
 
