@@ -80,7 +80,7 @@ export default function SiteBanner() {
         lineHeight: 1.5,
       }}
     >
-      Request a Quote Today — Our Team Replies Within 24 Hours.
+      Request a Quote — Get a Reply Within 24 Hours.
     </div>
   );
 }
