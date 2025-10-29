@@ -57,30 +57,30 @@ export default function CupCard({ cup }) {
         group bg-white rounded-2xl shadow-sm hover:shadow-md transition
         flex flex-col cursor-pointer focus:outline-none
         focus-visible:ring-2 focus-visible:ring-black/10
-        w-full
+        w-full max-w-[180px] mx-auto
       "
       aria-label={`${cup.size} details`}
     >
-      {/* Square image well */}
-      <div className="relative w-full aspect-square bg-gray-50 rounded-t-2xl overflow-hidden">
+      {/* Image container */}
+      <div className="relative w-full aspect-square bg-gray-50 rounded-t-2xl overflow-hidden max-w-[180px] mx-auto">
         <img
           src={cup.image}
           alt={`${cup.size} cup`}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+          className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-[1.03]"
           draggable={false}
           loading="lazy"
         />
       </div>
 
-      <div className="p-3 flex flex-col gap-2">
-        <p className="text-[13px] sm:text-sm font-medium text-gray-900 leading-snug text-center">
+      <div className="p-2 flex flex-col gap-1">
+        <p className="text-[12px] sm:text-sm font-medium text-gray-900 leading-snug text-center">
           {qtyPerCase} cups | {cup.size}
-          <span className="font-normal text-gray-700 block">
+          <span className="font-normal text-gray-700 block text-[11px] sm:text-xs">
             {cup.description || DEFAULT_DESCRIPTOR}
           </span>
         </p>
 
-        <p className="text-base sm:text-lg font-semibold text-gray-900 text-center">
+        <p className="text-sm sm:text-base font-semibold text-gray-900 text-center">
           ${effectiveCasePrice.toFixed(2)}
         </p>
 
@@ -88,9 +88,9 @@ export default function CupCard({ cup }) {
           type="button"
           onClick={handleAddToCart}
           className="
-            mt-auto inline-flex h-9 sm:h-10 w-full items-center justify-center
+            mt-auto inline-flex h-8 sm:h-9 w-full items-center justify-center
             rounded-md bg-[#28a745] hover:bg-[#218838] active:bg-[#1e7e34]
-            text-white text-[14px] sm:text-[15px] font-medium
+            text-white text-[13px] sm:text-[14px] font-medium
             hover:shadow-sm focus:outline-none
             focus-visible:ring-2 focus-visible:ring-[#145633] focus-visible:ring-offset-1
             transition-colors
