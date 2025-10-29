@@ -25,7 +25,7 @@ export default async function ProductsCategoriesPage() {
         {categories.map((cat) => (
           <Link
             key={cat._id}
-            href={`/products/${cat.slug}`}
+            href={`/catalog/${cat.slug}`}
             className="group block rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all bg-gray-50"
           >
             <div className="flex items-center justify-center h-40 sm:h-48 md:h-52 bg-white">
