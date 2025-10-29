@@ -58,72 +58,70 @@ export default function Home() {
 
       {/* Paper Cups Section */}
       <section id="product-sections" className="py-12">
-        {/* Header */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-6 sm:mb-8">
-          <div className="flex items-end justify-between">
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-black">
-                Paper Cups
-              </h2>
-              <div
-                aria-hidden
-                className="mt-1 h-px w-20 sm:w-24 rounded-full
-                           bg-gradient-to-r from-[#FFD814]/40 via-[#FFD814]/20 to-transparent"
-              />
-            </div>
-          </div>
+  {/* Header */}
+  <div className="max-w-5xl mx-auto px-5 sm:px-6 mb-6 sm:mb-8">
+    <div className="flex items-end justify-between">
+      <div>
+        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-black">
+          Paper Cups
+        </h2>
+        <div
+          aria-hidden
+          className="mt-1 h-px w-20 sm:w-24 rounded-full
+                     bg-gradient-to-r from-[#FFD814]/40 via-[#FFD814]/20 to-transparent"
+        />
+      </div>
+    </div>
+  </div>
+
+  {/* Sanity Products + Original See More Card */}
+  <div className="max-w-5xl mx-auto px-5 sm:px-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
+    {products.map((p) => (
+      <Link
+        key={p._id}
+        href={`/products/cups/${p.slug}`}
+        className="flex flex-col justify-between rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition"
+      >
+        {p.image && (
+          <Image
+            src={p.image}
+            alt={p.title}
+            width={400}
+            height={400}
+            className="w-full h-60 object-contain bg-gray-50"
+          />
+        )}
+        <div className="p-4 text-center">
+          <h2 className="font-semibold text-base sm:text-lg">{p.title}</h2>
+          <p className="text-gray-600 text-sm mt-1 line-clamp-2">{p.desc}</p>
         </div>
+      </Link>
+    ))}
 
-        {/* Sanity Products + Original See More Card */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {products.map((p) => (
-            <Link
-              key={p._id}
-              href={`/products/cups/${p.slug}`}
-              className="flex flex-col justify-between rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition"
-            >
-              {p.image && (
-                <Image
-                  src={p.image}
-                  alt={p.title}
-                  width={400}
-                  height={400}
-                  className="w-full h-72 object-cover"
-                />
-              )}
-              <div className="p-4 text-center">
-                <h2 className="font-semibold text-lg">{p.title}</h2>
-                <p className="text-gray-600 text-sm mt-1 line-clamp-2">{p.desc}</p>
-              </div>
-            </Link>
-          ))}
-
-          {/* 🟢 Original “See More” Card (arrow beside text, old colors) */}
-          <Link
-            href="/products"
-            className="flex flex-col items-center justify-center bg-[#F2F8F5]
-             rounded-2xl border border-[#DCEFE4] text-center
-             hover:bg-[#E7F3ED] transition-all p-6"
-          >
-            <h3 className="flex items-center gap-2 text-lg font-semibold text-[#0D1B2A] mb-1">
-              See More
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="#239356"
-                className="w-5 h-5"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-            </h3>
-            <p className="text-sm text-[#0D1B2A]/70">See all paper cup sizes</p>
-          </Link>
-
-
-        </div>
-      </section>
+    {/* “See More” Card */}
+    <Link
+      href="/products"
+      className="flex flex-col items-center justify-center bg-[#F2F8F5]
+       rounded-2xl border border-[#DCEFE4] text-center
+       hover:bg-[#E7F3ED] transition-all p-6"
+    >
+      <h3 className="flex items-center gap-2 text-lg font-semibold text-[#0D1B2A] mb-1">
+        See More
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="#239356"
+          className="w-5 h-5"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </h3>
+      <p className="text-sm text-[#0D1B2A]/70">See all paper cup sizes</p>
+    </Link>
+  </div>
+</section>
     </main>
   )
 }
