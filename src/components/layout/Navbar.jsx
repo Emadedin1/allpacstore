@@ -222,7 +222,7 @@ export default function Navbar() {
 
           {/* Second row: main nav links */}
           <nav className="flex justify-center space-x-7 mt-2 text-allpac w-full">
-            <Link href="/products" className={`${navFontClass} ${navBtnClass}`}>
+            <Link href="/catalog" className={`${navFontClass} ${navBtnClass}`}>
               Products
             </Link>
             <Link href="/about" className={`${navFontClass} ${navBtnClass}`}>
