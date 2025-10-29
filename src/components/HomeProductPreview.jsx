@@ -33,7 +33,7 @@ export default function HomeProductPreview() {
           return (
             <Link
               key="see-more"
-              href="/products"
+              href="/products/paper-cups"
               aria-label="See all packaging products"
               className="
                 group relative block h-full
