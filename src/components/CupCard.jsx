@@ -57,7 +57,7 @@ export default function CupCard({ cup }) {
         group bg-white rounded-2xl shadow-sm hover:shadow-md transition
         flex flex-col cursor-pointer focus:outline-none
         focus-visible:ring-2 focus-visible:ring-black/10
-        w-[var(--card-min)]
+        w-full
       "
       aria-label={`${cup.size} details`}
     >
