@@ -21,7 +21,7 @@ export default async function ProductsCategoriesPage() {
         </p>
       </div>
 
-      <section className="max-w-6xl mx-auto px-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 pb-20">
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 pb-20">
         {categories.map((cat) => (
           <Link
             key={cat._id}
