@@ -7,23 +7,29 @@ import ClientCartDrawer from "../components/layout/ClientCartDrawer";
 import SiteBanner from "../components/SiteBanner"; // <-- updated import
 
 export const metadata = {
+  metadataBase: new URL("https://www.allpacstore.com"),
   title:
     "Paper Cup Manufacturer in Canada | Single Wall & Double Wall Wholesale Cups | Allpac Packaging",
   description:
     "Allpac is a Canadian paper cup manufacturer based in Windsor, Ontario. We produce single wall and double wall paper cups — including custom printed and eco-friendly options — for coffee shops, distributors, and foodservice companies across North America.",
   alternates: {
-    canonical: "https://allpacstore.com/",
+    canonical: "https://www.allpacstore.com/",
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
   },
   openGraph: {
     title:
       "Allpac | Canadian Paper Cup Manufacturer — Single Wall, Double Wall, Custom & Eco-Friendly Cups",
     description:
       "Allpac manufactures high-quality paper cups in Windsor, Ontario. Our product range includes single wall and double wall paper cups, custom printed designs, and sustainable packaging solutions — available for wholesale across Canada and the U.S.",
-    url: "https://allpacstore.com/",
+    url: "https://www.allpacstore.com/",
     siteName: "Allpac Packaging",
     images: [
       {
-        url: "https://allpacstore.com/images/hero-cups.png",
+        url: "https://www.allpacstore.com/images/hero-cups.png",
         width: 1200,
         height: 630,
         alt: "Single Wall and Double Wall Paper Cups Manufactured in Canada",
