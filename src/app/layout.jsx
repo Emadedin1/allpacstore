@@ -9,7 +9,7 @@ import SiteBanner from "../components/SiteBanner"; // <-- updated import
 export const metadata = {
   metadataBase: new URL("https://www.allpacstore.com"),
   title:
-    "Paper Cup Manufacturer in Canada | Single Wall & Double Wall Wholesale Cups | Allpac Packaging",
+    "Allpac Store | Canadian Paper Cup Manufacturer & Wholesale Supplier",
   description:
     "Allpac is a Canadian paper cup manufacturer based in Windsor, Ontario. We produce single wall and double wall paper cups — including custom printed and eco-friendly options — for coffee shops, distributors, and foodservice companies across North America.",
   alternates: {
