@@ -1,149 +1,142 @@
 "use client";
+
 import { useState } from "react";
-import Link from "next/link";
 
-export default function ContactPage() {
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState("");
+export default function QuoteForm() {
+  const [loading, setLoading] = useState(false);
+  const [ok, setOk] = useState<null | boolean>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(e) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError("");
-    const form = e.target;
+    setLoading(true);
+    setOk(null);
+    setError(null);
+
+    const form = e.currentTarget;
     const formData = new FormData(form);
+
+    // Honeypot check
+    const hp = (formData.get("hp") as string) || "";
+    if (hp.trim()) {
+      setOk(true); // pretend success for bots
+      setLoading(false);
+      form.reset();
+      return;
+    }
 
     try {
       const res = await fetch("https://formspree.io/f/xqalonvg", {
         method: "POST",
+        headers: { Accept: "application/json" },
         body: formData,
-        headers: {
-          Accept: "application/json",
-        },
       });
-      const data = await res.json();
-      if (res.ok) {
-        setSubmitted(true);
-        form.reset();
-      } else if (data.errors && data.errors.length > 0) {
-        setError(data.errors[0].message);
-      } else {
-        setError("Something went wrong. Please try again.");
+
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const firstErr = json?.errors?.[0]?.message || "Failed to send.";
+        throw new Error(firstErr);
       }
-    } catch (err) {
-      setError("Something went wrong. Please try again.");
+
+      setOk(true);
+      form.reset();
+    } catch (err: any) {
+      setOk(false);
+      setError(err?.message || "Something went wrong.");
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-8">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-4xl font-bold mb-2">Request a Quote</h1>
+    <form onSubmit={onSubmit} className="space-y-4" encType="multipart/form-data" noValidate>
+      {/* Honeypot (bots fill this) */}
+      <input type="text" name="hp" className="hidden" tabIndex={-1} autoComplete="off" />
+
+      {/* Optional: subject for Formspree dashboard */}
+      <input type="hidden" name="_subject" value="New Quote Request — Allpac" />
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-1">
+          <label htmlFor="name" className="text-sm font-medium text-[#0D1B2A]">Name *</label>
+          <input
+            id="name"
+            name="name"
+            required
+            className="w-full rounded-lg border px-3 py-2 shadow-sm ring-1 ring-black/5 focus:outline-none focus:ring-2 focus:ring-cyan-600"
+            placeholder="Jane Doe"
+          />
+        </div>
+
+        <div className="grid gap-1">
+          <label htmlFor="email" className="text-sm font-medium text-[#0D1B2A]">Email *</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            autoComplete="email"
+            className="w-full rounded-lg border px-3 py-2 shadow-sm ring-1 ring-black/5 focus:outline-none focus:ring-2 focus:ring-cyan-600"
+            placeholder="you@company.com"
+          />
+        </div>
+
+        <div className="grid gap-1">
+          <label htmlFor="phone" className="text-sm font-medium text-[#0D1B2A]">Phone</label>
+          <input
+            id="phone"
+            name="phone"
+            autoComplete="tel"
+            className="w-full rounded-lg border px-3 py-2 shadow-sm ring-1 ring-black/5 focus:outline-none focus:ring-2 focus:ring-cyan-600"
+            placeholder="(226) 350-4144"
+          />
+        </div>
+
+        <div className="grid gap-1">
+          <label htmlFor="city" className="text-sm font-medium text-[#0D1B2A]">City</label>
+          <input
+            id="city"
+            name="city"
+            className="w-full rounded-lg border px-3 py-2 shadow-sm ring-1 ring-black/5 focus:outline-none focus:ring-2 focus:ring-cyan-600"
+            placeholder="Windsor, ON"
+          />
+        </div>
       </div>
 
-      <section className="mb-8">
-        <p className="text-lg text-gray-700">
-          For pricing, bulk orders, or custom packaging inquiries, our team will respond within 24 hours.
-        </p>
-      </section>
+      <div className="grid gap-1">
+        <label htmlFor="design" className="text-sm font-medium text-[#0D1B2A]">Upload Image / PDF (optional)</label>
+        <input
+          id="design"
+          name="design"
+          type="file"
+          accept=".png,.jpg,.jpeg,.pdf"
+          className="w-full rounded-lg border px-3 py-2 shadow-sm ring-1 ring-black/5 focus:outline-none focus:ring-2 focus:ring-cyan-600"
+        />
+      </div>
 
-      <section className="space-y-2 text-gray-700 mb-8">
-        <p><strong>🏭 Warehouse & Office</strong><br/>
-        3324 Marentette Ave, Windsor, ON N8X 4G4</p>
-        <p><strong>📞 Phone</strong><br/>
-        (226) 350-4144</p>
-        <p><strong>✉️ Email</strong><br/>
-        m.labak@allpacgroup.com</p>
-        <p><strong>⏰ Hours</strong><br/>
-        Mon–Fri: 8 AM–5 PM ET</p>
-      </section>
+      <div className="grid gap-1">
+        <label htmlFor="message" className="text-sm font-medium text-[#0D1B2A]">Message *</label>
+        <textarea
+          id="message"
+          name="message"
+          required
+          rows={5}
+          className="w-full rounded-lg border px-3 py-2 shadow-sm ring-1 ring-black/5 focus:outline-none focus:ring-2 focus:ring-cyan-600"
+          placeholder="Tell us about your order or inquiry..."
+        />
+      </div>
 
-      <section>
-        <h2 className="text-2xl font-semibold mb-4">Contact Form</h2>
-        {submitted ? (
-          <div className="bg-green-100 text-green-800 p-4 rounded shadow">
-            Thank you! Your message has been sent.
-          </div>
-        ) : (
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-4"
-            encType="multipart/form-data"
-          >
-            <div>
-              <label htmlFor="name" className="block font-medium mb-1">Name</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                className="w-full border border-gray-300 p-2 rounded"
-                placeholder="Your name"
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="company" className="block font-medium mb-1">Company (optional)</label>
-              <input
-                type="text"
-                id="company"
-                name="company"
-                className="w-full border border-gray-300 p-2 rounded"
-                placeholder="Your business name"
-              />
-            </div>
-            <div>
-              <label htmlFor="email" className="block font-medium mb-1">Email</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                className="w-full border border-gray-300 p-2 rounded"
-                placeholder="you@company.com"
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="phone" className="block font-medium mb-1">Phone</label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                className="w-full border border-gray-300 p-2 rounded"
-                placeholder="(519) 555-1234"
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="design" className="block font-medium mb-1">Upload Image (optional)</label>
-              <input
-                type="file"
-                id="design"
-                name="design"
-                accept=".png,.jpg,.pdf"
-                className="w-full border border-gray-300 p-2 rounded"
-              />
-            </div>
-            <div>
-              <label htmlFor="message" className="block font-medium mb-1">Message</label>
-              <textarea
-                id="message"
-                name="message"
-                className="w-full border border-gray-300 p-2 rounded h-32"
-                placeholder="Tell us about your order or inquiry..."
-                required
-              ></textarea>
-            </div>
-            {error && (
-              <div className="bg-red-100 text-red-800 p-2 rounded">{error}</div>
-            )}
-            <button
-              type="submit"
-              className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 cursor-pointer"
-            >
-              Send Message
-            </button>
-          </form>
-        )}
-      </section>
-    </div>
+      <div className="flex items-center gap-3">
+        <button
+          type="submit"
+          disabled={loading}
+          className="inline-flex items-center rounded-full bg-[#0D1B2A] px-4 py-2 text-white shadow-sm hover:bg-[#0b1420] disabled:opacity-50"
+        >
+          {loading ? "Sending..." : "Send request"}
+        </button>
+        {ok === true && <span className="text-sm text-green-700" aria-live="polite">Thanks — we’ll be in touch.</span>}
+        {ok === false && <span className="text-sm text-red-600" aria-live="polite">{error || "Couldn’t send."}</span>}
+      </div>
+    </form>
   );
 }
