@@ -6,26 +6,36 @@ import Image from 'next/image'
 import { client } from '@/sanity/lib/client'
 
 export default function Home() {
-  const [products, setProducts] = useState([])
+  const [singleWall, setSingleWall] = useState([])
+  const [doubleWall, setDoubleWall] = useState([])
+  const [lids, setLids] = useState([])
 
   useEffect(() => {
-    async function fetchProducts() {
+    async function fetchAll() {
       try {
-        const data = await client.fetch(`
-          *[_type == "product"] | order(title desc)[0...3]{
-            _id,
-            title,
-            desc,
+        // Prefer: products linked to a Category document with a slug.
+        const query = `
+          *[_type == "product" && category->slug.current == $cat]
+          | order(title asc)[0...8]{
+            _id, title, desc,
             "slug": slug.current,
             "image": image.asset->url
           }
-        `)
-        setProducts(data)
+        `
+        const [sw, dw, ld] = await Promise.all([
+          client.fetch(query, { cat: 'single-wall' }),
+          client.fetch(query, { cat: 'double-wall' }),
+          client.fetch(query, { cat: 'lids' }),
+        ])
+
+        setSingleWall(sw)
+        setDoubleWall(dw)
+        setLids(ld)
       } catch (err) {
-        console.error('Error fetching Sanity products:', err)
+        console.error('Error fetching products:', err)
       }
     }
-    fetchProducts()
+    fetchAll()
   }, [])
 
   return (
@@ -41,7 +51,7 @@ export default function Home() {
             Wholesale Paper Cup Manufacturer
           </h1>
           <p className="text-lg mb-6 max-w-xl mx-auto text-black">
-             Based in Windsor, ON
+            Based in Windsor, ON
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/c/cf/Flag_of_Canada.svg"
               alt="Canadian Flag"
@@ -62,72 +72,119 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Paper Cups Section */}
-      <section id="product-sections" className="py-12">
-  {/* Header */}
-  <div className="max-w-5xl mx-auto px-5 sm:px-6 mb-6 sm:mb-8">
-    <div className="flex items-end justify-between">
-      <div>
-        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-black">
-          Paper Cups
-        </h2>
-        <div
-          aria-hidden
-          className="mt-1 h-px w-20 sm:w-24 rounded-full
-                     bg-gradient-to-r from-[#FFD814]/40 via-[#FFD814]/20 to-transparent"
-        />
-      </div>
-    </div>
-  </div>
+      {/* Single-Wall Paper Cups */}
+      <CatalogSection
+        title="Single-Wall Paper Cups"
+        subtitleGradient
+        items={singleWall}
+        seeMoreHref="/catalog/single-wall"
+        seeMoreText="See all single-wall cups"
+        itemHrefBase="/catalog/single-wall"
+      />
 
-  {/* Sanity Products + Original See More Card */}
-  <div className="max-w-5xl mx-auto px-5 sm:px-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
-    {products.map((p) => (
-      <Link
-        key={p._id}
-        href={`/catalog/cups/${p.slug}`}
-        className="flex flex-col justify-between rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition"
-      >
-        {p.image && (
-          <Image
-            src={p.image}
-            alt={p.title}
-            width={400}
-            height={400}
-            className="w-full h-60 object-contain bg-gray-50"
-          />
-        )}
-        <div className="p-4 text-center">
-          <h2 className="font-semibold text-base sm:text-lg">{p.title}</h2>
-          <p className="text-gray-600 text-sm mt-1 line-clamp-2">{p.desc}</p>
-        </div>
-      </Link>
-    ))}
+      {/* Double-Wall Paper Cups */}
+      <CatalogSection
+        title="Double-Wall Paper Cups"
+        subtitleGradient
+        items={doubleWall}
+        seeMoreHref="/catalog/double-wall"
+        seeMoreText="See all double-wall cups"
+        itemHrefBase="/catalog/double-wall"
+      />
 
-    {/* “See More” Card */}
-    <Link
-      href="/catalog/paper-cups"
-      className="flex flex-col items-center justify-center bg-[#F2F8F5]
-       rounded-2xl border border-[#DCEFE4] text-center
-       hover:bg-[#E7F3ED] transition-all p-6"
-    >
-      <h3 className="flex items-center gap-2 text-lg font-semibold text-[#0D1B2A] mb-1">
-        See More
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={2}
-          stroke="#239356"
-          className="w-5 h-5"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-        </svg>
-      </h3>
-      <p className="text-sm text-[#0D1B2A]/70">See all paper cup options</p>
-    </Link>
-  </div>
-</section>
+      {/* Lids */}
+      <CatalogSection
+        title="Lids"
+        subtitleGradient
+        items={lids}
+        seeMoreHref="/catalog/lids"
+        seeMoreText="See all lids"
+        itemHrefBase="/catalog/lids"
+        imageBgClass="bg-white" // lids are often clear/black; white bg helps
+      />
     </main>
+  )
+}
+
+/* ----------------- Reusable Section ----------------- */
+function CatalogSection({
+  title,
+  items,
+  seeMoreHref,
+  seeMoreText,
+  itemHrefBase,
+  subtitleGradient,
+  imageBgClass = 'bg-gray-50',
+}) {
+  return (
+    <section className="py-12" id={title.toLowerCase().replace(/\s+/g, '-')}>
+      {/* Header */}
+      <div className="max-w-5xl mx-auto px-5 sm:px-6 mb-6 sm:mb-8">
+        <div className="flex items-end justify-between">
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-black">
+              {title}
+            </h2>
+            {subtitleGradient && (
+              <div
+                aria-hidden
+                className="mt-1 h-px w-20 sm:w-24 rounded-full
+                           bg-gradient-to-r from-[#FFD814]/40 via-[#FFD814]/20 to-transparent"
+              />
+            )}
+          </div>
+          {/* Optional: Add a small link at right later */}
+        </div>
+      </div>
+
+      {/* Grid */}
+      <div className="max-w-5xl mx-auto px-5 sm:px-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
+        {items?.map((p) => (
+          <Link
+            key={p._id}
+            href={`${itemHrefBase}/${p.slug}`}
+            className="flex flex-col justify-between rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition"
+          >
+            {p.image && (
+              <Image
+                src={p.image}
+                alt={p.title}
+                width={400}
+                height={400}
+                className={`w-full h-60 object-contain ${imageBgClass}`}
+              />
+            )}
+            <div className="p-4 text-center">
+              <h3 className="font-semibold text-base sm:text-lg">{p.title}</h3>
+              {p.desc ? (
+                <p className="text-gray-600 text-sm mt-1 line-clamp-2">{p.desc}</p>
+              ) : (
+                <p className="text-gray-500 text-sm mt-1">&nbsp;</p>
+              )}
+            </div>
+          </Link>
+        ))}
+
+        {/* “See More” Card */}
+        <Link
+          href={seeMoreHref}
+          className="flex flex-col items-center justify-center bg-[#F2F8F5]
+                    rounded-2xl border border-[#DCEFE4] text-center
+                    hover:bg-[#E7F3ED] transition-all p-6"
+        >
+          <h4 className="flex items-center gap-2 text-lg font-semibold text-[#0D1B2A] mb-1">
+            See More
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none" viewBox="0 0 24 24"
+              strokeWidth={2} stroke="#239356" className="w-5 h-5"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </h4>
+          <p className="text-sm text-[#0D1B2A]/70">{seeMoreText}</p>
+        </Link>
+      </div>
+    </section>
   )
 }
