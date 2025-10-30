@@ -7,7 +7,7 @@ export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setError("");
     const form = e.currentTarget;
@@ -34,7 +34,7 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="px-6 py-10 max-w-6xl mx-auto">
+    <div className="mx-auto max-w-6xl px-6 py-10">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Request a Quote</h1>
         <p className="mt-2 text-gray-600">
@@ -48,7 +48,7 @@ export default function ContactPage() {
           <h2 className="text-lg font-semibold">Contact</h2>
           <dl className="mt-4 space-y-4 text-sm text-gray-700">
             <div>
-              <dt className="font-medium">🏭 Warehouse & Office</dt>
+              <dt className="font-medium">🏭 Warehouse &amp; Office</dt>
               <dd>3324 Marentette Ave, Windsor, ON N8X 4G4</dd>
             </div>
             <div>
@@ -65,12 +65,12 @@ export default function ContactPage() {
             </div>
           </dl>
           <div className="mt-6">
-            <Link
+            <a
               href="tel:+12263504144"
               className="inline-flex items-center justify-center rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium hover:bg-gray-50"
             >
               Call us
-            </Link>
+            </a>
           </div>
         </section>
 
@@ -84,11 +84,7 @@ export default function ContactPage() {
                 Thank you! Your message has been sent.
               </div>
             ) : (
-              <form
-                onSubmit={handleSubmit}
-                className="space-y-6"
-                encType="multipart/form-data"
-              >
+              <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
                 {/* Row: Name & Company */}
                 <div className="grid gap-4 sm:grid-cols-2">
                   <FormField label="Name" htmlFor="name" required>
@@ -98,7 +94,7 @@ export default function ContactPage() {
                       type="text"
                       required
                       autoComplete="name"
-                      className="form-input"
+                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-gray-400 focus:outline-none focus:ring-4 focus:ring-gray-200"
                       placeholder="Your name"
                     />
                   </FormField>
@@ -109,7 +105,7 @@ export default function ContactPage() {
                       name="company"
                       type="text"
                       autoComplete="organization"
-                      className="form-input"
+                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-gray-400 focus:outline-none focus:ring-4 focus:ring-gray-200"
                       placeholder="Your business name"
                     />
                   </FormField>
@@ -124,7 +120,7 @@ export default function ContactPage() {
                       type="email"
                       required
                       autoComplete="email"
-                      className="form-input"
+                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-gray-400 focus:outline-none focus:ring-4 focus:ring-gray-200"
                       placeholder="you@company.com"
                     />
                   </FormField>
@@ -137,7 +133,7 @@ export default function ContactPage() {
                       inputMode="tel"
                       required
                       autoComplete="tel"
-                      className="form-input"
+                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-gray-400 focus:outline-none focus:ring-4 focus:ring-gray-200"
                       placeholder="(226) 350-4144"
                     />
                   </FormField>
@@ -151,13 +147,13 @@ export default function ContactPage() {
                       name="city"
                       type="text"
                       autoComplete="address-level2"
-                      className="form-input"
+                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-gray-400 focus:outline-none focus:ring-4 focus:ring-gray-200"
                       placeholder="Windsor, ON"
                     />
                   </FormField>
 
                   <FormField label="Upload Image / PDF" htmlFor="design" optional>
-                    <label className="file-input">
+                    <label className="inline-flex w-full cursor-pointer items-center justify-between truncate rounded-lg border border-dashed border-gray-300 bg-gray-50 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-100">
                       <input
                         id="design"
                         name="design"
@@ -177,7 +173,7 @@ export default function ContactPage() {
                     id="message"
                     name="message"
                     required
-                    className="form-input h-28 leading-relaxed"
+                    className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm placeholder:text-gray-400 focus:border-gray-400 focus:outline-none focus:ring-4 focus:ring-gray-200 h-28 leading-relaxed"
                     placeholder="Tell us about your order or inquiry..."
                   />
                 </FormField>
@@ -204,46 +200,15 @@ export default function ContactPage() {
           </div>
         </section>
       </div>
-
-      {/* Tailwind "component classes" */}
-      <style jsx>{`
-        .form-input {
-          @apply w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900
-                 shadow-xs placeholder:text-gray-400
-                 focus:outline-none focus:ring-4 focus:ring-gray-200 focus:border-gray-400;
-        }
-        .file-input {
-          @apply inline-flex w-full cursor-pointer items-center justify-between rounded-lg border
-                 border-dashed border-gray-300 bg-gray-50 px-3 py-2.5 text-sm text-gray-700
-                 hover:bg-gray-100;
-        }
-      `}</style>
     </div>
   );
 }
 
-/** Small helper to keep labels consistent */
-function FormField({
-  label,
-  htmlFor,
-  required,
-  optional,
-  children,
-}: {
-  label: string;
-  htmlFor: string;
-  required?: boolean;
-  optional?: boolean;
-  children: React.ReactNode;
-}) {
+function FormField({ label, htmlFor, required, optional, children }) {
   return (
     <div>
-      <label
-        htmlFor={htmlFor}
-        className="mb-1 block text-sm font-medium text-gray-800"
-      >
-        {label}{" "}
-        {optional ? <span className="text-gray-400">(optional)</span> : required ? "*" : null}
+      <label htmlFor={htmlFor} className="mb-1 block text-sm font-medium text-gray-800">
+        {label} {optional ? <span className="text-gray-400">(optional)</span> : required ? "*" : null}
       </label>
       {children}
     </div>
