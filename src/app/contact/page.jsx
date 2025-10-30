@@ -7,19 +7,17 @@ export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
-    const form = e.target;
+    const form = e.currentTarget;
     const formData = new FormData(form);
 
     try {
       const res = await fetch("https://formspree.io/f/xqalonvg", {
         method: "POST",
         body: formData,
-        headers: {
-          Accept: "application/json",
-        },
+        headers: { Accept: "application/json" },
       });
       const data = await res.json();
       if (res.ok) {
@@ -30,121 +28,224 @@ export default function ContactPage() {
       } else {
         setError("Something went wrong. Please try again.");
       }
-    } catch (err) {
+    } catch {
       setError("Something went wrong. Please try again.");
     }
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-8">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-4xl font-bold mb-2">Request a Quote</h1>
+    <div className="px-6 py-10 max-w-6xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight">Request a Quote</h1>
+        <p className="mt-2 text-gray-600">
+          For pricing, bulk orders, or custom packaging inquiries, our team replies within 24 hours.
+        </p>
       </div>
 
-      <section className="mb-8">
-        <p className="text-lg text-gray-700">
-          For pricing, bulk orders, or custom packaging inquiries, our team will respond within 24 hours.
-        </p>
-      </section>
-
-      <section className="space-y-2 text-gray-700 mb-8">
-        <p><strong>🏭 Warehouse & Office</strong><br/>
-        3324 Marentette Ave, Windsor, ON N8X 4G4</p>
-        <p><strong>📞 Phone</strong><br/>
-        (226) 350-4144</p>
-        <p><strong>✉️ Email</strong><br/>
-        m.labak@allpacgroup.com</p>
-        <p><strong>⏰ Hours</strong><br/>
-        Mon–Fri: 8 AM–5 PM ET</p>
-      </section>
-
-      <section>
-        <h2 className="text-2xl font-semibold mb-4">Contact Form</h2>
-        {submitted ? (
-          <div className="bg-green-100 text-green-800 p-4 rounded shadow">
-            Thank you! Your message has been sent.
-          </div>
-        ) : (
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-4"
-            encType="multipart/form-data"
-          >
+      <div className="grid gap-8 lg:grid-cols-3">
+        {/* Info card */}
+        <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:sticky lg:top-6 lg:h-fit">
+          <h2 className="text-lg font-semibold">Contact</h2>
+          <dl className="mt-4 space-y-4 text-sm text-gray-700">
             <div>
-              <label htmlFor="name" className="block font-medium mb-1">Name</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                className="w-full border border-gray-300 p-2 rounded"
-                placeholder="Your name"
-                required
-              />
+              <dt className="font-medium">🏭 Warehouse & Office</dt>
+              <dd>3324 Marentette Ave, Windsor, ON N8X 4G4</dd>
             </div>
             <div>
-              <label htmlFor="company" className="block font-medium mb-1">Company (optional)</label>
-              <input
-                type="text"
-                id="company"
-                name="company"
-                className="w-full border border-gray-300 p-2 rounded"
-                placeholder="Your business name"
-              />
+              <dt className="font-medium">📞 Phone</dt>
+              <dd>(226) 350-4144</dd>
             </div>
             <div>
-              <label htmlFor="email" className="block font-medium mb-1">Email</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                className="w-full border border-gray-300 p-2 rounded"
-                placeholder="you@company.com"
-                required
-              />
+              <dt className="font-medium">✉️ Email</dt>
+              <dd>m.labak@allpacgroup.com</dd>
             </div>
             <div>
-              <label htmlFor="phone" className="block font-medium mb-1">Phone</label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                className="w-full border border-gray-300 p-2 rounded"
-                placeholder="(519) 555-1234"
-                required
-              />
+              <dt className="font-medium">⏰ Hours</dt>
+              <dd>Mon–Fri · 8 AM–5 PM ET</dd>
             </div>
-            <div>
-              <label htmlFor="design" className="block font-medium mb-1">Upload Image (optional)</label>
-              <input
-                type="file"
-                id="design"
-                name="design"
-                accept=".png,.jpg,.pdf"
-                className="w-full border border-gray-300 p-2 rounded"
-              />
-            </div>
-            <div>
-              <label htmlFor="message" className="block font-medium mb-1">Message</label>
-              <textarea
-                id="message"
-                name="message"
-                className="w-full border border-gray-300 p-2 rounded h-32"
-                placeholder="Tell us about your order or inquiry..."
-                required
-              ></textarea>
-            </div>
-            {error && (
-              <div className="bg-red-100 text-red-800 p-2 rounded">{error}</div>
-            )}
-            <button
-              type="submit"
-              className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 cursor-pointer"
+          </dl>
+          <div className="mt-6">
+            <Link
+              href="tel:+12263504144"
+              className="inline-flex items-center justify-center rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium hover:bg-gray-50"
             >
-              Send Message
-            </button>
-          </form>
-        )}
-      </section>
+              Call us
+            </Link>
+          </div>
+        </section>
+
+        {/* Form card */}
+        <section className="lg:col-span-2">
+          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            <h2 className="sr-only">Contact Form</h2>
+
+            {submitted ? (
+              <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-green-800">
+                Thank you! Your message has been sent.
+              </div>
+            ) : (
+              <form
+                onSubmit={handleSubmit}
+                className="space-y-6"
+                encType="multipart/form-data"
+              >
+                {/* Row: Name & Company */}
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <FormField label="Name" htmlFor="name" required>
+                    <input
+                      id="name"
+                      name="name"
+                      type="text"
+                      required
+                      autoComplete="name"
+                      className="form-input"
+                      placeholder="Your name"
+                    />
+                  </FormField>
+
+                  <FormField label="Company" htmlFor="company" optional>
+                    <input
+                      id="company"
+                      name="company"
+                      type="text"
+                      autoComplete="organization"
+                      className="form-input"
+                      placeholder="Your business name"
+                    />
+                  </FormField>
+                </div>
+
+                {/* Row: Email & Phone */}
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <FormField label="Email" htmlFor="email" required>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      required
+                      autoComplete="email"
+                      className="form-input"
+                      placeholder="you@company.com"
+                    />
+                  </FormField>
+
+                  <FormField label="Phone" htmlFor="phone" required>
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      inputMode="tel"
+                      required
+                      autoComplete="tel"
+                      className="form-input"
+                      placeholder="(226) 350-4144"
+                    />
+                  </FormField>
+                </div>
+
+                {/* Row: City & Upload */}
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <FormField label="City" htmlFor="city">
+                    <input
+                      id="city"
+                      name="city"
+                      type="text"
+                      autoComplete="address-level2"
+                      className="form-input"
+                      placeholder="Windsor, ON"
+                    />
+                  </FormField>
+
+                  <FormField label="Upload Image / PDF" htmlFor="design" optional>
+                    <label className="file-input">
+                      <input
+                        id="design"
+                        name="design"
+                        type="file"
+                        accept=".png,.jpg,.jpeg,.pdf"
+                        className="hidden"
+                      />
+                      <span className="truncate">Choose file</span>
+                    </label>
+                    <p className="mt-1 text-xs text-gray-500">PNG, JPG, or PDF</p>
+                  </FormField>
+                </div>
+
+                {/* Message */}
+                <FormField label="Message" htmlFor="message" required>
+                  <textarea
+                    id="message"
+                    name="message"
+                    required
+                    className="form-input h-28 leading-relaxed"
+                    placeholder="Tell us about your order or inquiry..."
+                  />
+                </FormField>
+
+                {error && (
+                  <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                    {error}
+                  </div>
+                )}
+
+                <div className="flex items-center gap-3">
+                  <button
+                    type="submit"
+                    className="inline-flex items-center justify-center rounded-lg bg-black px-4 py-2.5 text-sm font-semibold text-white hover:bg-gray-800"
+                  >
+                    Send message
+                  </button>
+                  <p className="text-xs text-gray-500">
+                    By submitting, you agree to be contacted about your request.
+                  </p>
+                </div>
+              </form>
+            )}
+          </div>
+        </section>
+      </div>
+
+      {/* Tailwind "component classes" */}
+      <style jsx>{`
+        .form-input {
+          @apply w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900
+                 shadow-xs placeholder:text-gray-400
+                 focus:outline-none focus:ring-4 focus:ring-gray-200 focus:border-gray-400;
+        }
+        .file-input {
+          @apply inline-flex w-full cursor-pointer items-center justify-between rounded-lg border
+                 border-dashed border-gray-300 bg-gray-50 px-3 py-2.5 text-sm text-gray-700
+                 hover:bg-gray-100;
+        }
+      `}</style>
+    </div>
+  );
+}
+
+/** Small helper to keep labels consistent */
+function FormField({
+  label,
+  htmlFor,
+  required,
+  optional,
+  children,
+}: {
+  label: string;
+  htmlFor: string;
+  required?: boolean;
+  optional?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label
+        htmlFor={htmlFor}
+        className="mb-1 block text-sm font-medium text-gray-800"
+      >
+        {label}{" "}
+        {optional ? <span className="text-gray-400">(optional)</span> : required ? "*" : null}
+      </label>
+      {children}
     </div>
   );
 }
