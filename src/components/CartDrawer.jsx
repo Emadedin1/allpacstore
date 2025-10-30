@@ -196,7 +196,7 @@ export default function CartDrawer() {
             className="cursor-pointer rounded-md p-2 hover:bg-gray-50 active:bg-gray-100"
             aria-label="Close cart"
           >
-            <X size={20} />
+            <X size={20} /> 
           </button>
         </div>
 
