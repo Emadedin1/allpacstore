@@ -5,20 +5,18 @@ import Link from "next/link";
 export default async function ProductPage({ params }) {
   const { category, slug } = await params;
 
-  // Fetch product and related ones
+  // Fetch product
   const product = await client.fetch(
     `
     *[_type == "product" && slug.current == $slug][0]{
       _id,
       title,
-      desc,
-      "image": image.asset->url,
-      "imageHiRes": imageHiRes.asset->url,
-      specs,
-      variants[]{
-        label,
-        attributes
-      },
+      description,
+      "image": mainImage.asset->url,
+      "imageHiRes": highResImage.asset->url,
+      specifications,
+      variants,
+      notes,
       category->{
         _id,
         title,
@@ -37,13 +35,13 @@ export default async function ProductPage({ params }) {
     );
   }
 
-  // Fetch other products from same category
+  // Fetch other products from the same category
   const otherProducts = await client.fetch(
     `
     *[_type == "product" && category._ref == $catId && slug.current != $slug]{
       _id,
       title,
-      "image": image.asset->url,
+      "image": mainImage.asset->url,
       "slug": slug.current
     }
   `,
@@ -52,10 +50,11 @@ export default async function ProductPage({ params }) {
 
   return (
     <main className="max-w-6xl mx-auto p-4 md:p-6 space-y-12">
-      {/* PRODUCT HEADER */}
+      {/* HEADER */}
       <div className="flex flex-col md:flex-row gap-10">
         {/* LEFT: IMAGE + OVERVIEW */}
         <div className="md:w-1/2 flex flex-col gap-6">
+          {/* Product Image */}
           <div className="relative w-full aspect-square bg-gray-50 rounded-xl overflow-hidden ring-1 ring-black/5 shadow-sm">
             {product.image && (
               <Image
@@ -67,54 +66,53 @@ export default async function ProductPage({ params }) {
             )}
           </div>
 
-          {/* OVERVIEW directly under image */}
+          {/* Overview */}
           <div className="bg-gray-100 rounded-lg p-6 shadow-sm">
             <h2 className="text-2xl font-semibold mb-3">Overview</h2>
-            <p className="text-gray-700 mb-1">{product.desc}</p>
-            {product.specs?.Material?.length > 0 && (
-              <p className="text-gray-700">
-                <strong>Material:</strong> {product.specs.Material.join(", ")}
-              </p>
-            )}
-            {product.specs?.Dimensions?.length > 0 && (
-              <p className="text-gray-700">
-                <strong>Dimensions:</strong>{" "}
-                {product.specs.Dimensions.join(", ")}
-              </p>
-            )}
+            <p className="text-gray-700 leading-relaxed">
+              {product.description}
+            </p>
           </div>
         </div>
 
-        {/* RIGHT: INFO + TABLE + COLLAPSIBLE SECTIONS */}
+        {/* RIGHT: INFO + VARIANTS + SPECS */}
         <div className="md:w-1/2 flex flex-col justify-start space-y-6">
-          {/* TITLE + DESC */}
+          {/* Title + Description */}
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
               {product.title}
             </h1>
             <p className="text-gray-700 mt-4 leading-relaxed">
-              {product.desc}
+              {product.description}
             </p>
           </div>
 
-          {/* VARIANTS TABLE */}
           {/* VARIANTS TABLE */}
           {product.variants?.length > 0 && (
             <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
               <div className="border-b border-gray-200 px-4 py-3">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  Variants / Sizes / Options
+                  Product Specifications
                 </h3>
               </div>
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200 text-sm">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 w-[40%] text-left font-medium text-gray-600">
-                        Label
+                      <th className="px-6 py-3 text-left font-medium text-gray-600">
+                        Size
                       </th>
                       <th className="px-4 py-3 text-left font-medium text-gray-600">
-                        Attributes
+                        Top Dia
+                      </th>
+                      <th className="px-4 py-3 text-left font-medium text-gray-600">
+                        Packing
+                      </th>
+                      <th className="px-4 py-3 text-left font-medium text-gray-600">
+                        GSM
+                      </th>
+                      <th className="px-4 py-3 text-left font-medium text-gray-600">
+                        Notes
                       </th>
                     </tr>
                   </thead>
@@ -122,12 +120,19 @@ export default async function ProductPage({ params }) {
                     {product.variants.map((variant, idx) => (
                       <tr key={idx} className="hover:bg-gray-50">
                         <td className="px-6 py-3 font-medium text-gray-900 whitespace-nowrap">
-                          {variant.label}
+                          {variant.size || "—"}
                         </td>
                         <td className="px-4 py-3 text-gray-700">
-                          {variant.attributes?.length
-                            ? variant.attributes.join(", ")
-                            : "—"}
+                          {variant.topDia || "—"}
+                        </td>
+                        <td className="px-4 py-3 text-gray-700">
+                          {variant.packing || "—"}
+                        </td>
+                        <td className="px-4 py-3 text-gray-700">
+                          {variant.gsm || "—"}
+                        </td>
+                        <td className="px-4 py-3 text-gray-700">
+                          {variant.notes || "—"}
                         </td>
                       </tr>
                     ))}
@@ -137,33 +142,50 @@ export default async function ProductPage({ params }) {
             </div>
           )}
 
-
-          {/* COLLAPSIBLE SPECS */}
+          {/* COLLAPSIBLE DETAILS (SPECS + NOTES) */}
           <div className="space-y-4">
-            {product.specs &&
-              Object.entries(product.specs).map(([key, values]) => {
-                if (!Array.isArray(values) || values.length === 0) return null;
-                return (
-                  <div
-                    key={key}
-                    className="bg-white border border-gray-200 rounded-lg shadow-sm"
-                  >
-                    <details className="group">
-                      <summary className="cursor-pointer px-4 py-3 font-medium flex justify-between items-center hover:bg-gray-50">
-                        {key}
-                        <span className="transition-transform duration-300 group-open:rotate-180">
-                          ▼
-                        </span>
-                      </summary>
-                      <ul className="px-4 pb-3 text-sm text-gray-700 list-disc list-inside">
-                        {values.map((v, i) => (
-                          <li key={i}>{v}</li>
-                        ))}
-                      </ul>
-                    </details>
-                  </div>
-                );
-              })}
+            {/* Specifications */}
+            {product.specifications && (
+              <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+                <details className="group" open>
+                  <summary className="cursor-pointer px-4 py-3 font-medium flex justify-between items-center hover:bg-gray-50">
+                    Specifications
+                    <span className="transition-transform duration-300 group-open:rotate-180">
+                      ▼
+                    </span>
+                  </summary>
+                  <ul className="px-4 pb-3 text-sm text-gray-700 list-disc list-inside">
+                    {Object.entries(product.specifications).map(
+                      ([key, value]) =>
+                        value && (
+                          <li key={key}>
+                            <strong>{key}:</strong> {value}
+                          </li>
+                        )
+                    )}
+                  </ul>
+                </details>
+              </div>
+            )}
+
+            {/* Notes */}
+            {product.notes?.length > 0 && (
+              <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+                <details className="group">
+                  <summary className="cursor-pointer px-4 py-3 font-medium flex justify-between items-center hover:bg-gray-50">
+                    Additional Notes
+                    <span className="transition-transform duration-300 group-open:rotate-180">
+                      ▼
+                    </span>
+                  </summary>
+                  <ul className="px-4 pb-3 text-sm text-gray-700 list-disc list-inside">
+                    {product.notes.map((note, i) => (
+                      <li key={i}>{note}</li>
+                    ))}
+                  </ul>
+                </details>
+              </div>
+            )}
           </div>
         </div>
       </div>
