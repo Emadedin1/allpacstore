@@ -3,7 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default async function ProductPage({ params }) {
-  const { category, slug } = await params;
+  const { category, slug } = await params;  // ✅ must await here
+
+
 
   // Fetch product
   const product = await client.fetch(
@@ -201,7 +203,7 @@ export default async function ProductPage({ params }) {
                 className="snap-start flex-shrink-0 w-[200px] bg-white rounded-2xl shadow-sm hover:shadow-md transition ring-1 ring-black/5 hover:ring-black/10 flex flex-col"
               >
                 <Link
-                  href={`/products/${product.category?.slug}/${p.slug}`}
+                  href={`/catalog/${product.category?.slug}/${p.slug}`}
                   className="flex-1 rounded-2xl overflow-hidden"
                 >
                   <div className="relative w-full aspect-square bg-gray-50 rounded-t-2xl overflow-hidden">
