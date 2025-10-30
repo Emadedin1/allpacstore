@@ -15,22 +15,22 @@ export default function Home() {
       try {
         // Adjust 'single-wall' / 'double-wall' / 'lids' to match your Category slugs.
         const query = `
-          *[_type == "product" && category->slug.current == $cat]
-          | order(title asc)[0...12]{
-            _id,
-            title,
-            description,
-            "slug": slug.current,
-            // Prefer highRes if present; else mainImage
-            "image": coalesce(highResImage.asset->url, mainImage.asset->url),
-            variants[]{ size, topDia, packing }
-          }
-        `
-        const [sw, dw, ld] = await Promise.all([
-          client.fetch(query, { cat: 'single-wall' }),
-          client.fetch(query, { cat: 'double-wall' }),
-          client.fetch(query, { cat: 'lids' }),
-        ])
+        *[_type == "product" && category->slug.current == $cat]
+        | order(title asc)[0...12]{
+          _id,
+          title,
+          description,
+          "slug": slug.current,
+          "image": coalesce(highResImage.asset->url, mainImage.asset->url),
+          variants[]{ size, topDia, packing }
+        }
+      `;
+      
+      const [sw, dw, ld] = await Promise.all([
+        client.fetch(query, { cat: 'single-wall-cups' }),   // <-- updated
+        client.fetch(query, { cat: 'double-wall-cups' }),   // <-- updated
+        client.fetch(query, { cat: 'lids' }),
+      ]);
         setSingleWall(sw)
         setDoubleWall(dw)
         setLids(ld)
@@ -75,21 +75,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Single-Wall Paper Cups */}
+      {/* Single Wall Cups */}
       <CatalogSection
-        title="Single-Wall Paper Cups"
+        title="Single Wall Cups"                 // <-- updated
         items={singleWall}
         seeMoreHref="/catalog/single-wall-cups"
-        seeMoreText="See all single-wall cups"
+        seeMoreText="See all single wall cups"   // <-- updated label
         itemHrefBase="/catalog/single-wall-cups"
       />
-
-      {/* Double-Wall Paper Cups */}
+      
+      {/* Double Wall Cups */}
       <CatalogSection
-        title="Double-Wall Paper Cups"
+        title="Double Wall Cups"                 // <-- updated
         items={doubleWall}
         seeMoreHref="/catalog/double-wall-cups"
-        seeMoreText="See all double-wall cups"
+        seeMoreText="See all double wall cups"   // <-- updated label
         itemHrefBase="/catalog/double-wall-cups"
       />
 
