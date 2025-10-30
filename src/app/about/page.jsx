@@ -34,7 +34,7 @@ export default function AboutPage() {
         <h2 className="text-2xl font-semibold mb-2">Our Mission</h2>
         <p className="text-gray-700">
           We aim to replace single-use plastic with eco-friendly paper packaging, while
-          empowering local businesses with just-in-time delivery, and reliable Canadian manufacturing.
+          empowering businesses with just-in-time delivery, and reliable Canadian manufacturing.
         </p>
       </section>
 
@@ -42,10 +42,10 @@ export default function AboutPage() {
       <section>
         <h2 className="text-2xl font-semibold mb-2">What We Do</h2>
           <ul className="list-disc list-inside text-gray-700 space-y-1">
-            <li>Paper cup production — single-wall and double-wall — available in common sizes (10, 12, 16, 22, 32 oz).</li>
-            <li>Foodservice packaging: pizza boxes, soup containers, and takeout boxes.</li>
-            <li>Food-safe, recyclable stock (FSC® certified options) and EPR‑registered materials.</li>
-            <li>High-volume manufacturing and fast turnaround for bulk and repeat orders.</li>
+        <li>Single-wall paper cups (10, 12, 16, 22, 32 oz)</li>
+        <li>Double-wall paper cups (10, 12, 16, 22, 32 oz)</li>
+        <li>Lids for our paper cups</li>
+        <li>Food-safe certifications & materials (FSC® options, EPR-registered; FDA-/CFIA-aligned)</li>
           </ul>
       </section>
 
