@@ -38,6 +38,20 @@ export const metadata = {
     locale: "en_CA",
     type: "website",
   },
+  other: {
+    // ✅ JSON-LD schema to tell Google your logo + company identity
+    "application/ld+json": JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "Allpac Packaging",
+      url: "https://www.allpacstore.com",
+      logo: "https://www.allpacstore.com/images/hero-cups.png",
+      sameAs: [
+        "https://www.linkedin.com/company/allpacpackaging/",
+        "https://www.allpacstore.com"
+      ]
+    }),
+  },
 };
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -47,7 +61,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} !bg-white !text-black`}>
       <body suppressHydrationWarning className="antialiased">
-        <SiteBanner /> {/* <-- updated usage */}
+        <SiteBanner />
         <div style={{ paddingTop: 40 }} />
         <CartProvider>
           <Navbar />
