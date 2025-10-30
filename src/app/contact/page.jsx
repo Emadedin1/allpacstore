@@ -1,101 +1,150 @@
-// app/contact/page.tsx
-import Link from "next/link";
-import { Mail, MapPin, Phone, ShieldCheck, Clock, ArrowRight } from "lucide-react";
-import QuoteForm from "@/components/QuoteForm"; // client component below
+"use client";
 
-export const metadata = {
-  title: "Contact Allpac | Request a Quote",
-  description: "Request pricing for paper cups, PET containers, and paper packaging. Allpac manufactures in Canada & China.",
-};
+import { useState } from "react";
+import Link from "next/link";
 
 export default function ContactPage() {
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError("");
+    const form = e.target;
+    const formData = new FormData(form);
+
+    try {
+      const res = await fetch("https://formspree.io/f/xqalonvg", {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+        },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setSubmitted(true);
+        form.reset();
+      } else if (data.errors && data.errors.length > 0) {
+        setError(data.errors[0].message);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
+    }
+  }
+
   return (
-    <main className="relative">
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-b from-cyan-50 via-white to-white" />
-        <div className="absolute left-1/2 top-[-200px] h-[500px] w-[700px] -translate-x-1/2 rounded-full bg-cyan-200/30 blur-3xl" />
+    <div className="p-6 max-w-4xl mx-auto space-y-8">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-4xl font-bold mb-2">Request a Quote</h1>
       </div>
 
-      <section className="px-4 py-14 sm:py-18">
-        <div className="mx-auto max-w-6xl">
-          <div className="mx-auto max-w-3xl text-center">
-            <h1 className="text-4xl font-semibold tracking-tight text-[#0D1B2A] sm:text-5xl">Request a Quote</h1>
-            <p className="mt-3 text-lg text-gray-700">
-              Tell us what you need — we’ll recommend the right packaging with clear lead times and fair pricing.
-            </p>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600">
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 ring-1 ring-black/5 backdrop-blur">
-                <ShieldCheck className="h-4 w-4 text-cyan-700" /> 250,000-sq-ft Canadian facility
-              </div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 ring-1 ring-black/5 backdrop-blur">
-                <Clock className="h-4 w-4 text-cyan-700" /> Replies within 24 hours
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-10 grid gap-8 lg:grid-cols-12">
-            <div className="lg:col-span-7">
-              <div className="rounded-2xl border bg-white/80 p-6 shadow-sm ring-1 ring-black/5 backdrop-blur">
-                <QuoteForm />
-              </div>
-
-              <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                <details className="group rounded-xl border bg-white/70 p-4 ring-1 ring-black/5 backdrop-blur">
-                  <summary className="flex cursor-pointer list-none items-center justify-between font-medium text-[#0D1B2A]">
-                    Do you offer custom sizes or printing? <ArrowRight className="h-4 w-4 transition-transform group-open:rotate-90" />
-                  </summary>
-                  <p className="mt-2 text-sm text-gray-700">Yes—flexo & litho-lam. Upload a reference in the form.</p>
-                </details>
-                <details className="group rounded-xl border bg-white/70 p-4 ring-1 ring-black/5 backdrop-blur">
-                  <summary className="flex cursor-pointer list-none items-center justify-between font-medium text-[#0D1B2A]">
-                    Shipments & Incoterms <ArrowRight className="h-4 w-4 transition-transform group-open:rotate-90" />
-                  </summary>
-                  <p className="mt-2 text-sm text-gray-700">We ship worldwide (FOB, CIF, DDP/DAP). Add port or postal code.</p>
-                </details>
-              </div>
-            </div>
-
-            <aside className="lg:col-span-5 space-y-4">
-              <div className="rounded-2xl border bg-white/80 p-5 shadow-sm ring-1 ring-black/5 backdrop-blur">
-                <h2 className="text-lg font-semibold text-[#0D1B2A]">Contact</h2>
-                <ul className="mt-3 space-y-3 text-sm text-gray-700">
-                  <li className="flex items-center gap-2">
-                    <Mail size={16} className="text-cyan-700" />
-                    <a href="mailto:m.labak@allpacgroup.com" className="underline">m.labak@allpacgroup.com</a>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Phone size={16} className="mt-[2px] text-cyan-700" />
-                    <span>
-                      Ousama Labak — Partner & Executive Manager
-                      <br />
-                      <a href="tel:+12263407900" className="text-cyan-700 underline">+1 (226) 340-7900</a> • Mon–Fri 10:00–18:00 ET
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <MapPin size={16} className="mt-[2px] text-cyan-700" />
-                    <span>3324 Marentette Ave, Windsor, ON N8X 4G4<br />Canada</span>
-                  </li>
-                </ul>
-                <p className="mt-4 text-sm text-gray-600">Prefer email? We reply within one business day.</p>
-              </div>
-
-              <div className="rounded-2xl border bg-white/80 p-5 text-sm shadow-sm ring-1 ring-black/5 backdrop-blur">
-                Looking for a specific item? <Link href="/products" className="text-cyan-700 underline">Browse all products</Link>.
-              </div>
-
-              <div className="overflow-hidden rounded-2xl border ring-1 ring-black/5">
-                <iframe
-                  title="Allpac Location"
-                  className="h-56 w-full"
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  src="https://www.google.com/maps?q=3324%20Marentette%20Ave%2C%20Windsor%2C%20ON&output=embed"
-                />
-              </div>
-            </aside>
-          </div>
-        </div>
+      <section className="mb-8">
+        <p className="text-lg text-gray-700">
+          For pricing, bulk orders, or custom packaging inquiries, our team will respond within 24 hours.
+        </p>
       </section>
-    </main>
+
+      <section className="space-y-2 text-gray-700 mb-8">
+        <p><strong>🏭 Warehouse & Office</strong><br/>
+        3324 Marentette Ave, Windsor, ON N8X 4G4</p>
+        <p><strong>📞 Phone</strong><br/>
+        (226) 350-4144</p>
+        <p><strong>✉️ Email</strong><br/>
+        m.labak@allpacgroup.com</p>
+        <p><strong>⏰ Hours</strong><br/>
+        Mon–Fri: 8 AM–5 PM ET</p>
+      </section>
+
+      <section>
+        <h2 className="text-2xl font-semibold mb-4">Contact Form</h2>
+        {submitted ? (
+          <div className="bg-green-100 text-green-800 p-4 rounded shadow">
+            Thank you! Your message has been sent.
+          </div>
+        ) : (
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-4"
+            encType="multipart/form-data"
+          >
+            <div>
+              <label htmlFor="name" className="block font-medium mb-1">Name</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                className="w-full border border-gray-300 p-2 rounded"
+                placeholder="Your name"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="company" className="block font-medium mb-1">Company (optional)</label>
+              <input
+                type="text"
+                id="company"
+                name="company"
+                className="w-full border border-gray-300 p-2 rounded"
+                placeholder="Your business name"
+              />
+            </div>
+            <div>
+              <label htmlFor="email" className="block font-medium mb-1">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                className="w-full border border-gray-300 p-2 rounded"
+                placeholder="you@company.com"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="phone" className="block font-medium mb-1">Phone</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                className="w-full border border-gray-300 p-2 rounded"
+                placeholder="(519) 555-1234"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="design" className="block font-medium mb-1">Upload Image (optional)</label>
+              <input
+                type="file"
+                id="design"
+                name="design"
+                accept=".png,.jpg,.pdf"
+                className="w-full border border-gray-300 p-2 rounded"
+              />
+            </div>
+            <div>
+              <label htmlFor="message" className="block font-medium mb-1">Message</label>
+              <textarea
+                id="message"
+                name="message"
+                className="w-full border border-gray-300 p-2 rounded h-32"
+                placeholder="Tell us about your order or inquiry..."
+                required
+              ></textarea>
+            </div>
+            {error && (
+              <div className="bg-red-100 text-red-800 p-2 rounded">{error}</div>
+            )}
+            <button
+              type="submit"
+              className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 cursor-pointer"
+            >
+              Send Message
+            </button>
+          </form>
+        )}
+      </section>
+    </div>
   );
 }
