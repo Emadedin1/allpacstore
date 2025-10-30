@@ -3,30 +3,41 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default async function CategoryProductsPage({ params }) {
-  const { category } = await params;
+  const { category } = await params;   // ✅ await it here
 
 
-  const categoryData = await client.fetch(`
+  // Get category by slug
+  const categoryData = await client.fetch(
+    `
     *[_type == "category" && slug.current == $category][0]{
       _id,
       title
     }
-  `, { category });
+  `,
+    { category }
+  );
 
   if (!categoryData) {
-    return <div className="text-center py-20 text-gray-600">Category not found.</div>;
+    return (
+      <div className="text-center py-20 text-gray-600">
+        Category not found.
+      </div>
+    );
   }
 
-  const products = await client.fetch(`
-  *[_type == "product" && references($catId)] | order(title desc){
-    _id,
-    title,
-    desc,
-    "slug": slug.current,
-    "image": image.asset->url
-  }
-`, { catId: categoryData._id });
-
+  // Fetch all products that reference this category
+  const products = await client.fetch(
+    `
+    *[_type == "product" && references($catId)] | order(title asc){
+      _id,
+      title,
+      description,
+      "slug": slug.current,
+      "image": mainImage.asset->url
+    }
+  `,
+    { catId: categoryData._id }
+  );
 
   return (
     <main className="bg-white min-h-screen">
@@ -38,24 +49,39 @@ export default async function CategoryProductsPage({ params }) {
       </div>
 
       <section className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 px-6 pb-20">
+        {products.length === 0 && (
+          <div className="col-span-full text-center text-gray-500">
+            No products found for this category.
+          </div>
+        )}
+
         {products.map((p) => (
           <Link
             key={p._id}
             href={`/catalog/${category}/${p.slug}`}
-            className="block border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition"
+            className="block border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition bg-white"
           >
-            {p.image && (
-              <Image
-                src={p.image}
-                alt={p.title}
-                width={400}
-                height={400}
-                className="w-full h-72 object-cover"
-              />
-            )}
+            <div className="relative w-full h-72 bg-gray-50">
+              {p.image ? (
+                <Image
+                  src={p.image}
+                  alt={p.title}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+                  No image available
+                </div>
+              )}
+            </div>
             <div className="p-4 text-center">
-              <h2 className="font-semibold text-lg">{p.title}</h2>
-              <p className="text-gray-600 text-sm mt-1 line-clamp-2">{p.desc}</p>
+              <h2 className="font-semibold text-lg text-gray-900">
+                {p.title}
+              </h2>
+              <p className="text-gray-600 text-sm mt-1 line-clamp-2">
+                {p.description}
+              </p>
             </div>
           </Link>
         ))}

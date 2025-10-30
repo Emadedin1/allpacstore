@@ -25,7 +25,8 @@ export default function CupCard({ cup }) {
   const qtyPerCase = cup.qtyCase || 1000;
   const pricePerCup = effectiveCasePrice / qtyPerCase;
 
-  const goToDetails = () => router.push(`/products/${cup.slug}`);
+  const goToDetails = () => router.push("/catalog");
+
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" || e.key === " ") {
