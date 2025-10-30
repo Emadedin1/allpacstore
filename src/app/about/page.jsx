@@ -81,8 +81,8 @@ export default function AboutPage() {
       <section>
         <h2 className="text-2xl font-semibold mb-2">Community & Support</h2>
         <p className="text-gray-700">
-          We’re proud to support businesses worldwide. Whether you’re a distributor, food manufacturer, or enterprise buyer,
-          we’ll help you find the right large-volume paper packaging solutions—delivered globally with reliable service.
+          We support partners across North America and beyond with high-volume paper cups (single-wall, double-wall)
+          and dome/sip lids, custom printing, and consistent lead times—delivered worldwide.
         </p>
       </section>
     </div>
