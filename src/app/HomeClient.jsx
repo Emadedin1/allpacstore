@@ -16,7 +16,7 @@ export default function Home() {
         // Adjust 'single-wall' / 'double-wall' / 'lids' to match your Category slugs.
         const query = `
         *[_type == "product" && category->slug.current == $cat]
-        | order(title asc)[0...12]{
+        | order(title asc)[0...3]{
           _id,
           title,
           description,
