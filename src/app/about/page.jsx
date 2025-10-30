@@ -24,8 +24,8 @@ export default function AboutPage() {
       {/* Hero */}
       <p className="text-lg text-gray-700">
         Based in Windsor, Ontario, Allpac was founded in 1999 and owns a 250,000 sq ft manufacturing facility, making it
-        one of Canada’s most trusted partners for comprehensive paper packaging solutions. From single cafés to major events,
-        we deliver high-quality products — from paper cups to a wide range of paper-based packaging — quickly, with reliable
+        one of Canada’s most trusted paper cup manufacturers. From regional distributors to national chains,
+        we deliver high-volume paper cups — single-wall and double-wall with matching lids — quickly, with reliable
         service and competitive pricing.
       </p>
 
