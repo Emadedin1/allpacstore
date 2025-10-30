@@ -77,9 +77,9 @@ export default function Home() {
         title="Single-Wall Paper Cups"
         subtitleGradient
         items={singleWall}
-        seeMoreHref="/catalog/single-wall"
+        seeMoreHref="/catalog/single-wall-cups"
         seeMoreText="See all single-wall cups"
-        itemHrefBase="/catalog/single-wall"
+        itemHrefBase="/catalog/single-wall-cups"
       />
 
       {/* Double-Wall Paper Cups */}
@@ -87,9 +87,9 @@ export default function Home() {
         title="Double-Wall Paper Cups"
         subtitleGradient
         items={doubleWall}
-        seeMoreHref="/catalog/double-wall"
+        seeMoreHref="/catalog/double-wall-cups"
         seeMoreText="See all double-wall cups"
-        itemHrefBase="/catalog/double-wall"
+        itemHrefBase="/catalog/double-wall-cups"
       />
 
       {/* Lids */}
