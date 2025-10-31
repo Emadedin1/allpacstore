@@ -38,6 +38,7 @@ const PRICE_LIDS_MM = {
 
 const CASE_QTY = 1000
 const fmtInt = (n) => Number(n).toLocaleString('en-US')
+const money = (price) => `$${Number(price).toFixed(2)}`
 
 // Extract “12 oz”, “16oz”, etc.
 function extractOzFromTitle(title) {
@@ -51,11 +52,6 @@ function extractMmFromTitle(title) {
   if (!title) return null
   const m = String(title).match(/\b(80|90|98|100|105)\s*mm\b/i)
   return m ? m[1] : null
-}
-
-// Money
-function fmt(price) {
-  return `$${Number(price).toFixed(2)}`
 }
 
 // Decide estimated price per card
@@ -92,10 +88,58 @@ function getEstimatedPrice({ kind, title }) {
 }
 
 /* =======================
+   DISPLAY TITLE (B2B)
+======================= */
+
+const toThousands = (n) => Number(n).toLocaleString('en-US')
+
+function inferAttrsFromTitle(title) {
+  const t = String(title || '').toLowerCase()
+  const sizeMatch = t.match(/(\d+(?:\.\d+)?)\s*oz/)
+  const size = sizeMatch ? `${sizeMatch[1]} oz` : null
+
+  const wall = /double/.test(t) ? 'Double-Wall' : /single/.test(t) ? 'Single-Wall' : null
+  const temp = /\bhot\b/.test(t) ? 'Hot' : /\b(cold|iced)\b/.test(t) ? 'Cold' : null
+  const isBlank = /\bblank\b/.test(t) || !/\bprint|custom|logo\b/.test(t) // default Blank if not explicitly custom
+  const mmMatch = t.match(/\b(80|90|98|100|105)\s*mm\b/)
+  const mm = mmMatch ? `${mmMatch[1]} mm` : null
+  const isLid = /\blid\b/.test(t)
+  const lidType = /\bdome\b/.test(t) ? 'Dome Lid' : /\bsip\b/.test(t) ? 'Sip Lid' : (isLid ? 'Lid' : null)
+
+  return { size, wall, temp, isBlank, mm, lidType, isLid }
+}
+
+function buildDisplayTitle(originalTitle, kind /* 'single' | 'double' | 'lids' */) {
+  const { size, wall, temp, isBlank, mm, lidType, isLid } = inferAttrsFromTitle(originalTitle)
+
+  if (kind === 'lids' || isLid) {
+    const left = `${toThousands(CASE_QTY)}/case`
+    const rightParts = [mm, lidType || 'Lid', temp ? `(${temp})` : null].filter(Boolean)
+    return `${left} | ${rightParts.join(' ')}`
+  }
+
+  // Cups
+  const resolvedWall =
+    kind === 'double' ? 'Double-Wall' :
+    kind === 'single' ? 'Single-Wall' :
+    (wall || 'Single-Wall')
+
+  const right = [
+    size || '',
+    resolvedWall,
+    temp || 'Hot',
+    'Paper Cup',
+    isBlank ? '(Blank)' : null,
+  ].filter(Boolean).join(' ')
+
+  return `${toThousands(CASE_QTY)}/case | ${right}`
+}
+
+/* =======================
           PAGE
 ======================= */
 
-export default function Home() {
+export default function HomeClient() {
   const [singleWall, setSingleWall] = useState([])
   const [doubleWall, setDoubleWall] = useState([])
   const [lids, setLids] = useState([])
@@ -235,6 +279,7 @@ function HomeCatalogSection({
       <div className="max-w-5xl mx-auto px-5 sm:px-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
         {items?.map((p) => {
           const est = getEstimatedPrice({ kind, title: p.title })
+          const displayTitle = buildDisplayTitle(p.title, kind)
 
           return (
             <div
@@ -257,7 +302,7 @@ function HomeCatalogSection({
                 </div>
                 <div className="px-3 pt-3 text-center">
                   <p className="text-[13px] sm:text-[14px] font-medium text-gray-900 leading-snug">
-                    {p.title}
+                    {displayTitle}
                   </p>
                 </div>
               </Link>
@@ -267,7 +312,7 @@ function HomeCatalogSection({
                 {est !== undefined && (
                   <div className="mt-1">
                     <div className="text-[15px] sm:text-lg font-semibold text-gray-900">
-                      {fmt(est)}{' '}
+                      {money(est)}{' '}
                       <span className="text-gray-600 font-normal text-[12px] sm:text-base">/ case</span>
                     </div>
                     <div className="text-[10.5px] sm:text-xs text-gray-500">
@@ -276,7 +321,7 @@ function HomeCatalogSection({
                   </div>
                 )}
 
-                {/* Slimmer mobile CTA (full-width, fixed height) */}
+                {/* Compact mobile CTA (full-width, fixed height) */}
                 <Link
                   href="/contact"
                   className="mt-3 inline-flex w-full items-center justify-center
