@@ -4,10 +4,10 @@ import Link from "next/link";
 
 export default function AboutPage() {
   return (
-    <section className="py-10 px-4"> {/* reduced py from 12 → 10 */}
+    <section className="py-8 px-4"> {/* reduced vertical padding */}
       <div className="max-w-5xl mx-auto">
         {/* ---------- HEADER ---------- */}
-        <div className="text-center mb-6"> {/* reduced margin below header */}
+        <div className="text-center mb-4"> {/* smaller margin-bottom */}
           <h1 className="text-3xl font-semibold text-[#0D1B2A]">About Allpac</h1>
           <p className="mx-auto mt-2 max-w-2xl text-gray-700">
             Trusted paper packaging manufacturer serving North America.  
@@ -16,16 +16,16 @@ export default function AboutPage() {
         </div>
 
         {/* ---------- MAIN CONTENT ---------- */}
-        <div className="space-y-8"> {/* removed mt-10 to bring content closer */}
+        <div className="flex flex-col gap-6"> {/* gap-6 instead of space-y-8 */}
           {/* Combined Warehouse Image + Intro Text */}
           <div className="rounded-2xl border bg-white p-5 shadow-sm ring-1 ring-black/5">
-            <div className="w-full aspect-[11/6] rounded-xl overflow-hidden mb-4">
+            <div className="w-full aspect-[11/6] rounded-xl overflow-hidden mb-3"> {/* tighter mb */}
               <Image
                 src="/images/warehouse.JPG"
                 alt="Allpac warehouse"
                 width={800}
                 height={300}
-                className="object-cover w-full h-[220px] sm:h-[380px]"
+                className="object-cover w-full h-[220px] sm:h-[360px]"
                 priority
               />
             </div>
