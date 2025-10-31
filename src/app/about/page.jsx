@@ -53,9 +53,9 @@ export default function AboutPage() {
           <div className="rounded-2xl border bg-white p-6 shadow-sm ring-1 ring-black/5">
             <h2 className="text-lg font-semibold text-[#0D1B2A] mb-2">What We Do</h2>
             <ul className="list-disc list-inside text-gray-700 space-y-1">
-              <li>Single-wall paper cups (10–32 oz)</li>
-              <li>Double-wall paper cups (10–32 oz)</li>
-              <li>Dome lids and sip lids</li>
+              <li>Single-wall paper cups — 10 oz – 32 oz</li>
+              <li>Double-wall paper cups — 10 oz – 32 oz</li>
+              <li>Dome lids — 80 mm & 90 mm diameters</li>
               <li>FSC®-certified and food-safe packaging</li>
             </ul>
           </div>
@@ -79,14 +79,25 @@ export default function AboutPage() {
             </div>
           </div>
 
-          {/* Eco Commitment */}
-          <div className="rounded-2xl border bg-white p-6 shadow-sm ring-1 ring-black/5">
-            <h2 className="text-lg font-semibold text-[#0D1B2A] mb-2">Our Eco Commitment</h2>
-            <p className="text-gray-700 leading-relaxed">
-              Allpac products are crafted from FSC-certified paper using energy-efficient production.
-              We continuously optimize manufacturing to reduce waste and improve sustainability.
-            </p>
-          </div>
+          {/* Certifications */}
+<div className="rounded-2xl border bg-white p-6 shadow-sm ring-1 ring-black/5">
+  <h2 className="text-lg font-semibold text-[#0D1B2A] mb-2">
+    Certifications
+  </h2>
+  <p className="text-gray-700 leading-relaxed">
+    Our paper cups and lids are produced under certified systems to ensure food-safe, sustainable, and quality packaging for your business.
+  </p>
+  <ul className="list-disc list-inside text-gray-700 space-y-1 mt-3">
+    <li>FSC® Chain of Custody (Forest Stewardship Council) – verification that fiber comes from responsibly managed forests.</li>
+    <li>ISO 9001 Quality Management – ensures consistent and controlled manufacturing procedures.</li>
+    <li>ISO 22000 / FSSC 22000 Food Safety Management – applicable for beverage-contact packaging, ensuring hygienic production.</li>
+    <li>Food-Contact Compliance – meets FDA (USA) and CFIA/Health Canada standards for food-safe materials.</li>
+    <li>SMETA / BSCI Ethical Traceability – demonstrates fair labour practices and safe factory conditions.</li>
+  </ul>
+  <p className="text-gray-700 mt-4 leading-relaxed">
+    If you require a specific certificate or audit report (e.g., custom food-service chain compliance), we are happy to provide supporting documentation.
+  </p>
+</div>
 
           {/* Support */}
           <div className="rounded-2xl border bg-white p-6 shadow-sm ring-1 ring-black/5">
