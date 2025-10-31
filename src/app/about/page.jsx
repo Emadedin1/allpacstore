@@ -11,7 +11,7 @@ export default function AboutPage() {
           <h1 className="text-3xl font-semibold text-[#0D1B2A]">About Allpac</h1>
           <p className="mx-auto mt-2 max-w-2xl text-gray-700">
             Trusted paper packaging manufacturer serving North America.  
-            Discover our commitment to quality, sustainability, and customer service.
+            Discover our commitment to quality, sustainability, and reliable service.
           </p>
         </div>
 
@@ -19,30 +19,26 @@ export default function AboutPage() {
         <div className="mt-10 grid gap-8 lg:grid-cols-12">
           {/* LEFT: MAIN BODY */}
           <div className="lg:col-span-8 space-y-8">
-            {/* Warehouse Photo */}
-            <div className="w-full aspect-[11/6] rounded-2xl overflow-hidden shadow-sm ring-1 ring-black/5">
-              <Image
-                src="/images/warehouse.JPG"
-                alt="Allpac warehouse"
-                width={800}
-                height={300}
-                className="object-cover w-full h-[220px] sm:h-[400px]"
-                priority
-              />
-            </div>
-
-            {/* Overview */}
+            {/* Combined Warehouse Image + Intro Text */}
             <div className="rounded-2xl border bg-white p-6 shadow-sm ring-1 ring-black/5">
+              <div className="w-full aspect-[11/6] rounded-xl overflow-hidden mb-5">
+                <Image
+                  src="/images/warehouse.JPG"
+                  alt="Allpac warehouse"
+                  width={800}
+                  height={300}
+                  className="object-cover w-full h-[220px] sm:h-[400px]"
+                  priority
+                />
+              </div>
+
               <p className="text-gray-700 leading-relaxed">
-                Based in Windsor, Ontario, <strong>Allpac</strong> was founded in 1999 and
-                operates a <strong>250,000 sq. ft. manufacturing facility</strong>,
-                making it one of Canada’s most trusted partners for paper cup
-                and food packaging solutions.
+                Based in Windsor, Ontario, Allpac was founded in 1999 and operates a 250,000 sq ft manufacturing facility,
+                making it one of Canada’s most trusted partners for paper cup and food packaging solutions.
               </p>
               <p className="mt-3 text-gray-700 leading-relaxed">
-                From regional distributors to national chains, we deliver
-                high-volume single-wall and double-wall paper cups with matching
-                lids — quickly, reliably, and competitively.
+                From regional distributors to national chains, we deliver high-volume single-wall and double-wall paper cups
+                with matching lids — quickly, reliably, and competitively.
               </p>
             </div>
 
@@ -52,9 +48,8 @@ export default function AboutPage() {
                 Our Mission
               </h2>
               <p className="text-gray-700 leading-relaxed">
-                We aim to replace single-use plastics with eco-friendly paper
-                packaging while supporting businesses through just-in-time
-                delivery and Canadian-made reliability.
+                We aim to replace single-use plastics with eco-friendly paper packaging while supporting businesses through
+                just-in-time delivery and Canadian-made reliability.
               </p>
             </div>
 
@@ -105,8 +100,8 @@ export default function AboutPage() {
               </h2>
               <p className="text-gray-700 leading-relaxed">
                 Allpac products are crafted from FSC-certified paper using
-                energy-efficient production. We continuously optimize
-                manufacturing to reduce waste and improve sustainability.
+                energy-efficient production. We continuously optimize manufacturing
+                to reduce waste and improve sustainability.
               </p>
             </div>
 
@@ -116,9 +111,8 @@ export default function AboutPage() {
                 Community & Support
               </h2>
               <p className="text-gray-700 leading-relaxed">
-                We proudly support foodservice distributors and packaging
-                partners across North America with fast, consistent supply from
-                Canada and China.  
+                We proudly support foodservice distributors and packaging partners
+                across North America with fast, consistent supply from Canada and China.{" "}
                 <Link href="/contact" className="text-cyan-700 underline">
                   Request a quote
                 </Link>{" "}
