@@ -5,6 +5,100 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { client } from '@/sanity/lib/client'
 
+/* =======================
+   PRICE MAPS + HELPERS
+======================= */
+
+// Single-wall: given by you (per case, est.)
+const PRICE_SINGLE = {
+  '10 oz': 36.02,
+  '12 oz': 40.22,
+  '16 oz': 47.14, // default for 16 oz cold/iced or unspecified
+  '22 oz': 68.24,
+  '32 oz': 99.92,
+}
+
+// Double-wall: slightly higher (competitive but realistic, per case, est.)
+const PRICE_DOUBLE = {
+  '10 oz': 40.50,
+  '12 oz': 45.25,
+  '16 oz': 51.77, // 16 oz HOT override you requested
+  '22 oz': 74.99,
+  '32 oz': 109.90,
+}
+
+// Lids (per case, est.) by common diameters
+const PRICE_LIDS_MM = {
+  '80': 22.90,
+  '90': 24.90,
+  '98': 27.90,
+  '100': 27.90,
+  '105': 31.90,
+}
+
+// Extract “12 oz”, “16oz”, “16-oz”, etc.
+function extractOzFromTitle(title) {
+  if (!title) return null
+  const m = String(title).match(/(\d+(?:\.\d+)?)\s*oz/i)
+  return m ? `${m[1]} oz` : null
+}
+
+// Extract lid diameter like “90 mm”, “90mm”, etc.
+function extractMmFromTitle(title) {
+  if (!title) return null
+  const m = String(title).match(/\b(80|90|98|100|105)\s*mm\b/i)
+  return m ? m[1] : null
+}
+
+// Format money
+function fmt(price) {
+  return `$${Number(price).toFixed(2)}`
+}
+
+// Decide estimated price for a card
+function getEstimatedPrice({ kind, title }) {
+  const t = String(title || '').toLowerCase()
+
+  // Lids: match by diameter first
+  if (kind === 'lids') {
+    const mm = extractMmFromTitle(title)
+    if (mm && PRICE_LIDS_MM[mm] != null) return PRICE_LIDS_MM[mm]
+    // fallback competitive lid price if no diameter found
+    return 24.90
+  }
+
+  // Cups: use oz + hot/cold logic
+  const sizeKey = extractOzFromTitle(title)
+  if (!sizeKey) return undefined
+
+  // Special handling for 16 oz hot vs cold/iced
+  if (sizeKey === '16 oz') {
+    if (/\b(cold|iced)\b/.test(t)) {
+      // cold/iced: use single-wall default 16 oz if kind is 'single', else DW baseline
+      return kind === 'double' ? PRICE_SINGLE['16 oz'] : PRICE_SINGLE['16 oz']
+    }
+    if (/\bhot\b/.test(t)) {
+      // hot: prefer double-wall price when kind is 'double'
+      return kind === 'double' ? PRICE_DOUBLE['16 oz'] : PRICE_DOUBLE['16 oz']
+    }
+    // unclear: choose by section kind
+    return kind === 'double'
+      ? (PRICE_DOUBLE['16 oz'] ?? PRICE_SINGLE['16 oz'])
+      : PRICE_SINGLE['16 oz']
+  }
+
+  // Other sizes by section kind, with sensible fallback
+  if (kind === 'double') {
+    return PRICE_DOUBLE[sizeKey] ?? PRICE_SINGLE[sizeKey]
+  }
+  // single-wall (default)
+  return PRICE_SINGLE[sizeKey]
+}
+
+/* =======================
+          PAGE
+======================= */
+
 export default function Home() {
   const [singleWall, setSingleWall] = useState([])
   const [doubleWall, setDoubleWall] = useState([])
@@ -13,24 +107,22 @@ export default function Home() {
   useEffect(() => {
     async function fetchAll() {
       try {
-        // Adjust 'single-wall' / 'double-wall' / 'lids' to match your Category slugs.
         const query = `
-        *[_type == "product" && category->slug.current == $cat]
-        | order(title asc)[0...3]{
-          _id,
-          title,
-          description,
-          "slug": slug.current,
-          "image": coalesce(highResImage.asset->url, mainImage.asset->url),
-          variants[]{ size, topDia, packing }
-        }
-      `;
-      
-      const [sw, dw, ld] = await Promise.all([
-        client.fetch(query, { cat: 'single-wall-cups' }),   // <-- updated
-        client.fetch(query, { cat: 'double-wall-cups' }),   // <-- updated
-        client.fetch(query, { cat: 'lids' }),
-      ]);
+          *[_type == "product" && category->slug.current == $cat]
+          | order(title asc)[0...3]{
+            _id,
+            title,
+            description,
+            "slug": slug.current,
+            "image": coalesce(highResImage.asset->url, mainImage.asset->url),
+            variants[]{ size, topDia, packing }
+          }
+        `
+        const [sw, dw, ld] = await Promise.all([
+          client.fetch(query, { cat: 'single-wall-cups' }),
+          client.fetch(query, { cat: 'double-wall-cups' }),
+          client.fetch(query, { cat: 'lids' }),
+        ])
         setSingleWall(sw)
         setDoubleWall(dw)
         setLids(ld)
@@ -43,7 +135,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-white text-allpac">
-      {/* Hero Section (unchanged) */}
+      {/* Hero Section */}
       <section
         className="relative text-center py-14 px-4 bg-cover bg-[40%_center] sm:bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/hero-cups.png')" }}
@@ -77,20 +169,22 @@ export default function Home() {
 
       {/* Single Wall Cups */}
       <HomeCatalogSection
-        title="Single Wall Cups"                 // <-- updated
+        title="Single Wall Cups"
         items={singleWall}
         seeMoreHref="/catalog/single-wall-cups"
-        seeMoreText="See all single wall cups"   // <-- updated label
+        seeMoreText="See all single wall cups"
         itemHrefBase="/catalog/single-wall-cups"
+        kind="single"
       />
-      
+
       {/* Double Wall Cups */}
       <HomeCatalogSection
-        title="Double Wall Cups"                 // <-- updated
+        title="Double Wall Cups"
         items={doubleWall}
         seeMoreHref="/catalog/double-wall-cups"
-        seeMoreText="See all double wall cups"   // <-- updated label
+        seeMoreText="See all double wall cups"
         itemHrefBase="/catalog/double-wall-cups"
+        kind="double"
       />
 
       {/* Lids */}
@@ -101,10 +195,15 @@ export default function Home() {
         seeMoreText="See all lids"
         itemHrefBase="/catalog/lids"
         imageBgClass="bg-white"
+        kind="lids"
       />
     </main>
   )
 }
+
+/* =======================
+  SECTION + CARD RENDER
+======================= */
 
 function HomeCatalogSection({
   title,
@@ -113,6 +212,7 @@ function HomeCatalogSection({
   seeMoreText,
   itemHrefBase,
   imageBgClass = 'bg-gray-50',
+  kind = 'single', // 'single' | 'double' | 'lids'
 }) {
   return (
     <section className="py-12" id={title.toLowerCase().replace(/\s+/g, '-')}>
@@ -130,33 +230,45 @@ function HomeCatalogSection({
         </div>
       </div>
 
-      {/* Grid: mini cards like "Other Products" */}
+      {/* Grid: mini cards with price badge */}
       <div className="max-w-5xl mx-auto px-5 sm:px-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
-        {items?.map((p) => (
-          <Link
-            key={p._id}
-            href={`${itemHrefBase}/${p.slug}`}
-            className="flex flex-col bg-white rounded-2xl shadow-sm hover:shadow-md transition
-                       ring-1 ring-black/5 hover:ring-black/10 overflow-hidden"
-          >
-            <div className={`relative w-full aspect-square ${imageBgClass} overflow-hidden`}>
-              {p.image && (
-                <Image
-                  src={p.image}
-                  alt={p.title}
-                  fill
-                  sizes="230px"
-                  className="object-cover"
-                />
-              )}
-            </div>
-            <div className="p-3 text-center">
-              <p className="text-[14px] font-medium text-gray-900 leading-snug">
-                {p.title}
-              </p>
-            </div>
-          </Link>
-        ))}
+        {items?.map((p) => {
+          const est = getEstimatedPrice({ kind, title: p.title })
+
+          return (
+            <Link
+              key={p._id}
+              href={`${itemHrefBase}/${p.slug}`}
+              className="flex flex-col bg-white rounded-2xl shadow-sm hover:shadow-md transition
+                         ring-1 ring-black/5 hover:ring-black/10 overflow-hidden"
+            >
+              <div className={`relative w-full aspect-square ${imageBgClass} overflow-hidden`}>
+                {p.image && (
+                  <Image
+                    src={p.image}
+                    alt={p.title}
+                    fill
+                    sizes="230px"
+                    className="object-cover"
+                  />
+                )}
+
+                {/* Price tag badge (hide if no estimate) */}
+                {est !== undefined && (
+                  <div className="absolute left-2 bottom-2 rounded-md bg-black/80 text-white text-[12px] px-2 py-1 shadow-sm">
+                    {fmt(est)} <span className="opacity-80">est.</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="p-3 text-center">
+                <p className="text-[14px] font-medium text-gray-900 leading-snug">
+                  {p.title}
+                </p>
+              </div>
+            </Link>
+          )
+        })}
 
         {/* See More card */}
         <Link
@@ -176,5 +288,5 @@ function HomeCatalogSection({
         </Link>
       </div>
     </section>
-  );
+  )
 }
