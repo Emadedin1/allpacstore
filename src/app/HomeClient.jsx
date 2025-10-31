@@ -108,19 +108,24 @@ function inferAttrsFromTitle(title) {
   return { size, wall, temp, isBlank, mm, lidType, isLid }
 }
 
-function buildDisplayTitle(originalTitle, kind /* 'single' | 'double' | 'lids' */) {
+function buildDisplayTitle(originalTitle, kind) {
   const { size, wall, temp, isBlank, mm, lidType, isLid } = inferAttrsFromTitle(originalTitle)
+  const qtyLabel = '1000pcs'
 
-  const qtyLabel = '1000pcs' // exact text requested
-  const sizeWithDot = size ? (/\.$/.test(size) ? size : `${size}.`) : null
-
+  // ---- LIDS ----
   if (kind === 'lids' || isLid) {
-    // Lids example: "1000pcs | 90 mm Dome Lid (Hot/Cold)"
-    const right = [mm, lidType || 'Lid', temp ? `(${temp})` : null].filter(Boolean).join(' ')
-    return `${qtyLabel} | ${right}`
+    if (mm === '80 mm') {
+      return `${qtyLabel} | 80mm White Dome Lid For 10oz`
+    }
+    if (mm === '90 mm') {
+      return `${qtyLabel} | 90mm White Dome Lid For 12/16/20/22/32oz`
+    }
+    // fallback for other lid sizes if ever added
+    return `${qtyLabel} | ${mm || ''} White Dome Lid`
   }
 
-  // Cups example: "1000pcs | 12 oz. Blank Single-Walled Hot Paper Cup"
+  // ---- CUPS ----
+  const sizeWithDot = size ? (/\.$/.test(size) ? size : `${size}.`) : null
   const resolvedWall =
     kind === 'double' ? 'Double-Walled' :
     kind === 'single' ? 'Single-Walled' :
