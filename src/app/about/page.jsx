@@ -4,10 +4,10 @@ import Link from "next/link";
 
 export default function AboutPage() {
   return (
-    <section className="py-8 px-4"> {/* reduced vertical padding */}
+    <section className="pt-4 pb-10 px-4"> {/* removed large top padding */}
       <div className="max-w-5xl mx-auto">
         {/* ---------- HEADER ---------- */}
-        <div className="text-center mb-4"> {/* smaller margin-bottom */}
+        <div className="text-center mb-3"> {/* much smaller gap */}
           <h1 className="text-3xl font-semibold text-[#0D1B2A]">About Allpac</h1>
           <p className="mx-auto mt-2 max-w-2xl text-gray-700">
             Trusted paper packaging manufacturer serving North America.  
@@ -15,31 +15,31 @@ export default function AboutPage() {
           </p>
         </div>
 
-        {/* ---------- MAIN CONTENT ---------- */}
-        <div className="flex flex-col gap-6"> {/* gap-6 instead of space-y-8 */}
-          {/* Combined Warehouse Image + Intro Text */}
-          <div className="rounded-2xl border bg-white p-5 shadow-sm ring-1 ring-black/5">
-            <div className="w-full aspect-[11/6] rounded-xl overflow-hidden mb-3"> {/* tighter mb */}
-              <Image
-                src="/images/warehouse.JPG"
-                alt="Allpac warehouse"
-                width={800}
-                height={300}
-                className="object-cover w-full h-[220px] sm:h-[360px]"
-                priority
-              />
-            </div>
-
-            <p className="text-gray-700 leading-relaxed">
-              Based in Windsor, Ontario, Allpac was founded in 1999 and operates a 250,000 sq ft manufacturing facility,
-              making it one of Canada’s most trusted partners for paper cup and food packaging solutions.
-            </p>
-            <p className="mt-3 text-gray-700 leading-relaxed">
-              From regional distributors to national chains, we deliver high-volume single-wall and double-wall paper cups
-              with matching lids — quickly, reliably, and competitively.
-            </p>
+        {/* ---------- FIRST CARD: IMAGE + INTRO ---------- */}
+        <div className="rounded-2xl border bg-white p-4 shadow-sm ring-1 ring-black/5 mt-2">
+          <div className="w-full rounded-xl overflow-hidden mb-3">
+            <Image
+              src="/images/warehouse.JPG"
+              alt="Allpac warehouse"
+              width={900}
+              height={280}
+              className="object-cover w-full h-[200px] sm:h-[320px]" // shorter image for less whitespace
+              priority
+            />
           </div>
 
+          <p className="text-gray-700 leading-relaxed">
+            Based in Windsor, Ontario, Allpac was founded in 1999 and operates a 250,000 sq ft manufacturing facility,
+            making it one of Canada’s most trusted partners for paper cup and food packaging solutions.
+          </p>
+          <p className="mt-3 text-gray-700 leading-relaxed">
+            From regional distributors to national chains, we deliver high-volume single-wall and double-wall paper cups
+            with matching lids — quickly, reliably, and competitively.
+          </p>
+        </div>
+
+        {/* ---------- REST OF SECTIONS ---------- */}
+        <div className="mt-6 flex flex-col gap-5">
           {/* Mission */}
           <div className="rounded-2xl border bg-white p-6 shadow-sm ring-1 ring-black/5">
             <h2 className="text-lg font-semibold text-[#0D1B2A] mb-2">Our Mission</h2>
