@@ -229,7 +229,7 @@ export default function ContactPage() {
                   <span>
                     Mohammad Labak — Sales & Business Development
                     <br />
-                    <a
+                    <a 
                       href="tel:+12263504144"
                       className="text-cyan-700 underline"
                     >
