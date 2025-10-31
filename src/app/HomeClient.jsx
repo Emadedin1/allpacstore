@@ -315,7 +315,7 @@ function HomeCatalogSection({
                   <div className="mt-1">
                     <div className="text-[15px] sm:text-lg font-semibold text-gray-900">
                       {money(est)}
-                      <span className="ml-1 uppercase tracking-wide text-[11px] sm:text-xs text-gray-500 align-middle">est</span>
+                      <span className="ml-1 tracking-wide text-[11px] sm:text-xs text-gray-500 align-middle">est</span>
                     </div>
                   </div>
                 )}
