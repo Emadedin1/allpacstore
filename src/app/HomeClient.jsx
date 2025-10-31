@@ -191,6 +191,14 @@ export default function Home() {
         imageBgClass="bg-white"
         kind="lids"
       />
+
+      {/* page-level estimate disclaimer */}
+      <div className="max-w-5xl mx-auto px-5 sm:px-6 pb-12">
+        <p className="text-center text-xs text-gray-500">
+          Prices shown are <span className="font-medium">estimates per case</span> based on typical volumes.
+          Each case contains {fmtInt(CASE_QTY)} cups for cup items. Final quotes may vary by spec and quantity.
+        </p>
+      </div>
     </main>
   )
 }
@@ -253,12 +261,15 @@ function HomeCatalogSection({
                   {p.title}
                 </p>
 
-                {/* Price pill */}
+                {/* Price pill (explicitly marked as estimated) */}
                 {est !== undefined && (
                   <div className="mt-1 flex justify-center">
-                    <div className="inline-flex flex-col items-center rounded-md border border-gray-200 bg-white px-2 py-1 text-xs text-gray-800">
+                    <div
+                      className="inline-flex flex-col items-center rounded-md border border-gray-200 bg-white px-2 py-1 text-xs text-gray-800"
+                      aria-label={`Estimated price ${fmt(est)} per case, ${fmtInt(CASE_QTY)} cups`}
+                    >
                       <span className="font-medium">
-                        {fmt(est)} <span className="opacity-70">/ case</span>
+                        {fmt(est)} <span className="opacity-70">/ case (estimated)</span>
                       </span>
                       <span className="opacity-70">{fmtInt(CASE_QTY)} cups</span>
                     </div>
