@@ -6,7 +6,85 @@ import Image from 'next/image'
 import { client } from '@/sanity/lib/client'
 
 /* … keep all your existing helpers, PRICE_* maps, buildDisplayTitle, etc. … */
+// ============ HELPERS AND PRICE MAPS ============
 
+// Single-wall: your estimates (per case)
+const PRICE_SINGLE = {
+  "10 oz": 36.02,
+  "12 oz": 40.22,
+  "16 oz": 47.14,
+  "22 oz": 68.24,
+  "32 oz": 99.92,
+}
+
+// Double-wall: modest premium (per case)
+const PRICE_DOUBLE = {
+  "10 oz": 40.50,
+  "12 oz": 45.25,
+  "16 oz": 51.77,
+  "22 oz": 74.99,
+  "32 oz": 109.90,
+}
+
+// Lids (per case) by diameter
+const PRICE_LIDS_MM = {
+  "80": 22.90,
+  "90": 24.90,
+  "98": 27.90,
+  "100": 27.90,
+  "105": 31.90,
+}
+
+const money = (price) => `$${Number(price).toFixed(2)}`
+
+// Extract “12 oz”, “16oz”, etc.
+function extractOzFromTitle(title) {
+  if (!title) return null
+  const m = String(title).match(/(\d+(?:\.\d+)?)\s*oz/i)
+  return m ? `${m[1]} oz` : null
+}
+
+// Extract lid diameter “90 mm”, “90mm”, etc.
+function extractMmFromTitle(title) {
+  if (!title) return null
+  const m = String(title).match(/\b(80|90|98|100|105)\s*mm\b/i)
+  return m ? m[1] : null
+}
+
+// Decide estimated price per card
+function getEstimatedPrice({ kind, title }) {
+  const t = String(title || "").toLowerCase()
+
+  // Lids
+  if (kind === "lids") {
+    const mm = extractMmFromTitle(title)
+    if (mm && PRICE_LIDS_MM[mm] != null) return PRICE_LIDS_MM[mm]
+    return 24.90
+  }
+
+  // Cups
+  const sizeKey = extractOzFromTitle(title)
+  if (!sizeKey) return undefined
+
+  if (sizeKey === "16 oz") {
+    if (/\b(cold|iced)\b/.test(t)) return PRICE_SINGLE["16 oz"]
+    if (/\bhot\b/.test(t)) return PRICE_DOUBLE["16 oz"]
+    return PRICE_SINGLE["16 oz"]
+  }
+
+  if (kind === "double") return PRICE_DOUBLE[sizeKey] ?? PRICE_SINGLE[sizeKey]
+  return PRICE_SINGLE[sizeKey]
+}
+
+// Build title
+function buildDisplayTitle(originalTitle, kind) {
+  const t = String(originalTitle || "").toLowerCase()
+  const sizeMatch = t.match(/(\d+(?:\.\d+)?)\s*oz/)
+  const size = sizeMatch ? `${sizeMatch[1]} oz.` : ""
+  const wall = kind === "double" ? "Double-Walled" : "Single-Walled"
+  const isBlank = !t.includes("custom") && !t.includes("print")
+  return `1000pcs | ${size} ${isBlank ? "Blank " : ""}${wall} Paper Cup`
+}
 export default function HomeClient() {
   const [singleWall, setSingleWall] = useState([])
   const [doubleWall, setDoubleWall] = useState([])
