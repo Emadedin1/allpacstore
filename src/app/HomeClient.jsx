@@ -207,3 +207,76 @@ function CatalogSection({
     </section>
   )
 }
+
+function CatalogSection({
+  title,
+  items,
+  seeMoreHref,
+  seeMoreText,
+  itemHrefBase,
+  imageBgClass = 'bg-gray-50',
+}) {
+  return (
+    <section className="py-12" id={title.toLowerCase().replace(/\s+/g, '-')}>
+      {/* Header */}
+      <div className="max-w-5xl mx-auto px-5 sm:px-6 mb-6 sm:mb-8">
+        <div className="flex items-end justify-between">
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-black">{title}</h2>
+            <div
+              aria-hidden
+              className="mt-1 h-px w-20 sm:w-24 rounded-full
+                         bg-gradient-to-r from-[#FFD814]/40 via-[#FFD814]/20 to-transparent"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Grid: mini cards like "Other Products" */}
+      <div className="max-w-5xl mx-auto px-5 sm:px-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
+        {items?.map((p) => (
+          <Link
+            key={p._id}
+            href={`${itemHrefBase}/${p.slug}`}
+            className="flex flex-col bg-white rounded-2xl shadow-sm hover:shadow-md transition
+                       ring-1 ring-black/5 hover:ring-black/10 overflow-hidden"
+          >
+            <div className={`relative w-full aspect-square ${imageBgClass} overflow-hidden`}>
+              {p.image && (
+                <Image
+                  src={p.image}
+                  alt={p.title}
+                  fill
+                  sizes="230px"
+                  className="object-cover"
+                />
+              )}
+            </div>
+            <div className="p-3 text-center">
+              <p className="text-[14px] font-medium text-gray-900 leading-snug">
+                {p.title}
+              </p>
+            </div>
+          </Link>
+        ))}
+
+        {/* See More card */}
+        <Link
+          href={seeMoreHref}
+          className="flex flex-col items-center justify-center bg-[#F2F8F5]
+                    rounded-2xl border border-[#DCEFE4] text-center
+                    hover:bg-[#E7F3ED] transition-all p-6"
+        >
+          <h4 className="flex items-center gap-2 text-lg font-semibold text-[#0D1B2A] mb-1">
+            See More
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                 strokeWidth={2} stroke="#239356" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </h4>
+          <p className="text-sm text-[#0D1B2A]/70">{seeMoreText}</p>
+        </Link>
+      </div>
+    </section>
+  );
+}
