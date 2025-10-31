@@ -5,36 +5,39 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { client } from '@/sanity/lib/client'
 
-/* … keep all your existing helpers, PRICE_* maps, buildDisplayTitle, etc. … */
-// ============ HELPERS AND PRICE MAPS ============
+/* =======================
+   PRICE MAPS + HELPERS
+======================= */
 
 // Single-wall: your estimates (per case)
 const PRICE_SINGLE = {
-  "10 oz": 36.02,
-  "12 oz": 40.22,
-  "16 oz": 47.14,
-  "22 oz": 68.24,
-  "32 oz": 99.92,
+  '10 oz': 36.02,
+  '12 oz': 40.22,
+  '16 oz': 47.14, // default for 16 oz cold/iced or unspecified
+  '22 oz': 68.24,
+  '32 oz': 99.92,
 }
 
 // Double-wall: modest premium (per case)
 const PRICE_DOUBLE = {
-  "10 oz": 40.50,
-  "12 oz": 45.25,
-  "16 oz": 51.77,
-  "22 oz": 74.99,
-  "32 oz": 109.90,
+  '10 oz': 40.50,
+  '12 oz': 45.25,
+  '16 oz': 51.77, // 16 oz HOT override
+  '22 oz': 74.99,
+  '32 oz': 109.90,
 }
 
 // Lids (per case) by diameter
 const PRICE_LIDS_MM = {
-  "80": 22.90,
-  "90": 24.90,
-  "98": 27.90,
-  "100": 27.90,
-  "105": 31.90,
+  '80': 22.90,
+  '90': 24.90,
+  '98': 27.90,
+  '100': 27.90,
+  '105': 31.90,
 }
 
+const CASE_QTY = 1000
+const fmtInt = (n) => Number(n).toLocaleString('en-US')
 const money = (price) => `$${Number(price).toFixed(2)}`
 
 // Extract “12 oz”, “16oz”, etc.
@@ -53,38 +56,91 @@ function extractMmFromTitle(title) {
 
 // Decide estimated price per card
 function getEstimatedPrice({ kind, title }) {
-  const t = String(title || "").toLowerCase()
+  const t = String(title || '').toLowerCase()
 
-  // Lids
-  if (kind === "lids") {
+  // Lids by diameter
+  if (kind === 'lids') {
     const mm = extractMmFromTitle(title)
     if (mm && PRICE_LIDS_MM[mm] != null) return PRICE_LIDS_MM[mm]
-    return 24.90
+    return 24.90 // fallback competitive lid price
   }
 
-  // Cups
+  // Cups use oz + hot/cold logic
   const sizeKey = extractOzFromTitle(title)
   if (!sizeKey) return undefined
 
-  if (sizeKey === "16 oz") {
-    if (/\b(cold|iced)\b/.test(t)) return PRICE_SINGLE["16 oz"]
-    if (/\bhot\b/.test(t)) return PRICE_DOUBLE["16 oz"]
-    return PRICE_SINGLE["16 oz"]
+  if (sizeKey === '16 oz') {
+    if (/\b(cold|iced)\b/.test(t)) {
+      return kind === 'double' ? PRICE_SINGLE['16 oz'] : PRICE_SINGLE['16 oz']
+    }
+    if (/\bhot\b/.test(t)) {
+      return kind === 'double' ? PRICE_DOUBLE['16 oz'] : PRICE_DOUBLE['16 oz']
+    }
+    return kind === 'double'
+      ? (PRICE_DOUBLE['16 oz'] ?? PRICE_SINGLE['16 oz'])
+      : PRICE_SINGLE['16 oz']
   }
 
-  if (kind === "double") return PRICE_DOUBLE[sizeKey] ?? PRICE_SINGLE[sizeKey]
+  if (kind === 'double') {
+    return PRICE_DOUBLE[sizeKey] ?? PRICE_SINGLE[sizeKey]
+  }
   return PRICE_SINGLE[sizeKey]
 }
 
-// Build title
-function buildDisplayTitle(originalTitle, kind) {
-  const t = String(originalTitle || "").toLowerCase()
+/* =======================
+   DISPLAY TITLE (B2B)
+======================= */
+
+// Infer attributes from stored title
+function inferAttrsFromTitle(title) {
+  const t = String(title || '').toLowerCase()
   const sizeMatch = t.match(/(\d+(?:\.\d+)?)\s*oz/)
-  const size = sizeMatch ? `${sizeMatch[1]} oz.` : ""
-  const wall = kind === "double" ? "Double-Walled" : "Single-Walled"
-  const isBlank = !t.includes("custom") && !t.includes("print")
-  return `1000pcs | ${size} ${isBlank ? "Blank " : ""}${wall} Paper Cup`
+  const size = sizeMatch ? `${sizeMatch[1]} oz` : null
+
+  const wall = /double/.test(t) ? 'Double-Walled' : /single/.test(t) ? 'Single-Walled' : null
+  const temp = /\bhot\b/.test(t) ? 'Hot' : /\b(cold|iced)\b/.test(t) ? 'Cold' : null
+  const isBlank = /\bblank\b/.test(t) || !/\bprint|custom|logo\b/.test(t) // default Blank if not explicitly custom
+  const mmMatch = t.match(/\b(80|90|98|100|105)\s*mm\b/)
+  const mm = mmMatch ? `${mmMatch[1]} mm` : null
+  const isLid = /\blid\b/.test(t)
+  const lidType = /\bdome\b/.test(t) ? 'Dome Lid' : /\bsip\b/.test(t) ? 'Sip Lid' : (isLid ? 'Lid' : null)
+
+  return { size, wall, temp, isBlank, mm, lidType, isLid }
 }
+
+function buildDisplayTitle(originalTitle, kind /* 'single' | 'double' | 'lids' */) {
+  const { size, wall, temp, isBlank, mm, lidType, isLid } = inferAttrsFromTitle(originalTitle)
+
+  const qtyLabel = '1000pcs' // exact text requested
+  const sizeWithDot = size ? (/\.$/.test(size) ? size : `${size}.`) : null
+
+  if (kind === 'lids' || isLid) {
+    // Lids example: "1000pcs | 90 mm Dome Lid (Hot/Cold)"
+    const right = [mm, lidType || 'Lid', temp ? `(${temp})` : null].filter(Boolean).join(' ')
+    return `${qtyLabel} | ${right}`
+  }
+
+  // Cups example: "1000pcs | 12 oz. Blank Single-Walled Hot Paper Cup"
+  const resolvedWall =
+    kind === 'double' ? 'Double-Walled' :
+    kind === 'single' ? 'Single-Walled' :
+    (wall || 'Single-Walled')
+
+  const parts = [
+    sizeWithDot,
+    isBlank ? 'Blank' : null,
+    resolvedWall,
+    temp || 'Hot',
+    'Paper Cup',
+  ].filter(Boolean)
+
+  return `${qtyLabel} | ${parts.join(' ')}`
+}
+
+/* =======================
+          PAGE
+======================= */
+
 export default function HomeClient() {
   const [singleWall, setSingleWall] = useState([])
   const [doubleWall, setDoubleWall] = useState([])
@@ -120,24 +176,10 @@ export default function HomeClient() {
   }, [])
 
   return (
-    <main className="min-h-screen text-allpac">
-      {/* ---------- FIXED BACKGROUND (sits behind EVERYTHING) ---------- */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <Image
-          src="/images/home-bg.png"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
-        {/* light wash to keep text readable; adjust opacity as you like */}
-        <div className="absolute inset-0 bg-white/10" />
-      </div>
-
-      {/* ---------- HERO (rendered above the fixed bg) ---------- */}
+    <main className="min-h-screen bg-white text-allpac">
+      {/* Hero */}
       <section
-        className="relative z-10 text-center py-14 px-4 bg-cover bg-[40%_center] sm:bg-center bg-no-repeat"
+        className="relative text-center py-14 px-4 bg-cover bg-[40%_center] sm:bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/hero-cups.png')" }}
       >
         <div className="absolute inset-0 bg-white/80 sm:bg-white/60 backdrop-blur-sm" />
@@ -167,45 +209,45 @@ export default function HomeClient() {
         </div>
       </section>
 
-      {/* ---------- CONTENT SECTIONS (ensure they stay above bg) ---------- */}
-      <div className="relative z-10">
-        <HomeCatalogSection
-          title="Single Wall Cups"
-          items={singleWall}
-          seeMoreHref="/catalog/single-wall-cups"
-          seeMoreText="See all single wall cups"
-          itemHrefBase="/catalog/single-wall-cups"
-          kind="single"
-        />
+      {/* Sections */}
+      <HomeCatalogSection
+        title="Single Wall Cups"
+        items={singleWall}
+        seeMoreHref="/catalog/single-wall-cups"
+        seeMoreText="See all single wall cups"
+        itemHrefBase="/catalog/single-wall-cups"
+        kind="single"
+      />
 
-        <HomeCatalogSection
-          title="Double Wall Cups"
-          items={doubleWall}
-          seeMoreHref="/catalog/double-wall-cups"
-          seeMoreText="See all double wall cups"
-          itemHrefBase="/catalog/double-wall-cups"
-          kind="double"
-        />
+      <HomeCatalogSection
+        title="Double Wall Cups"
+        items={doubleWall}
+        seeMoreHref="/catalog/double-wall-cups"
+        seeMoreText="See all double wall cups"
+        itemHrefBase="/catalog/double-wall-cups"
+        kind="double"
+      />
 
-        <HomeCatalogSection
-          title="Lids"
-          items={lids}
-          seeMoreHref="/catalog/lids"
-          seeMoreText="See all lids"
-          itemHrefBase="/catalog/lids"
-          imageBgClass="bg-white"
-          kind="lids"
-        />
+      <HomeCatalogSection
+        title="Lids"
+        items={lids}
+        seeMoreHref="/catalog/lids"
+        seeMoreText="See all lids"
+        itemHrefBase="/catalog/lids"
+        imageBgClass="bg-white"
+        kind="lids"
+      />
 
-        <div className="max-w-5xl mx-auto px-5 sm:px-6 pb-12">
-          <p className="text-center text-xs text-gray-500">
-            Prices shown are <span className="font-medium">estimates per case</span>. Final quotes may vary by spec and quantity.
-          </p>
-        </div>
+      {/* page-level estimate note */}
+      <div className="max-w-5xl mx-auto px-5 sm:px-6 pb-12">
+        <p className="text-center text-xs text-gray-500">
+          Prices shown are <span className="font-medium">estimates per case</span>. Each cup case contains {fmtInt(CASE_QTY)} cups. Final quotes may vary by spec and quantity.
+        </p>
       </div>
     </main>
   )
 }
+
 /* =======================
   SECTION + CARD RENDER
 ======================= */
