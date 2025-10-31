@@ -208,7 +208,7 @@ function CatalogSection({
   )
 }
 
-function CatalogSection({
+function HomeCatalogSection({
   title,
   items,
   seeMoreHref,
