@@ -34,29 +34,25 @@ const PRICE_LIDS_MM = {
 };
 
 const CASE_QTY = 1000;
-const fmtInt = (n) => Number(n).toLocaleString("en-US");
+const fmtInt = (n: number | string) => Number(n).toLocaleString("en-US");
+const money = (price: number | string) => `$${Number(price).toFixed(2)}`;
 
 // Extract “12 oz”, “16oz”, etc.
-function extractOzFromTitle(title) {
+function extractOzFromTitle(title?: string | null) {
   if (!title) return null;
   const m = String(title).match(/(\d+(?:\.\d+)?)\s*oz/i);
   return m ? `${m[1]} oz` : null;
 }
 
 // Extract lid diameter “90 mm”, “90mm”, etc.
-function extractMmFromTitle(title) {
+function extractMmFromTitle(title?: string | null) {
   if (!title) return null;
   const m = String(title).match(/\b(80|90|98|100|105)\s*mm\b/i);
   return m ? m[1] : null;
 }
 
-// Money
-function fmt(price) {
-  return `$${Number(price).toFixed(2)}`;
-}
-
 // Decide estimated price per card
-function getEstimatedPrice({ kind, title }) {
+function getEstimatedPrice({ kind, title }: { kind: "single" | "double" | "lids"; title: string }) {
   const t = String(title || "").toLowerCase();
 
   // Lids by diameter
@@ -89,15 +85,62 @@ function getEstimatedPrice({ kind, title }) {
 }
 
 // Infer kind from category slug
-function inferKindFromSlug(slug) {
-  if (!slug) return "single";
-  if (slug.includes("double")) return "double";
-  if (slug.includes("lid")) return "lids";
-  if (slug.includes("single")) return "single";
-  return "single";
+function inferKindFromSlug(slug?: string) {
+  if (!slug) return "single" as const;
+  if (slug.includes("double")) return "double" as const;
+  if (slug.includes("lid")) return "lids" as const;
+  if (slug.includes("single")) return "single" as const;
+  return "single" as const;
 }
 
-export default async function CategoryProductsPage({ params }) {
+/* =======================
+   DISPLAY TITLE (B2B)
+======================= */
+
+function inferAttrsFromTitle(title?: string | null) {
+  const t = String(title || "").toLowerCase();
+  const sizeMatch = t.match(/(\d+(?:\.\d+)?)\s*oz/);
+  const size = sizeMatch ? `${sizeMatch[1]} oz` : null;
+
+  const wall = /double/.test(t) ? "Double-Walled" : /single/.test(t) ? "Single-Walled" : null;
+  const temp = /\bhot\b/.test(t) ? "Hot" : /\b(cold|iced)\b/.test(t) ? "Cold" : null;
+  const isBlank = /\bblank\b/.test(t) || !/\bprint|custom|logo\b/.test(t); // default Blank if not explicitly custom
+  const mmMatch = t.match(/\b(80|90|98|100|105)\s*mm\b/);
+  const mm = mmMatch ? `${mmMatch[1]} mm` : null;
+  const isLid = /\blid\b/.test(t);
+  const lidType = /\bdome\b/.test(t) ? "Dome Lid" : /\bsip\b/.test(t) ? "Sip Lid" : isLid ? "Lid" : null;
+
+  return { size, wall, temp, isBlank, mm, lidType, isLid };
+}
+
+function buildDisplayTitle(originalTitle: string, kind: "single" | "double" | "lids") {
+  const { size, wall, temp, isBlank, mm, lidType, isLid } = inferAttrsFromTitle(originalTitle);
+
+  const qtyLabel = "1000pcs"; // exact text
+  const sizeWithDot = size ? (/\.$/.test(size) ? size : `${size}.`) : null;
+
+  if (kind === "lids" || isLid) {
+    // Lids example: "1000pcs | 90 mm Dome Lid (Hot/Cold)"
+    const right = [mm, lidType || "Lid", temp ? `(${temp})` : null].filter(Boolean).join(" ");
+    return `${qtyLabel} | ${right}`;
+  }
+
+  // Cups example: "1000pcs | 12 oz. Blank Single-Walled Hot Paper Cup"
+  const resolvedWall =
+    kind === "double" ? "Double-Walled" : kind === "single" ? "Single-Walled" : wall || "Single-Walled";
+
+  const parts = [sizeWithDot, isBlank ? "Blank" : null, resolvedWall, temp || "Hot", "Paper Cup"]
+    .filter(Boolean)
+    .join(" ");
+
+  return `${qtyLabel} | ${parts}`;
+}
+
+/* =======================
+          PAGE
+======================= */
+
+export default async function CategoryProductsPage({ params }: { params: Promise<{ category: string }> }) {
   const { category } = await params; // ✅ await it here
   const kind = inferKindFromSlug(category);
 
@@ -153,8 +196,9 @@ export default async function CategoryProductsPage({ params }) {
           </div>
         )}
 
-        {products.map((p) => {
+        {products.map((p: any) => {
           const est = getEstimatedPrice({ kind, title: p.title });
+          const displayTitle = buildDisplayTitle(p.title, kind);
 
           return (
             <div
@@ -184,7 +228,7 @@ export default async function CategoryProductsPage({ params }) {
                 </div>
                 <div className="px-3 pt-3 text-center">
                   <h2 className="text-[14px] font-medium text-gray-900 leading-snug">
-                    {p.title}
+                    {displayTitle}
                   </h2>
                 </div>
               </Link>
@@ -194,20 +238,16 @@ export default async function CategoryProductsPage({ params }) {
                 {est !== undefined && (
                   <div className="mt-1">
                     <div className="text-base sm:text-lg font-semibold text-gray-900">
-                      {fmt(est)}{" "}
-                      <span className="text-gray-600 font-normal text-sm sm:text-base">
-                        / case
-                      </span>
-                    </div>
-                    <div className="text-[11px] sm:text-xs text-gray-500">
-                      (estimated) • {fmtInt(CASE_QTY)} cups
+                      {money(est)}
+                      <span className="ml-1 tracking-wide text-[11px] sm:text-xs text-gray-500 align-middle">est</span>
                     </div>
                   </div>
                 )}
 
                 <Link
                   href="/contact"
-                  className="inline-flex items-center justify-center px-5 py-2.5 mt-3 text-sm font-medium text-white
+                  className="inline-flex w-full items-center justify-center h-9 sm:h-10 px-3 sm:px-5 mt-3
+                             text-[13px] sm:text-sm font-medium text-white
                              bg-[#239356] hover:bg-[#1F844C] rounded-md transition-all duration-200"
                 >
                   Request a Quote
