@@ -76,7 +76,7 @@ export default function Home() {
       </section>
 
       {/* Single Wall Cups */}
-      <CatalogSection
+      <HomeCatalogSection
         title="Single Wall Cups"                 // <-- updated
         items={singleWall}
         seeMoreHref="/catalog/single-wall-cups"
@@ -85,7 +85,7 @@ export default function Home() {
       />
       
       {/* Double Wall Cups */}
-      <CatalogSection
+      <HomeCatalogSection
         title="Double Wall Cups"                 // <-- updated
         items={doubleWall}
         seeMoreHref="/catalog/double-wall-cups"
@@ -94,7 +94,7 @@ export default function Home() {
       />
 
       {/* Lids */}
-      <CatalogSection
+      <HomeCatalogSection
         title="Lids"
         items={lids}
         seeMoreHref="/catalog/lids"
@@ -103,108 +103,6 @@ export default function Home() {
         imageBgClass="bg-white"
       />
     </main>
-  )
-}
-
-/* ---------- Reusable section with size chips ---------- */
-function CatalogSection({
-  title,
-  items,
-  seeMoreHref,
-  seeMoreText,
-  itemHrefBase,
-  imageBgClass = 'bg-gray-50',
-}) {
-  return (
-    <section className="py-12" id={title.toLowerCase().replace(/\s+/g, '-')}>
-      {/* Header */}
-      <div className="max-w-5xl mx-auto px-5 sm:px-6 mb-6 sm:mb-8">
-        <div className="flex items-end justify-between">
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-black">{title}</h2>
-            <div
-              aria-hidden
-              className="mt-1 h-px w-20 sm:w-24 rounded-full
-                         bg-gradient-to-r from-[#FFD814]/40 via-[#FFD814]/20 to-transparent"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Grid */}
-      <div className="max-w-5xl mx-auto px-5 sm:px-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
-        {items?.map((p) => {
-          // Build size list from variants[].size
-          const rawSizes = Array.isArray(p.variants)
-            ? p.variants.map(v => v?.size).filter(Boolean)
-            : []
-          // Format (ensure "oz" suffix if numeric)
-          const sizes = rawSizes.map(s => (/\boz\b/i.test(s) ? s : `${s}`))
-
-          return (
-            <Link
-              key={p._id}
-              href={`${itemHrefBase}/${p.slug}`}
-              className="flex flex-col justify-between rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition"
-            >
-              {p.image && (
-                <Image
-                  src={p.image}
-                  alt={p.title}
-                  width={400}
-                  height={400}
-                  className={`w-full h-60 object-contain ${imageBgClass}`}
-                />
-              )}
-              <div className="p-4 text-center">
-                <h3 className="font-semibold text-base sm:text-lg">{p.title}</h3>
-                {p.description ? (
-                  <p className="text-gray-600 text-sm mt-1 line-clamp-2">{p.description}</p>
-                ) : (
-                  <p className="text-gray-500 text-sm mt-1">&nbsp;</p>
-                )}
-
-                {/* size chips (only render if we have sizes) */}
-                {sizes.length > 0 && (
-                  <ul className="mt-2 flex flex-wrap justify-center gap-1.5">
-                    {sizes.slice(0, 6).map((s) => (
-                      <li
-                        key={s}
-                        className="rounded-full border border-gray-200 px-2 py-0.5 text-xs text-gray-700"
-                      >
-                        {s}
-                      </li>
-                    ))}
-                    {sizes.length > 6 && (
-                      <li className="rounded-full border border-gray-200 px-2 py-0.5 text-xs text-gray-700">
-                        +{sizes.length - 6} more
-                      </li>
-                    )}
-                  </ul>
-                )}
-              </div>
-            </Link>
-          )
-        })}
-
-        {/* See More Card */}
-        <Link
-          href={seeMoreHref}
-          className="flex flex-col items-center justify-center bg-[#F2F8F5]
-                    rounded-2xl border border-[#DCEFE4] text-center
-                    hover:bg-[#E7F3ED] transition-all p-6"
-        >
-          <h4 className="flex items-center gap-2 text-lg font-semibold text-[#0D1B2A] mb-1">
-            See More
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                 strokeWidth={2} stroke="#239356" className="w-5 h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </h4>
-          <p className="text-sm text-[#0D1B2A]/70">{seeMoreText}</p>
-        </Link>
-      </div>
-    </section>
   )
 }
 
