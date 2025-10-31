@@ -115,10 +115,10 @@ function buildDisplayTitle(originalTitle, kind) {
   // ---- LIDS ----
   if (kind === 'lids' || isLid) {
     if (mm === '80 mm') {
-      return `${qtyLabel} | 80mm White Dome Lid For 10oz`
+      return `${qtyLabel} | 80mm White Dome Lid For 10oz Cups`
     }
     if (mm === '90 mm') {
-      return `${qtyLabel} | 90mm White Dome Lid For 12/16/20/22/32oz`
+      return `${qtyLabel} | 90mm White Dome Lid For 12-32oz Cups`
     }
     // fallback for other lid sizes if ever added
     return `${qtyLabel} | ${mm || ''} White Dome Lid`
