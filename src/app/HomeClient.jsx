@@ -91,14 +91,13 @@ function getEstimatedPrice({ kind, title }) {
    DISPLAY TITLE (B2B)
 ======================= */
 
-const toThousands = (n) => Number(n).toLocaleString('en-US')
-
+// Infer attributes from stored title
 function inferAttrsFromTitle(title) {
   const t = String(title || '').toLowerCase()
   const sizeMatch = t.match(/(\d+(?:\.\d+)?)\s*oz/)
   const size = sizeMatch ? `${sizeMatch[1]} oz` : null
 
-  const wall = /double/.test(t) ? 'Double-Wall' : /single/.test(t) ? 'Single-Wall' : null
+  const wall = /double/.test(t) ? 'Double-Walled' : /single/.test(t) ? 'Single-Walled' : null
   const temp = /\bhot\b/.test(t) ? 'Hot' : /\b(cold|iced)\b/.test(t) ? 'Cold' : null
   const isBlank = /\bblank\b/.test(t) || !/\bprint|custom|logo\b/.test(t) // default Blank if not explicitly custom
   const mmMatch = t.match(/\b(80|90|98|100|105)\s*mm\b/)
@@ -112,27 +111,30 @@ function inferAttrsFromTitle(title) {
 function buildDisplayTitle(originalTitle, kind /* 'single' | 'double' | 'lids' */) {
   const { size, wall, temp, isBlank, mm, lidType, isLid } = inferAttrsFromTitle(originalTitle)
 
+  const qtyLabel = '1000pcs' // exact text requested
+  const sizeWithDot = size ? (/\.$/.test(size) ? size : `${size}.`) : null
+
   if (kind === 'lids' || isLid) {
-    const left = `${toThousands(CASE_QTY)}/case`
-    const rightParts = [mm, lidType || 'Lid', temp ? `(${temp})` : null].filter(Boolean)
-    return `${left} | ${rightParts.join(' ')}`
+    // Lids example: "1000pcs | 90 mm Dome Lid (Hot/Cold)"
+    const right = [mm, lidType || 'Lid', temp ? `(${temp})` : null].filter(Boolean).join(' ')
+    return `${qtyLabel} | ${right}`
   }
 
-  // Cups
+  // Cups example: "1000pcs | 12 oz. Blank Single-Walled Hot Paper Cup"
   const resolvedWall =
-    kind === 'double' ? 'Double-Wall' :
-    kind === 'single' ? 'Single-Wall' :
-    (wall || 'Single-Wall')
+    kind === 'double' ? 'Double-Walled' :
+    kind === 'single' ? 'Single-Walled' :
+    (wall || 'Single-Walled')
 
-  const right = [
-    size || '',
+  const parts = [
+    sizeWithDot,
+    isBlank ? 'Blank' : null,
     resolvedWall,
     temp || 'Hot',
     'Paper Cup',
-    isBlank ? '(Blank)' : null,
-  ].filter(Boolean).join(' ')
+  ].filter(Boolean)
 
-  return `${toThousands(CASE_QTY)}/case | ${right}`
+  return `${qtyLabel} | ${parts.join(' ')}`
 }
 
 /* =======================
