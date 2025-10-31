@@ -192,11 +192,10 @@ export default function Home() {
         kind="lids"
       />
 
-      {/* page-level estimate disclaimer */}
+      {/* page-level estimate note */}
       <div className="max-w-5xl mx-auto px-5 sm:px-6 pb-12">
         <p className="text-center text-xs text-gray-500">
-          Prices shown are <span className="font-medium">estimates per case</span> based on typical volumes.
-          Each case contains {fmtInt(CASE_QTY)} cups for cup items. Final quotes may vary by spec and quantity.
+          Prices shown are <span className="font-medium">estimates per case</span>. Each cup case contains {fmtInt(CASE_QTY)} cups. Final quotes may vary by spec and quantity.
         </p>
       </div>
     </main>
@@ -232,51 +231,59 @@ function HomeCatalogSection({
         </div>
       </div>
 
-      {/* Grid: mini cards with price under title */}
+      {/* Grid: mini cards with big price + CTA */}
       <div className="max-w-5xl mx-auto px-5 sm:px-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
         {items?.map((p) => {
           const est = getEstimatedPrice({ kind, title: p.title })
 
           return (
-            <Link
+            <div
               key={p._id}
-              href={`${itemHrefBase}/${p.slug}`}
               className="flex flex-col bg-white rounded-2xl shadow-sm hover:shadow-md transition
                          ring-1 ring-black/5 hover:ring-black/10 overflow-hidden"
             >
-              <div className={`relative w-full aspect-square ${imageBgClass} overflow-hidden`}>
-                {p.image && (
-                  <Image
-                    src={p.image}
-                    alt={p.title}
-                    fill
-                    sizes="230px"
-                    className="object-cover"
-                  />
-                )}
-              </div>
+              {/* Image + Title link to product detail */}
+              <Link href={`${itemHrefBase}/${p.slug}`} className="rounded-t-2xl overflow-hidden">
+                <div className={`relative w-full aspect-square ${imageBgClass} overflow-hidden`}>
+                  {p.image && (
+                    <Image
+                      src={p.image}
+                      alt={p.title}
+                      fill
+                      sizes="230px"
+                      className="object-cover"
+                    />
+                  )}
+                </div>
+                <div className="px-3 pt-3 text-center">
+                  <p className="text-[14px] font-medium text-gray-900 leading-snug">
+                    {p.title}
+                  </p>
+                </div>
+              </Link>
 
-              <div className="p-3 text-center">
-                <p className="text-[14px] font-medium text-gray-900 leading-snug">
-                  {p.title}
-                </p>
-
-                {/* Price pill (explicitly marked as estimated) */}
+              {/* Price + CTA */}
+              <div className="px-3 pb-3 pt-1 text-center">
                 {est !== undefined && (
-                  <div className="mt-1 flex justify-center">
-                    <div
-                      className="inline-flex flex-col items-center rounded-md border border-gray-200 bg-white px-2 py-1 text-xs text-gray-800"
-                      aria-label={`Estimated price ${fmt(est)} per case, ${fmtInt(CASE_QTY)} cups`}
-                    >
-                      <span className="font-medium">
-                        {fmt(est)} <span className="opacity-70">/ case (estimated)</span>
-                      </span>
-                      <span className="opacity-70">{fmtInt(CASE_QTY)} cups</span>
+                  <div className="mt-1">
+                    <div className="text-base sm:text-lg font-semibold text-gray-900">
+                      {fmt(est)} <span className="text-gray-600 font-normal text-sm sm:text-base">/ case</span>
+                    </div>
+                    <div className="text-[11px] sm:text-xs text-gray-500">
+                      (estimated) • {fmtInt(CASE_QTY)} cups
                     </div>
                   </div>
                 )}
+
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center justify-center px-5 py-2.5 mt-3 text-sm font-medium text-white
+                             bg-[#239356] hover:bg-[#1F844C] rounded-md transition-all duration-200"
+                >
+                  Request a Quote
+                </Link>
               </div>
-            </Link>
+            </div>
           )
         })}
 
