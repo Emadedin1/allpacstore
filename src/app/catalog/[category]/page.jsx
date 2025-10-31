@@ -241,7 +241,7 @@ export default async function CategoryProductsPage({ params }) {
                     <div className="text-base sm:text-lg font-semibold text-gray-900">
                       {fmt(est)}
                       <span className="ml-1 tracking-wide text-[11px] sm:text-xs text-gray-500 align-middle">est</span>
-                      <span className="ml-1 text-gray-600 font-normal text-sm sm:text-base">/ case</span>
+                      <span className="ml-1 text-gray-600 font-normal text-sm sm:text-base"></span>
                     </div>
                     <div className="text-[11px] sm:text-xs text-gray-500">
                       {fmtInt(CASE_QTY)} cups per case
