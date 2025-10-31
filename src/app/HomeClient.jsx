@@ -9,7 +9,7 @@ import { client } from '@/sanity/lib/client'
    PRICE MAPS + HELPERS
 ======================= */
 
-// Single-wall: given by you (per case, est.)
+// Single-wall: your estimates (per case)
 const PRICE_SINGLE = {
   '10 oz': 36.02,
   '12 oz': 40.22,
@@ -18,16 +18,16 @@ const PRICE_SINGLE = {
   '32 oz': 99.92,
 }
 
-// Double-wall: slightly higher (competitive but realistic, per case, est.)
+// Double-wall: modest premium (per case)
 const PRICE_DOUBLE = {
   '10 oz': 40.50,
   '12 oz': 45.25,
-  '16 oz': 51.77, // 16 oz HOT override you requested
+  '16 oz': 51.77, // 16 oz HOT override
   '22 oz': 74.99,
   '32 oz': 109.90,
 }
 
-// Lids (per case, est.) by common diameters
+// Lids (per case) by diameter
 const PRICE_LIDS_MM = {
   '80': 22.90,
   '90': 24.90,
@@ -36,62 +36,58 @@ const PRICE_LIDS_MM = {
   '105': 31.90,
 }
 
-// Extract “12 oz”, “16oz”, “16-oz”, etc.
+const CASE_QTY = 1000
+const fmtInt = (n) => Number(n).toLocaleString('en-US')
+
+// Extract “12 oz”, “16oz”, etc.
 function extractOzFromTitle(title) {
   if (!title) return null
   const m = String(title).match(/(\d+(?:\.\d+)?)\s*oz/i)
   return m ? `${m[1]} oz` : null
 }
 
-// Extract lid diameter like “90 mm”, “90mm”, etc.
+// Extract lid diameter “90 mm”, “90mm”, etc.
 function extractMmFromTitle(title) {
   if (!title) return null
   const m = String(title).match(/\b(80|90|98|100|105)\s*mm\b/i)
   return m ? m[1] : null
 }
 
-// Format money
+// Money
 function fmt(price) {
   return `$${Number(price).toFixed(2)}`
 }
 
-// Decide estimated price for a card
+// Decide estimated price per card
 function getEstimatedPrice({ kind, title }) {
   const t = String(title || '').toLowerCase()
 
-  // Lids: match by diameter first
+  // Lids by diameter
   if (kind === 'lids') {
     const mm = extractMmFromTitle(title)
     if (mm && PRICE_LIDS_MM[mm] != null) return PRICE_LIDS_MM[mm]
-    // fallback competitive lid price if no diameter found
-    return 24.90
+    return 24.90 // fallback competitive lid price
   }
 
-  // Cups: use oz + hot/cold logic
+  // Cups use oz + hot/cold logic
   const sizeKey = extractOzFromTitle(title)
   if (!sizeKey) return undefined
 
-  // Special handling for 16 oz hot vs cold/iced
   if (sizeKey === '16 oz') {
     if (/\b(cold|iced)\b/.test(t)) {
-      // cold/iced: use single-wall default 16 oz if kind is 'single', else DW baseline
       return kind === 'double' ? PRICE_SINGLE['16 oz'] : PRICE_SINGLE['16 oz']
     }
     if (/\bhot\b/.test(t)) {
-      // hot: prefer double-wall price when kind is 'double'
       return kind === 'double' ? PRICE_DOUBLE['16 oz'] : PRICE_DOUBLE['16 oz']
     }
-    // unclear: choose by section kind
     return kind === 'double'
       ? (PRICE_DOUBLE['16 oz'] ?? PRICE_SINGLE['16 oz'])
       : PRICE_SINGLE['16 oz']
   }
 
-  // Other sizes by section kind, with sensible fallback
   if (kind === 'double') {
     return PRICE_DOUBLE[sizeKey] ?? PRICE_SINGLE[sizeKey]
   }
-  // single-wall (default)
   return PRICE_SINGLE[sizeKey]
 }
 
@@ -135,7 +131,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-white text-allpac">
-      {/* Hero Section */}
+      {/* Hero */}
       <section
         className="relative text-center py-14 px-4 bg-cover bg-[40%_center] sm:bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/images/hero-cups.png')" }}
@@ -167,7 +163,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Single Wall Cups */}
+      {/* Sections */}
       <HomeCatalogSection
         title="Single Wall Cups"
         items={singleWall}
@@ -177,7 +173,6 @@ export default function Home() {
         kind="single"
       />
 
-      {/* Double Wall Cups */}
       <HomeCatalogSection
         title="Double Wall Cups"
         items={doubleWall}
@@ -187,7 +182,6 @@ export default function Home() {
         kind="double"
       />
 
-      {/* Lids */}
       <HomeCatalogSection
         title="Lids"
         items={lids}
@@ -230,10 +224,10 @@ function HomeCatalogSection({
         </div>
       </div>
 
-      {/* Grid: mini cards with price BELOW the title */}
+      {/* Grid: mini cards with price under title */}
       <div className="max-w-5xl mx-auto px-5 sm:px-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
         {items?.map((p) => {
-          const est = getEstimatedPrice({ kind, title: p.title });
+          const est = getEstimatedPrice({ kind, title: p.title })
 
           return (
             <Link
@@ -259,17 +253,20 @@ function HomeCatalogSection({
                   {p.title}
                 </p>
 
-                {/* Price pill under the title */}
+                {/* Price pill */}
                 {est !== undefined && (
                   <div className="mt-1 flex justify-center">
-                    <span className="inline-flex items-center rounded-md border border-gray-200 bg-white px-2 py-0.5 text-xs font-medium text-gray-800">
-                      {fmt(est)} <span className="ml-1 opacity-70">est.</span>
-                    </span>
+                    <div className="inline-flex flex-col items-center rounded-md border border-gray-200 bg-white px-2 py-1 text-xs text-gray-800">
+                      <span className="font-medium">
+                        {fmt(est)} <span className="opacity-70">/ case</span>
+                      </span>
+                      <span className="opacity-70">{fmtInt(CASE_QTY)} cups</span>
+                    </div>
                   </div>
                 )}
               </div>
             </Link>
-          );
+          )
         })}
 
         {/* See More card */}
@@ -290,5 +287,5 @@ function HomeCatalogSection({
         </Link>
       </div>
     </section>
-  );
+  )
 }
