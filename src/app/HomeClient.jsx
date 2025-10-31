@@ -314,11 +314,12 @@ function HomeCatalogSection({
                 {est !== undefined && (
                   <div className="mt-1">
                     <div className="text-[15px] sm:text-lg font-semibold text-gray-900">
-                      {money(est)}{' '}
-                      <span className="text-gray-600 font-normal text-[12px] sm:text-base"></span>
+                      {money(est)}
+                      <span className="ml-1 uppercase tracking-wide text-[11px] sm:text-xs text-gray-500 align-middle">est</span>
+                      <span className="text-gray-600 font-normal text-[12px] sm:text-base"> / case</span>
                     </div>
                     <div className="text-[10.5px] sm:text-xs text-gray-500">
-                      (estimated)
+                      {fmtInt(CASE_QTY)} cups
                     </div>
                   </div>
                 )}
