@@ -2,16 +2,112 @@ import { client } from "@/sanity/lib/client";
 import Image from "next/image";
 import Link from "next/link";
 
-export default async function CategoryProductsPage({ params }) {
-  const { category } = await params;   // ✅ await it here
+/* =======================
+   PRICE MAPS + HELPERS
+======================= */
 
+// Single-wall: your estimates (per case)
+const PRICE_SINGLE = {
+  "10 oz": 36.02,
+  "12 oz": 40.22,
+  "16 oz": 47.14, // default for 16 oz cold/iced or unspecified
+  "22 oz": 68.24,
+  "32 oz": 99.92,
+};
+
+// Double-wall: modest premium (per case)
+const PRICE_DOUBLE = {
+  "10 oz": 40.50,
+  "12 oz": 45.25,
+  "16 oz": 51.77, // 16 oz HOT override
+  "22 oz": 74.99,
+  "32 oz": 109.90,
+};
+
+// Lids (per case) by diameter
+const PRICE_LIDS_MM = {
+  "80": 22.90,
+  "90": 24.90,
+  "98": 27.90,
+  "100": 27.90,
+  "105": 31.90,
+};
+
+const CASE_QTY = 1000;
+const fmtInt = (n) => Number(n).toLocaleString("en-US");
+
+// Extract “12 oz”, “16oz”, etc.
+function extractOzFromTitle(title) {
+  if (!title) return null;
+  const m = String(title).match(/(\d+(?:\.\d+)?)\s*oz/i);
+  return m ? `${m[1]} oz` : null;
+}
+
+// Extract lid diameter “90 mm”, “90mm”, etc.
+function extractMmFromTitle(title) {
+  if (!title) return null;
+  const m = String(title).match(/\b(80|90|98|100|105)\s*mm\b/i);
+  return m ? m[1] : null;
+}
+
+// Money
+function fmt(price) {
+  return `$${Number(price).toFixed(2)}`;
+}
+
+// Decide estimated price per card
+function getEstimatedPrice({ kind, title }) {
+  const t = String(title || "").toLowerCase();
+
+  // Lids by diameter
+  if (kind === "lids") {
+    const mm = extractMmFromTitle(title);
+    if (mm && PRICE_LIDS_MM[mm] != null) return PRICE_LIDS_MM[mm];
+    return 24.90; // fallback competitive lid price
+  }
+
+  // Cups use oz + hot/cold logic
+  const sizeKey = extractOzFromTitle(title);
+  if (!sizeKey) return undefined;
+
+  if (sizeKey === "16 oz") {
+    if (/\b(cold|iced)\b/.test(t)) {
+      return kind === "double" ? PRICE_SINGLE["16 oz"] : PRICE_SINGLE["16 oz"];
+    }
+    if (/\bhot\b/.test(t)) {
+      return kind === "double" ? PRICE_DOUBLE["16 oz"] : PRICE_DOUBLE["16 oz"];
+    }
+    return kind === "double"
+      ? PRICE_DOUBLE["16 oz"] ?? PRICE_SINGLE["16 oz"]
+      : PRICE_SINGLE["16 oz"];
+  }
+
+  if (kind === "double") {
+    return PRICE_DOUBLE[sizeKey] ?? PRICE_SINGLE[sizeKey];
+  }
+  return PRICE_SINGLE[sizeKey];
+}
+
+// Infer kind from category slug
+function inferKindFromSlug(slug) {
+  if (!slug) return "single";
+  if (slug.includes("double")) return "double";
+  if (slug.includes("lid")) return "lids";
+  if (slug.includes("single")) return "single";
+  return "single";
+}
+
+export default async function CategoryProductsPage({ params }) {
+  const { category } = await params; // ✅ await it here
+  const kind = inferKindFromSlug(category);
 
   // Get category by slug
   const categoryData = await client.fetch(
     `
     *[_type == "category" && slug.current == $category][0]{
       _id,
-      title
+      title,
+      "slug": slug.current
     }
   `,
     { category }
@@ -33,7 +129,7 @@ export default async function CategoryProductsPage({ params }) {
       title,
       description,
       "slug": slug.current,
-      "image": mainImage.asset->url
+      "image": coalesce(highResImage.asset->url, mainImage.asset->url)
     }
   `,
     { catId: categoryData._id }
@@ -41,6 +137,7 @@ export default async function CategoryProductsPage({ params }) {
 
   return (
     <main className="bg-white min-h-screen">
+      {/* Header */}
       <div className="text-center py-10">
         <h1 className="text-4xl font-bold">{categoryData.title}</h1>
         <p className="text-gray-600 mt-2">
@@ -48,44 +145,85 @@ export default async function CategoryProductsPage({ params }) {
         </p>
       </div>
 
-      <section className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 px-6 pb-20">
+      {/* Grid */}
+      <section className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-6 pb-20">
         {products.length === 0 && (
           <div className="col-span-full text-center text-gray-500">
             No products found for this category.
           </div>
         )}
 
-        {products.map((p) => (
-          <Link
-            key={p._id}
-            href={`/catalog/${category}/${p.slug}`}
-            className="block border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition bg-white"
-          >
-            <div className="relative w-full h-72 bg-gray-50">
-              {p.image ? (
-                <Image
-                  src={p.image}
-                  alt={p.title}
-                  fill
-                  className="object-cover"
-                />
-              ) : (
-                <div className="flex items-center justify-center h-full text-gray-400 text-sm">
-                  No image available
+        {products.map((p) => {
+          const est = getEstimatedPrice({ kind, title: p.title });
+
+          return (
+            <div
+              key={p._id}
+              className="flex flex-col bg-white rounded-2xl shadow-sm hover:shadow-md transition
+                         ring-1 ring-black/5 hover:ring-black/10 overflow-hidden"
+            >
+              {/* Image + Title link to product detail */}
+              <Link
+                href={`/catalog/${category}/${p.slug}`}
+                className="rounded-t-2xl overflow-hidden"
+              >
+                <div className="relative w-full aspect-square bg-gray-50 overflow-hidden">
+                  {p.image ? (
+                    <Image
+                      src={p.image}
+                      alt={p.title}
+                      fill
+                      sizes="320px"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-sm">
+                      No image available
+                    </div>
+                  )}
                 </div>
-              )}
+                <div className="px-3 pt-3 text-center">
+                  <h2 className="text-[14px] font-medium text-gray-900 leading-snug">
+                    {p.title}
+                  </h2>
+                </div>
+              </Link>
+
+              {/* Price + CTA */}
+              <div className="px-3 pb-4 pt-1 text-center">
+                {est !== undefined && (
+                  <div className="mt-1">
+                    <div className="text-base sm:text-lg font-semibold text-gray-900">
+                      {fmt(est)}{" "}
+                      <span className="text-gray-600 font-normal text-sm sm:text-base">
+                        / case
+                      </span>
+                    </div>
+                    <div className="text-[11px] sm:text-xs text-gray-500">
+                      (estimated) • {fmtInt(CASE_QTY)} cups
+                    </div>
+                  </div>
+                )}
+
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center justify-center px-5 py-2.5 mt-3 text-sm font-medium text-white
+                             bg-[#239356] hover:bg-[#1F844C] rounded-md transition-all duration-200"
+                >
+                  Request a Quote
+                </Link>
+              </div>
             </div>
-            <div className="p-4 text-center">
-              <h2 className="font-semibold text-lg text-gray-900">
-                {p.title}
-              </h2>
-              <p className="text-gray-600 text-sm mt-1 line-clamp-2">
-                {p.description}
-              </p>
-            </div>
-          </Link>
-        ))}
+          );
+        })}
       </section>
+
+      {/* page-level estimate note */}
+      <div className="max-w-7xl mx-auto px-6 pb-12">
+        <p className="text-center text-xs text-gray-500">
+          Prices shown are <span className="font-medium">estimates per case</span>. Each cup case contains {fmtInt(CASE_QTY)} cups. Final quotes may vary by spec and quantity.
+        </p>
+      </div>
     </main>
   );
 }
