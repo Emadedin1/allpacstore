@@ -235,7 +235,7 @@ export default function ContactPage() {
                     >
                       +1 (226) 350-4144
                     </a>{" "}
-                    • Mon–Fri 8:00am–5:00pm
+                    
                   </span>
                 </li>
               </ul>
@@ -247,7 +247,7 @@ export default function ContactPage() {
 
             <div className="rounded-2xl border bg-white p-5 text-sm shadow-sm ring-1 ring-black/5">
               Looking for a specific product?{" "}
-              <Link href="/products" className="text-cyan-700 underline">
+              <Link href="/catalog" className="text-cyan-700 underline">
                 Browse all products
               </Link>
               .
