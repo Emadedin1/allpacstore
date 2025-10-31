@@ -132,7 +132,7 @@ export default function HomeClient() {
           className="object-cover"
         />
         {/* light wash to keep text readable; adjust opacity as you like */}
-        <div className="absolute inset-0 bg-white/40" />
+        <div className="absolute inset-0 bg-white/10" />
       </div>
 
       {/* ---------- HERO (rendered above the fixed bg) ---------- */}
