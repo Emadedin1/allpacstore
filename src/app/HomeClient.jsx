@@ -230,10 +230,10 @@ function HomeCatalogSection({
         </div>
       </div>
 
-      {/* Grid: mini cards with price badge */}
+      {/* Grid: mini cards with price BELOW the title */}
       <div className="max-w-5xl mx-auto px-5 sm:px-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
         {items?.map((p) => {
-          const est = getEstimatedPrice({ kind, title: p.title })
+          const est = getEstimatedPrice({ kind, title: p.title });
 
           return (
             <Link
@@ -252,22 +252,24 @@ function HomeCatalogSection({
                     className="object-cover"
                   />
                 )}
-
-                {/* Price tag badge (hide if no estimate) */}
-                {est !== undefined && (
-                  <div className="absolute left-2 bottom-2 rounded-md bg-black/80 text-white text-[12px] px-2 py-1 shadow-sm">
-                    {fmt(est)} <span className="opacity-80">est.</span>
-                  </div>
-                )}
               </div>
 
               <div className="p-3 text-center">
                 <p className="text-[14px] font-medium text-gray-900 leading-snug">
                   {p.title}
                 </p>
+
+                {/* Price pill under the title */}
+                {est !== undefined && (
+                  <div className="mt-1 flex justify-center">
+                    <span className="inline-flex items-center rounded-md border border-gray-200 bg-white px-2 py-0.5 text-xs font-medium text-gray-800">
+                      {fmt(est)} <span className="ml-1 opacity-70">est.</span>
+                    </span>
+                  </div>
+                )}
               </div>
             </Link>
-          )
+          );
         })}
 
         {/* See More card */}
@@ -288,5 +290,5 @@ function HomeCatalogSection({
         </Link>
       </div>
     </section>
-  )
+  );
 }
