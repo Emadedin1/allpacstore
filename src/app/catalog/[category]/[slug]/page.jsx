@@ -27,12 +27,23 @@ const PRICE_LIDS_MM = {
   '100': 27.9,
   '105': 31.9,
 }
+
 const money = (n) => `$${Number(n).toFixed(2)}`
-const extractOz = (t) => String(t || '').match(/(\d+(?:\.\d+)?)\s*oz/i)?.[0]
-const extractMm = (t) => String(t || '').match(/\b(80|90|98|100|105)\s*mm\b/i)?.[1]
+const extractOz = (t) => String(t || '').match(/(\d+(?:\.\d+)?)\s*oz/i)?.[0] // e.g., "12 oz"
+const extractMm = (t) => String(t || '').match(/\b(80|90|98|100|105)\s*mm\b/i)?.[1] // e.g., "90"
+const detectTemp = (t) => {
+  const s = String(t || '').toLowerCase()
+  if (/\b(cold|iced)\b/.test(s)) return 'Cold'
+  if (/\bhot\b/.test(s)) return 'Hot'
+  // default: Hot (same assumption used on home)
+  return 'Hot'
+}
+const isBlankCup = (t) => {
+  const s = String(t || '').toLowerCase()
+  return /\bblank\b/.test(s) || !/\b(custom|print|logo)\b/.test(s)
+}
 
 function getEstimatedPrice({ kind, title }) {
-  const t = String(title).toLowerCase()
   if (kind === 'lids') {
     const mm = extractMm(title)
     return PRICE_LIDS_MM[mm] ?? 24.9
@@ -44,25 +55,43 @@ function getEstimatedPrice({ kind, title }) {
     : PRICE_SINGLE[oz]
 }
 
-function inferAttrs(title) {
-  const t = String(title).toLowerCase()
-  const size = extractOz(t)
-  const wall = /double/.test(t) ? 'Double-Walled' : /single/.test(t) ? 'Single-Walled' : null
-  const mm = extractMm(t)
-  const isLid = /\blid\b/.test(t)
-  const lidType = /\bdome\b/.test(t) ? 'Dome Lid' : isLid ? 'Lid' : null
-  return { size, wall, mm, isLid, lidType }
+function inferKindFromCategorySlug(slug = '') {
+  if (slug.includes('double')) return 'double'
+  if (slug.includes('lid')) return 'lids'
+  return 'single'
 }
 
-function buildDisplayTitle(originalTitle, kind) {
-  const { size, wall, mm, isLid, lidType } = inferAttrs(originalTitle)
+/** Match homepage naming exactly (with Hot/Cold) */
+function buildDisplayTitle(originalTitle, kind /* 'single' | 'double' | 'lids' */) {
   const qty = '1000pcs'
-  if (isLid || kind === 'lids') {
+  const t = String(originalTitle || '')
+  const size = extractOz(t) ? `${extractOz(t)}.` : null
+  const temp = detectTemp(t) // "Hot" | "Cold"
+  const blank = isBlankCup(t)
+
+  // Lids
+  if (kind === 'lids' || /\blid\b/i.test(t)) {
+    const mm = extractMm(t)
     if (mm === '80') return `${qty} | 80mm White Dome Lid For 10oz Cups`
     if (mm === '90') return `${qty} | 90mm White Dome Lid For 12–32oz Cups`
-    return `${qty} | ${mm || ''} ${lidType || 'Lid'}`
+    return `${qty} | ${mm ? `${mm}mm ` : ''}White Dome Lid`
   }
-  return `${qty} | ${size || ''} ${wall || ''} Paper Cup`.trim()
+
+  // Cups
+  const wall =
+    kind === 'double' ? 'Double-Walled' :
+    kind === 'single' ? 'Single-Walled' :
+    /double/i.test(t) ? 'Double-Walled' : 'Single-Walled'
+
+  const parts = [
+    size,                              // "12 oz."
+    blank ? 'Blank' : null,            // "Blank"
+    wall,                              // "Single-Walled" / "Double-Walled"
+    temp,                              // "Hot" / "Cold"
+    'Paper Cup',
+  ].filter(Boolean)
+
+  return `${qty} | ${parts.join(' ')}`
 }
 
 /* =======================
@@ -72,6 +101,7 @@ function buildDisplayTitle(originalTitle, kind) {
 export default async function ProductPage({ params }) {
   const { category, slug } = await params
 
+  // Fetch product
   const product = await client.fetch(
     `
     *[_type == "product" && slug.current == $slug][0]{
@@ -97,6 +127,7 @@ export default async function ProductPage({ params }) {
     return <div className="text-center py-20 text-gray-600">Product not found.</div>
   }
 
+  // Other products in same category
   const otherProducts = await client.fetch(
     `
     *[_type == "product" && category._ref == $catId && slug.current != $slug]{
@@ -109,14 +140,16 @@ export default async function ProductPage({ params }) {
     { catId: product.category?._id, slug }
   )
 
-  const kind =
-    product.category?.slug === 'double-wall-cups'
-      ? 'double'
-      : product.category?.slug === 'lids'
-      ? 'lids'
-      : 'single'
+  const kind = inferKindFromCategorySlug(product.category?.slug || '')
   const displayTitle = buildDisplayTitle(product.title, kind)
   const est = getEstimatedPrice({ kind, title: product.title })
+
+  // Append printing note for cups (single/double)
+  const extraNotes =
+    kind !== 'lids'
+      ? ['Optional custom printing available.']
+      : []
+  const notesToShow = [...(product.notes || []), ...extraNotes]
 
   return (
     <main className="max-w-6xl mx-auto p-4 md:p-6 space-y-12">
@@ -147,9 +180,9 @@ export default async function ProductPage({ params }) {
           <div>
             <h1 className="text-3xl font-bold text-gray-900">{displayTitle}</h1>
 
-            {est && (
+            {typeof est !== 'undefined' && (
               <p className="text-lg font-semibold text-gray-900 mt-2">
-                {money(est)} <span className="text-xs text-gray-500">est / case</span>
+                {money(est)} <span className="ml-1 text-xs text-gray-500 align-middle">est</span>
               </p>
             )}
 
@@ -158,7 +191,7 @@ export default async function ProductPage({ params }) {
 
           <Link
             href="/contact"
-            className="inline-flex items-center justify-center px-5 py-2.5 mt-4 text-sm font-medium text-white
+            className="inline-flex items-center justify-center px-5 py-2.5 mt-2 text-sm font-medium text-white
              bg-[#239356] hover:bg-[#1F844C] rounded-md transition-all duration-200"
           >
             Request a Quote
@@ -197,7 +230,7 @@ export default async function ProductPage({ params }) {
             </div>
           )}
 
-          {/* ADDITIONAL DETAILS */}
+          {/* COLLAPSIBLE DETAILS */}
           {product.specifications && (
             <details className="group bg-white border border-gray-200 rounded-lg shadow-sm" open>
               <summary className="cursor-pointer px-4 py-3 font-medium flex justify-between items-center hover:bg-gray-50">
@@ -216,13 +249,13 @@ export default async function ProductPage({ params }) {
             </details>
           )}
 
-          {product.notes?.length > 0 && (
+          {notesToShow.length > 0 && (
             <details className="group bg-white border border-gray-200 rounded-lg shadow-sm">
               <summary className="cursor-pointer px-4 py-3 font-medium flex justify-between items-center hover:bg-gray-50">
                 Additional Notes <span className="transition-transform duration-300 group-open:rotate-180">▼</span>
               </summary>
               <ul className="px-4 pb-3 text-sm text-gray-700 list-disc list-inside">
-                {product.notes.map((note, i) => (
+                {notesToShow.map((note, i) => (
                   <li key={i}>{note}</li>
                 ))}
               </ul>
@@ -258,7 +291,7 @@ export default async function ProductPage({ params }) {
                   </div>
                   <div className="p-3 text-center">
                     <p className="text-[14px] font-medium text-gray-900 leading-snug">
-                      {buildDisplayTitle(p.title, product.category?.slug || '')}
+                      {buildDisplayTitle(p.title, inferKindFromCategorySlug(product.category?.slug || ''))}
                     </p>
                   </div>
                 </Link>
