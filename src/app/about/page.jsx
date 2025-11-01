@@ -9,10 +9,6 @@ export default function AboutPage() {
         {/* ---------- HEADER ---------- */}
         <div className="text-center mb-3"> {/* much smaller gap */}
           <h1 className="text-3xl font-semibold text-[#0D1B2A]">About Allpac</h1>
-          <p className="mx-auto mt-2 max-w-2xl text-gray-700">
-            Trusted paper cup manufacturer serving North America.  
-            Discover our commitment to quality, sustainability, and reliable service.
-          </p>
         </div>
 
         {/* ---------- FIRST CARD: IMAGE + INTRO ---------- */}
