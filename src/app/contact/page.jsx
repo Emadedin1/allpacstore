@@ -1,4 +1,5 @@
 import ContactClient from "./ContactClient";
+import Script from "next/script";
 
 export const metadata = {
   title: "Contact Allpac Store | Get a Quote for Paper Cups & Food Packaging",
@@ -29,10 +30,46 @@ export const metadata = {
       },
     ],
     locale: "en_CA",
-    type: "website",
+    type: "ContactPage",
   },
 };
 
 export default function ContactPage() {
-  return <ContactClient />;
+  return (
+    <>
+      <Script
+        id="ld-json-contact"
+        type="application/ld+json"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ContactPage",
+            name: "Contact Allpac Store",
+            description:
+              "Contact Allpac Store for wholesale, custom, or bulk paper cup orders. Based in Windsor, Ontario — serving distributors and coffee chains across North America.",
+            url: "https://www.allpacstore.com/contact",
+            publisher: {
+              "@type": "Organization",
+              name: "Allpac Group",
+              url: "https://www.allpacstore.com",
+              logo: "https://www.allpacstore.com/favicon.ico",
+              contactPoint: {
+                "@type": "ContactPoint",
+                telephone: "+1-226-350-4144",
+                contactType: "Sales",
+                areaServed: "CA, US",
+                availableLanguage: "English",
+              },
+              sameAs: [
+                "https://www.linkedin.com/company/allpacpackaging/",
+                "https://www.instagram.com/allpac/",
+              ],
+            },
+          }),
+        }}
+      />
+      <ContactClient />
+    </>
+  );
 }
