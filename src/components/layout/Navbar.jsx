@@ -127,13 +127,13 @@ export default function Navbar() {
         {/* Desktop navbar - logo, then right section */}
         <div className="hidden sm:flex items-center justify-between w-full relative">
           {/* Left: logo */}
-          <Link href="/">
-            <img
-              src="/images/allpac.png"
-              alt="Allpac Store"
-              className="h-12 w-auto"
-            />
-          </Link>
+          <Link href="/" aria-label="Allpac Store – Canadian Paper Cup Manufacturer">
+          <img
+            src="/images/allpac.png"
+            alt="Allpac Store"
+            className="h-12 w-auto"
+          />
+        </Link>
 
           {/* Right: nav links and user (cart removed) */}
           <div className="flex items-center gap-x-8">
