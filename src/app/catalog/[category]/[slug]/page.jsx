@@ -141,8 +141,17 @@ export default async function ProductPage({ params }) {
   const displayTitle = buildDisplayTitle(product.title, kind)
   const est = getEstimatedPrice({ kind, title: product.title })
 
-  const extraNote = kind !== 'lids' ? ['Optional custom printing available.'] : []
-  const notesToShow = [...(product.notes || []), ...extraNote]
+  let notesToShow = [...(product.notes || [])]
+
+   // Add only if not already included
+   if (
+     kind !== 'lids' &&
+     !notesToShow.some((n) =>
+       /custom\s*printing/i.test(n)
+     )
+   ) {
+     notesToShow.push('Optional custom printing available.')
+   }
 
   function staticSpecs(title) {
     const t = title.toLowerCase()
