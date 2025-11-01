@@ -51,9 +51,9 @@ export default function ContactPage() {
             Request a Quote
           </h1>
           <p className="mx-auto mt-2 max-w-2xl text-gray-700">
-            For pricing, bulk orders, or custom packaging inquiries, our team
-            will respond within 24 hours. Share your requirements, and we’ll
-            provide a clear, competitive quote.
+            For pricing, bulk orders, or custom-printed packaging inquiries,
+            our team will respond within 24 hours. Share your requirements, and we’ll
+            provide a clear, competitive quote tailored to your needs.
           </p>
         </div>
 
