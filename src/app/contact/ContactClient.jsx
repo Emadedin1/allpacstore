@@ -52,7 +52,7 @@ export default function ContactClient() {
             Request a Quote
           </h1>
           <p className="mx-auto mt-2 max-w-2xl text-gray-700">
-            For pricing, bulk orders, or custom-printed packaging inquiries,
+            For pricing, bulk orders, or custom-printed paper cup inquiries,
             our team will respond within 24 hours. Share your requirements, and
             we’ll provide a clear, competitive quote tailored to your needs.
           </p>
