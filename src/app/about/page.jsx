@@ -1,4 +1,5 @@
 import AboutClient from "./AboutClient";
+import Script from "next/script";
 
 export const metadata = {
   title: "About Allpac Store | Canadian Paper Cup Manufacturer in Windsor, Ontario",
@@ -35,5 +36,33 @@ export const metadata = {
 };
 
 export default function AboutPage() {
-  return <AboutClient />;
+  return (
+    <>
+      <Script
+        id="ld-json-about"
+        type="application/ld+json"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "AboutPage",
+            name: "About Allpac Store",
+            description:
+              "Allpac Store is a Canadian packaging manufacturer specializing in paper cups, lids, and foodservice packaging since 1999.",
+            publisher: {
+              "@type": "Organization",
+              name: "Allpac Group",
+              url: "https://www.allpacstore.com",
+              logo: "https://www.allpacstore.com/favicon.ico",
+              sameAs: [
+                "https://www.linkedin.com/company/allpacpackaging/",
+                "https://www.instagram.com/allpac/",
+              ],
+            },
+          }),
+        }}
+      />
+      <AboutClient />
+    </>
+  );
 }
