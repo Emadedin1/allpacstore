@@ -226,98 +226,109 @@ export default async function ProductPage({ params }) {
     </summary>
 
     <ul className="px-4 pb-3 text-sm text-gray-700 list-disc list-inside">
-      {/* Keep dynamic fields if any exist in Sanity */}
+      {/* Normalize inconsistent keys */}
       {Object.entries(product.specifications).map(([key, value]) => {
-  if (!value) return null;
+        if (!value) return null;
 
-  // Normalize inconsistent key names for clean, consistent labels
-     const labelMap = {
-       compatibleLid: 'Compatible Lid',
-       material: 'Material',
-       topDiameterRange: 'Top Diameter',
-       bottomDiameterRange: 'Bottom Diameter',
-       height: 'Height',
-       capacity: 'Capacity',
-       use: 'Use',
-       wallType: 'Wall Type',
-       caseDimensions: 'Case Dimensions',
-       machine: 'Machine',
-       paperType: 'Paper Type',
-       gsm: 'GSM',
-     };
-   
-     const formattedKey =
-       labelMap[key] ||
-       key
-         .replace(/([A-Z])/g, ' $1')
-         .replace(/^./, (s) => s.toUpperCase())
-         .trim();
-   
-     return (
-       <li key={key}>
-         <strong>{formattedKey}:</strong> {value}
-       </li>
-     );
-   })}
+        const labelMap = {
+          compatibleLid: 'Compatible Lid',
+          material: 'Material',
+          topDiameterRange: 'Top Diameter',
+          bottomDiameterRange: 'Bottom Diameter',
+          height: 'Height',
+          capacity: 'Capacity',
+          use: 'Use',
+          wallType: 'Wall Type',
+          caseDimensions: 'Case Dimensions',
+          machine: 'Machine',
+          paperType: 'Paper Type',
+          gsm: 'GSM',
+        };
 
-      {/* Static specs based on product title */}
+        const formattedKey =
+          labelMap[key] ||
+          key
+            .replace(/([A-Z])/g, ' $1')
+            .replace(/^./, (s) => s.toUpperCase())
+            .trim();
+
+        return (
+          <li key={key}>
+            <strong>{formattedKey}:</strong> {value}
+          </li>
+        );
+      })}
+
+      {/* Static specs (skip duplicates if already defined) */}
       {(() => {
         const t = product.title.toLowerCase();
-
-        if (t.includes('10 oz')) return (
-          <>
-            <li><strong>Top Diameter:</strong> 90 mm</li>
-            <li><strong>Bottom Diameter:</strong> 60 mm</li>
-            <li><strong>Height:</strong> 94 mm</li>
-            <li><strong>Capacity:</strong> 353 ml (11.9 oz)</li>
-            <li><strong>Paper Type:</strong> Single PE 0.49 mm / Base 0.35 mm</li>
-            <li><strong>Machine:</strong> KSJ-160 Paper Cup Machine</li>
-          </>
+        const keys = Object.keys(product.specifications || {}).map((k) =>
+          k.toLowerCase().replace(/\s+/g, '')
         );
+        const hasTop = keys.includes('topdiameter') || keys.includes('topdiameterrange');
+        const hasBottom = keys.includes('bottomdiameter') || keys.includes('bottomdiameterrange');
+        const hasHeight = keys.includes('height');
+        const hasCapacity = keys.includes('capacity');
 
-        if (t.includes('12 oz')) return (
-          <>
-            <li><strong>Top Diameter:</strong> 90 mm</li>
-            <li><strong>Bottom Diameter:</strong> 60 mm</li>
-            <li><strong>Height:</strong> 112 mm</li>
-            <li><strong>Capacity:</strong> 420 ml (14.2 oz)</li>
-            <li><strong>Paper Type:</strong> Single PE 0.49 mm / Base 0.35 mm</li>
-            <li><strong>Machine:</strong> KSJ-160 Paper Cup Machine</li>
-          </>
-        );
+        if (t.includes('10 oz'))
+          return (
+            <>
+              {!hasTop && <li><strong>Top Diameter:</strong> 90 mm</li>}
+              {!hasBottom && <li><strong>Bottom Diameter:</strong> 60 mm</li>}
+              {!hasHeight && <li><strong>Height:</strong> 94 mm</li>}
+              {!hasCapacity && <li><strong>Capacity:</strong> 353 ml (11.9 oz)</li>}
+              <li><strong>Paper Type:</strong> Single PE 0.49 mm / Base 0.35 mm</li>
+              <li><strong>Machine:</strong> KSJ-160 Paper Cup Machine</li>
+            </>
+          );
 
-        if (t.includes('16 oz')) return (
-          <>
-            <li><strong>Top Diameter:</strong> 90 mm</li>
-            <li><strong>Bottom Diameter:</strong> 60 mm</li>
-            <li><strong>Height:</strong> 137 mm</li>
-            <li><strong>Capacity:</strong> 502 ml (17 oz)</li>
-            <li><strong>Paper Type:</strong> Double PE 0.44 mm / Base 0.34 mm</li>
-            <li><strong>Machine:</strong> KSJ-120E Paper Cup Machine</li>
-          </>
-        );
+        if (t.includes('12 oz'))
+          return (
+            <>
+              {!hasTop && <li><strong>Top Diameter:</strong> 90 mm</li>}
+              {!hasBottom && <li><strong>Bottom Diameter:</strong> 60 mm</li>}
+              {!hasHeight && <li><strong>Height:</strong> 112 mm</li>}
+              {!hasCapacity && <li><strong>Capacity:</strong> 420 ml (14.2 oz)</li>}
+              <li><strong>Paper Type:</strong> Single PE 0.49 mm / Base 0.35 mm</li>
+              <li><strong>Machine:</strong> KSJ-160 Paper Cup Machine</li>
+            </>
+          );
 
-        if (t.includes('22 oz')) return (
-          <>
-            <li><strong>Top Diameter:</strong> 90 mm</li>
-            <li><strong>Bottom Diameter:</strong> 62 mm</li>
-            <li><strong>Height:</strong> 160 mm</li>
-            <li><strong>Capacity:</strong> 660 ml (22.3 oz)</li>
-            <li><strong>Paper Type:</strong> Double PE 0.44 mm / Base 0.34 mm</li>
-            <li><strong>Machine:</strong> KSJ-120E Paper Cup Machine</li>
-          </>
-        );
+        if (t.includes('16 oz'))
+          return (
+            <>
+              {!hasTop && <li><strong>Top Diameter:</strong> 90 mm</li>}
+              {!hasBottom && <li><strong>Bottom Diameter:</strong> 60 mm</li>}
+              {!hasHeight && <li><strong>Height:</strong> 137 mm</li>}
+              {!hasCapacity && <li><strong>Capacity:</strong> 502 ml (17 oz)</li>}
+              <li><strong>Paper Type:</strong> Double PE 0.44 mm / Base 0.34 mm</li>
+              <li><strong>Machine:</strong> KSJ-120E Paper Cup Machine</li>
+            </>
+          );
 
-        if (t.includes('32 oz')) return (
-          <>
-            <li><strong>Top Diameter:</strong> 105 mm</li>
-            <li><strong>Bottom Diameter:</strong> 71 mm</li>
-            <li><strong>Height:</strong> 179 mm</li>
-            <li><strong>Capacity:</strong> 966 ml (32.7 oz)</li>
-            <li><strong>Paper Type:</strong> Double PE 0.44 mm / Base 0.34 mm</li>
-            <li><strong>Machine:</strong> KSJ-120E Paper Cup Machine</li>
-          </>
-        );
+        if (t.includes('22 oz'))
+          return (
+            <>
+              {!hasTop && <li><strong>Top Diameter:</strong> 90 mm</li>}
+              {!hasBottom && <li><strong>Bottom Diameter:</strong> 62 mm</li>}
+              {!hasHeight && <li><strong>Height:</strong> 160 mm</li>}
+              {!hasCapacity && <li><strong>Capacity:</strong> 660 ml (22.3 oz)</li>}
+              <li><strong>Paper Type:</strong> Double PE 0.44 mm / Base 0.34 mm</li>
+              <li><strong>Machine:</strong> KSJ-120E Paper Cup Machine</li>
+            </>
+          );
+
+        if (t.includes('32 oz'))
+          return (
+            <>
+              {!hasTop && <li><strong>Top Diameter:</strong> 105 mm</li>}
+              {!hasBottom && <li><strong>Bottom Diameter:</strong> 71 mm</li>}
+              {!hasHeight && <li><strong>Height:</strong> 179 mm</li>}
+              {!hasCapacity && <li><strong>Capacity:</strong> 966 ml (32.7 oz)</li>}
+              <li><strong>Paper Type:</strong> Double PE 0.44 mm / Base 0.34 mm</li>
+              <li><strong>Machine:</strong> KSJ-120E Paper Cup Machine</li>
+            </>
+          );
 
         return null;
       })()}
