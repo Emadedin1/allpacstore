@@ -220,22 +220,29 @@ export default async function ProductPage({ params }) {
 
           {/* DETAILS */}
           {product.specifications && (
-            <details className="group bg-white border border-gray-200 rounded-lg shadow-sm" open>
-              <summary className="cursor-pointer px-4 py-3 font-medium flex justify-between items-center hover:bg-gray-50">
-                Specifications <span className="transition-transform duration-300 group-open:rotate-180">▼</span>
-              </summary>
-              <ul className="px-4 pb-3 text-sm text-gray-700 list-disc list-inside">
-                {Object.entries(product.specifications).map(
-                  ([key, value]) =>
-                    value && (
-                      <li key={key}>
-                        <strong>{key}:</strong> {value}
-                      </li>
-                    )
-                )}
-              </ul>
-            </details>
-          )}
+           <details className="group bg-white border border-gray-200 rounded-lg shadow-sm" open>
+             <summary className="cursor-pointer px-4 py-3 font-medium flex justify-between items-center hover:bg-gray-50">
+               Specifications <span className="transition-transform duration-300 group-open:rotate-180">▼</span>
+             </summary>
+             <ul className="px-4 pb-3 text-sm text-gray-700 list-disc list-inside">
+               {Object.entries(product.specifications).map(
+                 ([key, value]) =>
+                   value && (
+                     <li key={key}>
+                       <strong>{key}:</strong> {value}
+                     </li>
+                   )
+               )}
+         
+               {/*  Add case dimensions only for paper cups */}
+               {kind !== 'lids' && (
+                 <li>
+                   <strong>Case Dimensions:</strong> 18.5″ × 15″ × 23″
+                 </li>
+               )}
+             </ul>
+           </details>
+         )}
 
           {notesToShow.length > 0 && (
             <details className="group bg-white border border-gray-200 rounded-lg shadow-sm">
