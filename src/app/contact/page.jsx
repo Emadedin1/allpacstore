@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import Script from "next/script";
 import ContactWrapper from "./ContactWrapper";
 
