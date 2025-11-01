@@ -118,9 +118,8 @@ function buildDisplayTitle(originalTitle, kind) {
       return `${qtyLabel} | 80mm White Dome Lid For 10oz Cups`
     }
     if (mm === '90 mm') {
-      return `${qtyLabel} | 90mm White Dome Lid For 12-32oz Cups`
+      return `${qtyLabel} | 90mm White Dome Lid For 12–32oz Cups`
     }
-    // fallback for other lid sizes if ever added
     return `${qtyLabel} | ${mm || ''} White Dome Lid`
   }
 
@@ -131,11 +130,14 @@ function buildDisplayTitle(originalTitle, kind) {
     kind === 'single' ? 'Single-Walled' :
     (wall || 'Single-Walled')
 
+  // ❗ Skip “Hot” for double-wall cups
+  const tempLabel = kind === 'double' ? null : temp || 'Hot'
+
   const parts = [
     sizeWithDot,
     isBlank ? 'Blank' : null,
     resolvedWall,
-    temp || 'Hot',
+    tempLabel,
     'Paper Cup',
   ].filter(Boolean)
 
