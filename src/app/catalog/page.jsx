@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import CatalogClient from "./CatalogClient";
 import Script from "next/script";
 
