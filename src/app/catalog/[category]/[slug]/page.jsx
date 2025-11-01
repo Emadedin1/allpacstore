@@ -60,7 +60,6 @@ function inferKindFromCategorySlug(slug = '') {
   return 'single'
 }
 
-/** Title builder with Hot/Cold + no “Hot” for double-wall */
 function buildDisplayTitle(originalTitle, kind) {
   const qty = '1000pcs'
   const t = String(originalTitle || '')
@@ -68,7 +67,6 @@ function buildDisplayTitle(originalTitle, kind) {
   const temp = detectTemp(t)
   const blank = isBlankCup(t)
 
-  // Lids
   if (kind === 'lids' || /\blid\b/i.test(t)) {
     const mm = extractMm(t)
     if (mm === '80') return `${qty} | 80mm White Dome Lid For 10oz Cups`
@@ -85,7 +83,7 @@ function buildDisplayTitle(originalTitle, kind) {
     size,
     blank ? 'Blank' : null,
     wall,
-    kind === 'double' ? null : temp, // omit “Hot” for double-wall
+    kind === 'double' ? null : temp,
     'Paper Cup',
   ].filter(Boolean)
 
@@ -138,9 +136,22 @@ export default async function ProductPage({ params }) {
   const displayTitle = buildDisplayTitle(product.title, kind)
   const est = getEstimatedPrice({ kind, title: product.title })
 
-  // ✅ Add “Optional custom printing available.” as final note for cups
   const extraNote = kind !== 'lids' ? ['Optional custom printing available.'] : []
   const notesToShow = [...(product.notes || []), ...extraNote]
+
+  /* ====== Helper to get static dimensions by size ====== */
+  function staticSpecs(title) {
+    const t = title.toLowerCase()
+    const base = { case: '18.5″ × 15″ × 23″', pack: '1000 pcs/ctn' }
+    if (t.includes('10 oz')) return { ...base, top: '90 mm', height: '94 mm', cap: '353 ml (11.9 oz)' }
+    if (t.includes('12 oz')) return { ...base, top: '90 mm', height: '112 mm', cap: '420 ml (14.2 oz)' }
+    if (t.includes('16 oz')) return { ...base, top: '90 mm', height: '137 mm', cap: '502 ml (17 oz)' }
+    if (t.includes('22 oz')) return { ...base, top: '90 mm', height: '160 mm', cap: '660 ml (22.3 oz)' }
+    if (t.includes('32 oz')) return { ...base, top: '105 mm', height: '179 mm', cap: '966 ml (32.7 oz)' }
+    return base
+  }
+
+  const staticData = staticSpecs(product.title)
 
   return (
     <main className="max-w-6xl mx-auto p-4 md:p-6 space-y-12">
@@ -158,13 +169,16 @@ export default async function ProductPage({ params }) {
             )}
           </div>
 
+          {/* CLEAN OVERVIEW */}
           <div className="bg-gray-100 rounded-lg p-6 shadow-sm">
             <h2 className="text-2xl font-semibold mb-3">Overview</h2>
-            <p className="text-gray-700 leading-relaxed">{product.description}</p>
+            <p className="text-gray-700 leading-relaxed">
+              {product.description.replace(/(\d+(\.\d+)?\s*(gsm|mm|ml))/gi, '').trim()}  
+            </p>
           </div>
         </div>
 
-        {/* RIGHT */}
+        {/* RIGHT SIDE */}
         <div className="md:w-1/2 flex flex-col space-y-6">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">{displayTitle}</h1>
@@ -175,7 +189,9 @@ export default async function ProductPage({ params }) {
               </p>
             )}
 
-            <p className="text-gray-700 mt-4 leading-relaxed">{product.description}</p>
+            <p className="text-gray-700 mt-4 leading-relaxed">
+              {product.description.split('.').slice(0, 2).join('. ')}.
+            </p>
           </div>
 
           <Link
@@ -185,164 +201,82 @@ export default async function ProductPage({ params }) {
             Request a Quote
           </Link>
 
-          {/* VARIANTS */}
-          {product.variants?.length > 0 && (
-            <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-              <div className="border-b border-gray-200 px-4 py-3">
-                <h3 className="text-lg font-semibold text-gray-900">Product Specifications</h3>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200 text-sm">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      {['Size', 'Top Dia', 'Packing', 'GSM', 'Notes'].map((h) => (
-                        <th key={h} className="px-4 py-3 text-left font-medium text-gray-600">
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {product.variants.map((v, i) => (
-                      <tr key={i} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 font-medium text-gray-900">{v.size || '—'}</td>
-                        <td className="px-4 py-3 text-gray-700">{v.topDia || '—'}</td>
-                        <td className="px-4 py-3 text-gray-700">{v.packing || '—'}</td>
-                        <td className="px-4 py-3 text-gray-700">{v.gsm || '—'}</td>
-                        <td className="px-4 py-3 text-gray-700">{v.notes || '—'}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+          {/* STREAMLINED PRODUCT SPEC TABLE */}
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="border-b border-gray-200 px-4 py-3">
+              <h3 className="text-lg font-semibold text-gray-900">Product Specifications</h3>
             </div>
-          )}
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200 text-sm">
+                <thead className="bg-gray-50">
+                  <tr>
+                    {['Size', 'Top Dia', 'Height', 'Capacity', 'Packing', 'Case Dimensions'].map((h) => (
+                      <th key={h} className="px-4 py-3 text-left font-medium text-gray-600">
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-4 py-3 font-medium text-gray-900">{extractOz(product.title)}</td>
+                    <td className="px-4 py-3 text-gray-700">{staticData.top}</td>
+                    <td className="px-4 py-3 text-gray-700">{staticData.height}</td>
+                    <td className="px-4 py-3 text-gray-700">{staticData.cap}</td>
+                    <td className="px-4 py-3 text-gray-700">{staticData.pack}</td>
+                    <td className="px-4 py-3 text-gray-700">{staticData.case}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-          {/* DETAILS */}
+          {/* TECHNICAL SPECS */}
           {product.specifications && (
-  <details className="group bg-white border border-gray-200 rounded-lg shadow-sm" open>
-    <summary className="cursor-pointer px-4 py-3 font-medium flex justify-between items-center hover:bg-gray-50">
-      Specifications <span className="transition-transform duration-300 group-open:rotate-180">▼</span>
-    </summary>
+            <details className="group bg-white border border-gray-200 rounded-lg shadow-sm" open>
+              <summary className="cursor-pointer px-4 py-3 font-medium flex justify-between items-center hover:bg-gray-50">
+                Technical Specifications <span className="transition-transform duration-300 group-open:rotate-180">▼</span>
+              </summary>
 
-    <ul className="px-4 pb-3 text-sm text-gray-700 list-disc list-inside">
-      {/* Normalize inconsistent keys */}
-      {Object.entries(product.specifications).map(([key, value]) => {
-        if (!value) return null;
+              <ul className="px-4 pb-3 text-sm text-gray-700 list-disc list-inside">
+                {Object.entries(product.specifications).map(([key, value]) => {
+                  if (!value) return null
 
-        const labelMap = {
-          compatibleLid: 'Compatible Lid',
-          material: 'Material',
-          topDiameterRange: 'Top Diameter',
-          bottomDiameterRange: 'Bottom Diameter',
-          height: 'Height',
-          capacity: 'Capacity',
-          use: 'Use',
-          wallType: 'Wall Type',
-          caseDimensions: 'Case Dimensions',
-          machine: 'Machine',
-          paperType: 'Paper Type',
-          gsm: 'GSM',
-        };
+                  const labelMap = {
+                    compatibleLid: 'Compatible Lid',
+                    material: 'Material',
+                    topDiameterRange: 'Top Diameter',
+                    bottomDiameterRange: 'Bottom Diameter',
+                    height: 'Height',
+                    capacity: 'Capacity',
+                    use: 'Use',
+                    wallType: 'Wall Type',
+                    caseDimensions: 'Case Dimensions',
+                    machine: 'Machine',
+                    paperType: 'Paper Type',
+                    gsm: 'GSM',
+                  }
 
-        const formattedKey =
-          labelMap[key] ||
-          key
-            .replace(/([A-Z])/g, ' $1')
-            .replace(/^./, (s) => s.toUpperCase())
-            .trim();
+                  const formattedKey =
+                    labelMap[key] ||
+                    key
+                      .replace(/([A-Z])/g, ' $1')
+                      .replace(/^./, (s) => s.toUpperCase())
+                      .trim()
 
-        return (
-          <li key={key}>
-            <strong>{formattedKey}:</strong> {value}
-          </li>
-        );
-      })}
+                  return (
+                    <li key={key}>
+                      <strong>{formattedKey}:</strong> {value}
+                    </li>
+                  )
+                })}
 
-      {/* Static specs (skip duplicates if already defined) */}
-      {(() => {
-        const t = product.title.toLowerCase();
-        const keys = Object.keys(product.specifications || {}).map((k) =>
-          k.toLowerCase().replace(/\s+/g, '')
-        );
-        const hasTop = keys.includes('topdiameter') || keys.includes('topdiameterrange');
-        const hasBottom = keys.includes('bottomdiameter') || keys.includes('bottomdiameterrange');
-        const hasHeight = keys.includes('height');
-        const hasCapacity = keys.includes('capacity');
-
-        if (t.includes('10 oz'))
-          return (
-            <>
-              {!hasTop && <li><strong>Top Diameter:</strong> 90 mm</li>}
-              {!hasBottom && <li><strong>Bottom Diameter:</strong> 60 mm</li>}
-              {!hasHeight && <li><strong>Height:</strong> 94 mm</li>}
-              {!hasCapacity && <li><strong>Capacity:</strong> 353 ml (11.9 oz)</li>}
-              <li><strong>Paper Type:</strong> Single PE 0.49 mm / Base 0.35 mm</li>
-              <li><strong>Machine:</strong> KSJ-160 Paper Cup Machine</li>
-            </>
-          );
-
-        if (t.includes('12 oz'))
-          return (
-            <>
-              {!hasTop && <li><strong>Top Diameter:</strong> 90 mm</li>}
-              {!hasBottom && <li><strong>Bottom Diameter:</strong> 60 mm</li>}
-              {!hasHeight && <li><strong>Height:</strong> 112 mm</li>}
-              {!hasCapacity && <li><strong>Capacity:</strong> 420 ml (14.2 oz)</li>}
-              <li><strong>Paper Type:</strong> Single PE 0.49 mm / Base 0.35 mm</li>
-              <li><strong>Machine:</strong> KSJ-160 Paper Cup Machine</li>
-            </>
-          );
-
-        if (t.includes('16 oz'))
-          return (
-            <>
-              {!hasTop && <li><strong>Top Diameter:</strong> 90 mm</li>}
-              {!hasBottom && <li><strong>Bottom Diameter:</strong> 60 mm</li>}
-              {!hasHeight && <li><strong>Height:</strong> 137 mm</li>}
-              {!hasCapacity && <li><strong>Capacity:</strong> 502 ml (17 oz)</li>}
-              <li><strong>Paper Type:</strong> Double PE 0.44 mm / Base 0.34 mm</li>
-              <li><strong>Machine:</strong> KSJ-120E Paper Cup Machine</li>
-            </>
-          );
-
-        if (t.includes('22 oz'))
-          return (
-            <>
-              {!hasTop && <li><strong>Top Diameter:</strong> 90 mm</li>}
-              {!hasBottom && <li><strong>Bottom Diameter:</strong> 62 mm</li>}
-              {!hasHeight && <li><strong>Height:</strong> 160 mm</li>}
-              {!hasCapacity && <li><strong>Capacity:</strong> 660 ml (22.3 oz)</li>}
-              <li><strong>Paper Type:</strong> Double PE 0.44 mm / Base 0.34 mm</li>
-              <li><strong>Machine:</strong> KSJ-120E Paper Cup Machine</li>
-            </>
-          );
-
-        if (t.includes('32 oz'))
-          return (
-            <>
-              {!hasTop && <li><strong>Top Diameter:</strong> 105 mm</li>}
-              {!hasBottom && <li><strong>Bottom Diameter:</strong> 71 mm</li>}
-              {!hasHeight && <li><strong>Height:</strong> 179 mm</li>}
-              {!hasCapacity && <li><strong>Capacity:</strong> 966 ml (32.7 oz)</li>}
-              <li><strong>Paper Type:</strong> Double PE 0.44 mm / Base 0.34 mm</li>
-              <li><strong>Machine:</strong> KSJ-120E Paper Cup Machine</li>
-            </>
-          );
-
-        return null;
-      })()}
-
-      {/* Case dimensions for all cups */}
-      {kind !== 'lids' && (
-        <li>
-          <strong>Case Dimensions:</strong> 18.5″ × 15″ × 23″
-        </li>
-      )}
-    </ul>
-  </details>
-)}
-
+                {kind !== 'lids' && (
+                  <li><strong>Case Dimensions:</strong> 18.5″ × 15″ × 23″</li>
+                )}
+              </ul>
+            </details>
+          )}
 
           {notesToShow.length > 0 && (
             <details className="group bg-white border border-gray-200 rounded-lg shadow-sm">
