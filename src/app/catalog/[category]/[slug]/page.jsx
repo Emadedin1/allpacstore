@@ -1,3 +1,5 @@
+'use client'
+
 import { client } from '@/sanity/lib/client'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -29,13 +31,12 @@ const PRICE_LIDS_MM = {
 }
 
 const money = (n) => `$${Number(n).toFixed(2)}`
-const extractOz = (t) => String(t || '').match(/(\d+(?:\.\d+)?)\s*oz/i)?.[0] // e.g., "12 oz"
-const extractMm = (t) => String(t || '').match(/\b(80|90|98|100|105)\s*mm\b/i)?.[1] // e.g., "90"
+const extractOz = (t) => String(t || '').match(/(\d+(?:\.\d+)?)\s*oz/i)?.[0]
+const extractMm = (t) => String(t || '').match(/\b(80|90|98|100|105)\s*mm\b/i)?.[1]
 const detectTemp = (t) => {
   const s = String(t || '').toLowerCase()
   if (/\b(cold|iced)\b/.test(s)) return 'Cold'
   if (/\bhot\b/.test(s)) return 'Hot'
-  // default: Hot (same assumption used on home)
   return 'Hot'
 }
 const isBlankCup = (t) => {
@@ -61,12 +62,12 @@ function inferKindFromCategorySlug(slug = '') {
   return 'single'
 }
 
-/** Match homepage naming exactly (with Hot/Cold) */
-function buildDisplayTitle(originalTitle, kind /* 'single' | 'double' | 'lids' */) {
+/** Title builder with Hot/Cold + no “Hot” for double-wall */
+function buildDisplayTitle(originalTitle, kind) {
   const qty = '1000pcs'
   const t = String(originalTitle || '')
   const size = extractOz(t) ? `${extractOz(t)}.` : null
-  const temp = detectTemp(t) // "Hot" | "Cold"
+  const temp = detectTemp(t)
   const blank = isBlankCup(t)
 
   // Lids
@@ -77,17 +78,16 @@ function buildDisplayTitle(originalTitle, kind /* 'single' | 'double' | 'lids' *
     return `${qty} | ${mm ? `${mm}mm ` : ''}White Dome Lid`
   }
 
-  // Cups
   const wall =
     kind === 'double' ? 'Double-Walled' :
     kind === 'single' ? 'Single-Walled' :
     /double/i.test(t) ? 'Double-Walled' : 'Single-Walled'
 
   const parts = [
-    size,                              // "12 oz."
-    blank ? 'Blank' : null,            // "Blank"
-    wall,                              // "Single-Walled" / "Double-Walled"
-    temp,                              // "Hot" / "Cold"
+    size,
+    blank ? 'Blank' : null,
+    wall,
+    kind === 'double' ? null : temp, // omit “Hot” for double-wall
     'Paper Cup',
   ].filter(Boolean)
 
@@ -101,7 +101,6 @@ function buildDisplayTitle(originalTitle, kind /* 'single' | 'double' | 'lids' *
 export default async function ProductPage({ params }) {
   const { category, slug } = await params
 
-  // Fetch product
   const product = await client.fetch(
     `
     *[_type == "product" && slug.current == $slug][0]{
@@ -123,11 +122,8 @@ export default async function ProductPage({ params }) {
     { slug }
   )
 
-  if (!product) {
-    return <div className="text-center py-20 text-gray-600">Product not found.</div>
-  }
+  if (!product) return <div className="text-center py-20 text-gray-600">Product not found.</div>
 
-  // Other products in same category
   const otherProducts = await client.fetch(
     `
     *[_type == "product" && category._ref == $catId && slug.current != $slug]{
@@ -144,18 +140,14 @@ export default async function ProductPage({ params }) {
   const displayTitle = buildDisplayTitle(product.title, kind)
   const est = getEstimatedPrice({ kind, title: product.title })
 
-  // Append printing note for cups (single/double)
-  const extraNotes =
-    kind !== 'lids'
-      ? ['Optional custom printing available.']
-      : []
-  const notesToShow = [...(product.notes || []), ...extraNotes]
+  // ✅ Add “Optional custom printing available.” as final note for cups
+  const extraNote = kind !== 'lids' ? ['Optional custom printing available.'] : []
+  const notesToShow = [...(product.notes || []), ...extraNote]
 
   return (
     <main className="max-w-6xl mx-auto p-4 md:p-6 space-y-12">
-      {/* HEADER */}
       <div className="flex flex-col md:flex-row gap-10">
-        {/* LEFT: IMAGE + OVERVIEW */}
+        {/* LEFT */}
         <div className="md:w-1/2 flex flex-col gap-6">
           <div className="relative w-full aspect-square bg-gray-50 rounded-xl overflow-hidden ring-1 ring-black/5 shadow-sm">
             {product.image && (
@@ -168,15 +160,14 @@ export default async function ProductPage({ params }) {
             )}
           </div>
 
-          {/* Overview */}
           <div className="bg-gray-100 rounded-lg p-6 shadow-sm">
             <h2 className="text-2xl font-semibold mb-3">Overview</h2>
             <p className="text-gray-700 leading-relaxed">{product.description}</p>
           </div>
         </div>
 
-        {/* RIGHT: DETAILS */}
-        <div className="md:w-1/2 flex flex-col justify-start space-y-6">
+        {/* RIGHT */}
+        <div className="md:w-1/2 flex flex-col space-y-6">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">{displayTitle}</h1>
 
@@ -191,13 +182,12 @@ export default async function ProductPage({ params }) {
 
           <Link
             href="/contact"
-            className="inline-flex items-center justify-center px-5 py-2.5 mt-2 text-sm font-medium text-white
-             bg-[#239356] hover:bg-[#1F844C] rounded-md transition-all duration-200"
+            className="inline-flex items-center justify-center px-5 py-2.5 mt-2 text-sm font-medium text-white bg-[#239356] hover:bg-[#1F844C] rounded-md transition-all duration-200"
           >
             Request a Quote
           </Link>
 
-          {/* VARIANTS TABLE */}
+          {/* VARIANTS */}
           {product.variants?.length > 0 && (
             <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
               <div className="border-b border-gray-200 px-4 py-3">
@@ -230,7 +220,7 @@ export default async function ProductPage({ params }) {
             </div>
           )}
 
-          {/* COLLAPSIBLE DETAILS */}
+          {/* DETAILS */}
           {product.specifications && (
             <details className="group bg-white border border-gray-200 rounded-lg shadow-sm" open>
               <summary className="cursor-pointer px-4 py-3 font-medium flex justify-between items-center hover:bg-gray-50">
