@@ -1,5 +1,8 @@
 import Script from "next/script";
-import ContactClient from "./ContactClient";
+import dynamic from "next/dynamic";
+
+// ✅ dynamically import the client component (so it's not rendered during build)
+const ContactClient = dynamic(() => import("./ContactClient"), { ssr: false });
 
 export const metadata = {
   title: "Contact Allpac Store | Get a Quote for Paper Cups & Food Packaging",
@@ -37,7 +40,6 @@ export const metadata = {
 export default function ContactPage() {
   return (
     <>
-      {/* ✅ Structured Data only — lightweight Server Component safe */}
       <Script
         id="ld-json-contact"
         type="application/ld+json"
@@ -70,7 +72,6 @@ export default function ContactPage() {
           }),
         }}
       />
-      {/* ✅ Client interactivity separated */}
       <ContactClient />
     </>
   );
