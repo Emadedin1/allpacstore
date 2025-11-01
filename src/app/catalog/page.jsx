@@ -1,7 +1,4 @@
-export const dynamic = "force-dynamic";
-
 import CatalogClient from "./CatalogClient";
-import CatalogSchema from "./CatalogSchema"; // ✅ we'll create this next
 
 export const metadata = {
   title: "Product Catalog | Allpac Store — Paper Cups, Lids & Custom Packaging",
@@ -32,16 +29,10 @@ export const metadata = {
       },
     ],
     locale: "en_CA",
-    type: "CollectionPage",
+    type: "website",
   },
 };
 
 export default function CatalogPage() {
-  return (
-    <>
-      {/* ✅ moved Script into its own client component */}
-      <CatalogSchema />
-      <CatalogClient />
-    </>
-  );
+  return <CatalogClient />;
 }
