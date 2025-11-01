@@ -4,14 +4,14 @@ import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import { CartProvider } from "../context/CartContext";
 import ClientCartDrawer from "../components/layout/ClientCartDrawer";
-import SiteBanner from "../components/SiteBanner"; // <-- updated import
+import SiteBanner from "../components/SiteBanner";
+import Script from "next/script";
 
 export const metadata = {
   metadataBase: new URL("https://www.allpacstore.com"),
-  title:
-    "Allpac Store | Canadian Paper Cup Manufacturer & Wholesale Supplier",
+  title: "Allpac Store | Wholesale Paper Cup Manufacturer Canada",
   description:
-    "Allpac is a Canadian paper cup manufacturer based in Windsor, Ontario. We produce single wall and double wall paper cups — including custom printed and eco-friendly options — for coffee shops, distributors, and foodservice companies across North America.",
+    "Allpac manufactures single-wall and double-wall paper cups with matching lids. Based in Windsor, Ontario — trusted by distributors and foodservice suppliers across North America.",
   alternates: {
     canonical: "https://www.allpacstore.com/",
   },
@@ -21,36 +21,28 @@ export const metadata = {
     apple: "/favicon.ico",
   },
   openGraph: {
-    title:
-      "Allpac | Canadian Paper Cup Manufacturer — Single Wall, Double Wall, Custom & Eco-Friendly Cups",
+    title: "Allpac Store | Wholesale Paper Cups & Lids Manufacturer Canada",
     description:
-      "Allpac manufactures high-quality paper cups in Windsor, Ontario. Our product range includes single wall and double wall paper cups, custom printed designs, and sustainable packaging solutions — available for wholesale across Canada and the U.S.",
+      "Trusted Canadian manufacturer of single-wall and double-wall paper cups with matching lids — serving distributors across North America.",
     url: "https://www.allpacstore.com/",
-    siteName: "Allpac Packaging",
+    siteName: "Allpac Store",
     images: [
       {
         url: "https://www.allpacstore.com/images/hero-cups.png",
         width: 1200,
         height: 630,
-        alt: "Single Wall and Double Wall Paper Cups Manufactured in Canada",
+        alt: "Allpac paper cups and lids manufactured in Canada",
       },
     ],
     locale: "en_CA",
     type: "website",
   },
-  other: {
-    // ✅ JSON-LD schema to tell Google your logo + company identity
-    "application/ld+json": JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      name: "Allpac Packaging",
-      url: "https://www.allpacstore.com",
-      logo: "https://www.allpacstore.com/images/hero-cups.png",
-      sameAs: [
-        "https://www.linkedin.com/company/allpacpackaging/",
-        "https://www.allpacstore.com"
-      ]
-    }),
+  twitter: {
+    card: "summary_large_image",
+    title: "Allpac Store | Wholesale Paper Cups & Lids Manufacturer Canada",
+    description:
+      "Trusted Canadian manufacturer of single-wall and double-wall paper cups with matching lids — serving distributors across North America.",
+    images: ["https://www.allpacstore.com/images/hero-cups.png"],
   },
 };
 
@@ -59,7 +51,33 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} !bg-white !text-black`}>
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} !bg-white !text-black`}
+    >
+      <head>
+        {/* ✅ Structured data for Google (Organization schema) */}
+        <Script
+          id="ld-json-org"
+          type="application/ld+json"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "Allpac Group",
+              url: "https://www.allpacstore.com",
+              logo: "https://www.allpacstore.com/favicon.ico",
+              description:
+                "Allpac is a Canadian manufacturer of paper cups and lids, based in Windsor, Ontario. Serving distributors and foodservice suppliers across North America.",
+              sameAs: [
+                "https://www.linkedin.com/company/allpacpackaging/",
+                "https://www.instagram.com/allpac/",
+              ],
+            }),
+          }}
+        />
+      </head>
       <body suppressHydrationWarning className="antialiased">
         <SiteBanner />
         <div style={{ paddingTop: 40 }} />
