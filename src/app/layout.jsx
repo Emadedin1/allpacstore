@@ -21,7 +21,7 @@ export const metadata = {
     apple: "/favicon.ico",
   },
   openGraph: {
-    title: "Allpac Store | Wholesale Paper Cups & Lids Manufacturer Canada",
+    title: "Allpac Group | Wholesale Paper Cups & Lids Manufacturer Canada",
     description:
       "Trusted Canadian manufacturer of single-wall and double-wall paper cups with matching lids — serving distributors across North America.",
     url: "https://www.allpacstore.com/",
@@ -39,7 +39,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Allpac Store | Wholesale Paper Cups & Lids Manufacturer Canada",
+    title: "Allpac Group | Wholesale Paper Cups & Lids Manufacturer Canada",
     description:
       "Trusted Canadian manufacturer of single-wall and double-wall paper cups with matching lids — serving distributors across North America.",
     images: ["https://www.allpacstore.com/images/hero-cups.png"],
