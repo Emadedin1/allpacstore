@@ -129,7 +129,7 @@ export default function Navbar() {
           {/* Left: logo */}
           <Link href="/">
             <img
-              src="/images/allpac-logo.png"
+              src="/images/allpac.png"
               alt="Allpac Store"
               className="h-12 w-auto"
             />
