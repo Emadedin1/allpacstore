@@ -9,7 +9,7 @@ export default async function CatalogClient() {
       title,
       "slug": slug.current,
       "thumbnail": thumbnail.asset->url
-    } | order(title asc)
+    } | order(title desc)
   `);
 
   return (
