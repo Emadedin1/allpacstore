@@ -3,9 +3,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 /* =======================
-   PRICING + TITLE HELPERS
+   PRICING (CAD) + HELPERS
 ======================= */
 
+// Per-case CAD estimates
 const PRICE_SINGLE = {
   '10 oz': 36.02,
   '12 oz': 40.22,
@@ -28,11 +29,12 @@ const PRICE_LIDS_MM = {
   '105': 31.9,
 }
 
-// 💰 CAD → USD conversion
-const CAD_TO_USD = 0.73
+// FX — static daily-ish rate; update when you like
+const FX_CAD_TO_USD = 0.74
 
-const money = (n) => `$${(Number(n) * CAD_TO_USD).toFixed(2)} USD`
-
+const toUSD = (cad) => cad * FX_CAD_TO_USD
+const money = (n) => `$${Number(n).toFixed(2)}`
+const moneyUSD = (cad) => `${money(toUSD(cad))} USD`
 const extractOz = (t) => String(t || '').match(/(\d+(?:\.\d+)?)\s*oz/i)?.[0]
 const extractMm = (t) => String(t || '').match(/\b(80|90|98|100|105)\s*mm\b/i)?.[1]
 const detectTemp = (t) => {
@@ -45,8 +47,13 @@ const isBlankCup = (t) => {
   const s = String(t || '').toLowerCase()
   return /\bblank\b/.test(s) || !/\b(custom|print|logo)\b/.test(s)
 }
+const inferKindFromCategorySlug = (slug = '') => {
+  if (slug.includes('double')) return 'double'
+  if (slug.includes('lid')) return 'lids'
+  return 'single'
+}
 
-function getEstimatedPrice({ kind, title }) {
+function getEstimatedPriceCAD({ kind, title }) {
   if (kind === 'lids') {
     const mm = extractMm(title)
     return PRICE_LIDS_MM[mm] ?? 24.9
@@ -56,12 +63,6 @@ function getEstimatedPrice({ kind, title }) {
   return kind === 'double'
     ? PRICE_DOUBLE[oz] ?? PRICE_SINGLE[oz]
     : PRICE_SINGLE[oz]
-}
-
-function inferKindFromCategorySlug(slug = '') {
-  if (slug.includes('double')) return 'double'
-  if (slug.includes('lid')) return 'lids'
-  return 'single'
 }
 
 function buildDisplayTitle(originalTitle, kind) {
@@ -79,15 +80,15 @@ function buildDisplayTitle(originalTitle, kind) {
   }
 
   const wall =
-    kind === 'double' ? 'Double-Walled' :
-    kind === 'single' ? 'Single-Walled' :
-    /double/i.test(t) ? 'Double-Walled' : 'Single-Walled'
+    kind === 'double' ? 'Double-Walled'
+    : kind === 'single' ? 'Single-Walled'
+    : /double/i.test(t) ? 'Double-Walled' : 'Single-Walled'
 
   const parts = [
     size,
     blank ? 'Blank' : null,
     wall,
-    kind === 'double' ? null : temp,
+    kind === 'double' ? null : temp, // skip “Hot/Cold” label for double-wall
     'Paper Cup',
   ].filter(Boolean)
 
@@ -95,7 +96,7 @@ function buildDisplayTitle(originalTitle, kind) {
 }
 
 /* =======================
-   PRODUCT PAGE
+   PAGE
 ======================= */
 
 export default async function ProductPage({ params }) {
@@ -122,49 +123,51 @@ export default async function ProductPage({ params }) {
     { slug }
   )
 
-  if (!product)
-    return <div className="text-center py-20 text-gray-600">Product not found.</div>
+  if (!product) {
+    return (
+      <main className="max-w-6xl mx-auto p-6">
+        <div className="text-center py-20 text-gray-600">Product not found.</div>
+      </main>
+    )
+  }
 
+  const kind = inferKindFromCategorySlug(product.category?.slug || '')
+  const displayTitle = buildDisplayTitle(product.title, kind)
+  const estCAD = getEstimatedPriceCAD({ kind, title: product.title })
+
+  // Additional notes: ensure ONLY our standardized custom-printing line shows
+  let notesToShow = [...(product.notes || [])]
+  const hasAnyCustomPrintingNote = notesToShow.some((n) => /custom\s*printing/i.test(n))
+  // Remove any existing custom-printing mentions
+  notesToShow = notesToShow.filter((n) => !/custom\s*printing/i.test(n))
+  // Add our single clean line (for cups only)
+  if (kind !== 'lids') notesToShow.push('Optional custom printing available.')
+
+  // Static size specs (quick reference)
+  function staticSpecs(title) {
+    const t = title.toLowerCase()
+    const base = { case: '18.5″ × 15″ × 23″', pack: '1000 pcs/ctn' }
+    if (t.includes('10 oz')) return { ...base, top: '90 mm',  height: '94 mm',  cap: '353 ml (11.9 oz)' }
+    if (t.includes('12 oz')) return { ...base, top: '90 mm',  height: '112 mm', cap: '420 ml (14.2 oz)' }
+    if (t.includes('16 oz')) return { ...base, top: '90 mm',  height: '137 mm', cap: '502 ml (17 oz)' }
+    if (t.includes('22 oz')) return { ...base, top: '90 mm',  height: '160 mm', cap: '660 ml (22.3 oz)' }
+    if (t.includes('32 oz')) return { ...base, top: '105 mm', height: '179 mm', cap: '966 ml (32.7 oz)' }
+    return base
+  }
+  const staticData = staticSpecs(product.title)
+
+  // Fetch other products in the same category (for the slider)
   const otherProducts = await client.fetch(
     `
     *[_type == "product" && category._ref == $catId && slug.current != $slug]{
       _id,
       title,
-      "image": mainImage.asset->url,
+      "image": coalesce(highResImage.asset->url, mainImage.asset->url),
       "slug": slug.current
-    }
+    } | order(title asc)
   `,
     { catId: product.category?._id, slug }
   )
-
-  const kind = inferKindFromCategorySlug(product.category?.slug || '')
-  const displayTitle = buildDisplayTitle(product.title, kind)
-  const est = getEstimatedPrice({ kind, title: product.title })
-
-  let notesToShow = [...(product.notes || [])]
-
-   // Add only if not already included
-   if (
-     kind !== 'lids' &&
-     !notesToShow.some((n) =>
-       /custom\s*printing/i.test(n)
-     )
-   ) {
-     notesToShow.push('Optional custom printing available.')
-   }
-
-  function staticSpecs(title) {
-    const t = title.toLowerCase()
-    const base = { case: '18.5″ × 15″ × 23″', pack: '1000 pcs/ctn' }
-    if (t.includes('10 oz')) return { ...base, top: '90 mm', height: '94 mm', cap: '353 ml (11.9 oz)' }
-    if (t.includes('12 oz')) return { ...base, top: '90 mm', height: '112 mm', cap: '420 ml (14.2 oz)' }
-    if (t.includes('16 oz')) return { ...base, top: '90 mm', height: '137 mm', cap: '502 ml (17 oz)' }
-    if (t.includes('22 oz')) return { ...base, top: '90 mm', height: '160 mm', cap: '660 ml (22.3 oz)' }
-    if (t.includes('32 oz')) return { ...base, top: '105 mm', height: '179 mm', cap: '966 ml (32.7 oz)' }
-    return base
-  }
-
-  const staticData = staticSpecs(product.title)
 
   return (
     <main className="max-w-6xl mx-auto p-4 md:p-6 space-y-12">
@@ -182,28 +185,31 @@ export default async function ProductPage({ params }) {
             )}
           </div>
 
+          {/* Overview */}
           <div className="bg-gray-100 rounded-lg p-6 shadow-sm">
             <h2 className="text-2xl font-semibold mb-3">Overview</h2>
             <p className="text-gray-700 leading-relaxed">
-              {product.description.replace(/(\d+(\.\d+)?\s*(gsm|mm|ml))/gi, '').trim()}  
+              {String(product.description || '')
+                .replace(/(\d+(\.\d+)?\s*(gsm|mm|ml))/gi, '')
+                .trim()}
             </p>
           </div>
         </div>
 
-        {/* RIGHT SIDE */}
+        {/* RIGHT */}
         <div className="md:w-1/2 flex flex-col space-y-6">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">{displayTitle}</h1>
 
-            {typeof est !== 'undefined' && (
+            {typeof estCAD !== 'undefined' && (
               <p className="text-lg font-semibold text-gray-900 mt-2">
-                {money(est)}{' '}
-                <span className="ml-1 text-xs text-gray-500 align-middle">USD EST</span>
+                {moneyUSD(estCAD)}{' '}
+                <span className="ml-1 text-xs text-gray-500 align-middle">est</span>
               </p>
             )}
 
             <p className="text-gray-700 mt-4 leading-relaxed">
-              {product.description.split('.').slice(0, 2).join('. ')}.
+              {String(product.description || '').split('.').slice(0, 2).join('. ').trim()}.
             </p>
           </div>
 
@@ -214,7 +220,7 @@ export default async function ProductPage({ params }) {
             Request a Quote
           </Link>
 
-          {/* SPEC TABLE */}
+          {/* Spec Table */}
           <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
             <div className="border-b border-gray-200 px-4 py-3">
               <h3 className="text-lg font-semibold text-gray-900">Product Specifications</h3>
@@ -244,18 +250,16 @@ export default async function ProductPage({ params }) {
             </div>
           </div>
 
-          {/* TECHNICAL SPECS */}
+          {/* Technical Specs */}
           {product.specifications && (
             <details className="group bg-white border border-gray-200 rounded-lg shadow-sm" open>
               <summary className="cursor-pointer px-4 py-3 font-medium flex justify-between items-center hover:bg-gray-50">
-                Technical Specifications{' '}
-                <span className="transition-transform duration-300 group-open:rotate-180">▼</span>
+                Technical Specifications <span className="transition-transform duration-300 group-open:rotate-180">▼</span>
               </summary>
 
               <ul className="px-4 pb-3 text-sm text-gray-700 list-disc list-inside">
                 {Object.entries(product.specifications).map(([key, value]) => {
                   if (!value) return null
-
                   const labelMap = {
                     compatibleLid: 'Compatible Lid',
                     material: 'Material',
@@ -270,21 +274,15 @@ export default async function ProductPage({ params }) {
                     paperType: 'Paper Type',
                     gsm: 'GSM',
                   }
-
                   const formattedKey =
                     labelMap[key] ||
-                    key
-                      .replace(/([A-Z])/g, ' $1')
-                      .replace(/^./, (s) => s.toUpperCase())
-                      .trim()
-
+                    key.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase()).trim()
                   return (
                     <li key={key}>
                       <strong>{formattedKey}:</strong> {value}
                     </li>
                   )
                 })}
-
                 {kind !== 'lids' && (
                   <li><strong>Case Dimensions:</strong> 18.5″ × 15″ × 23″</li>
                 )}
@@ -292,12 +290,11 @@ export default async function ProductPage({ params }) {
             </details>
           )}
 
-          {/* ADDITIONAL NOTES */}
+          {/* Additional Notes (deduped; standardized) */}
           {notesToShow.length > 0 && (
             <details className="group bg-white border border-gray-200 rounded-lg shadow-sm">
               <summary className="cursor-pointer px-4 py-3 font-medium flex justify-between items-center hover:bg-gray-50">
-                Additional Notes{' '}
-                <span className="transition-transform duration-300 group-open:rotate-180">▼</span>
+                Additional Notes <span className="transition-transform duration-300 group-open:rotate-180">▼</span>
               </summary>
               <ul className="px-4 pb-3 text-sm text-gray-700 list-disc list-inside">
                 {notesToShow.map((note, i) => (
@@ -309,42 +306,78 @@ export default async function ProductPage({ params }) {
         </div>
       </div>
 
-      {/* OTHER PRODUCTS */}
+      {/* OTHER PRODUCTS – horizontal slider with scroll/snap + arrow buttons */}
       {otherProducts.length > 0 && (
-        <div>
-          <h2 className="text-2xl font-bold mb-5">Other Products</h2>
-          <div className="flex gap-5 overflow-x-auto pb-3 hide-scrollbar snap-x snap-mandatory scroll-smooth">
-            {otherProducts.map((p) => (
-              <div
-                key={p._id}
-                className="snap-start flex-shrink-0 w-[200px] bg-white rounded-2xl shadow-sm hover:shadow-md transition ring-1 ring-black/5 hover:ring-black/10 flex flex-col"
-              >
-                <Link
-                  href={`/catalog/${product.category?.slug}/${p.slug}`}
-                  className="flex-1 rounded-2xl overflow-hidden"
+        <section>
+          <h2 className="text-2xl font-bold mb-4">Other Products</h2>
+
+          <div className="relative">
+            {/* track */}
+            <div
+              id="other-track"
+              className="flex gap-5 overflow-x-auto pb-3 snap-x snap-mandatory scroll-smooth hide-scrollbar"
+            >
+              {otherProducts.map((p) => (
+                <div
+                  key={p._id}
+                  className="snap-start flex-shrink-0 w-[200px] bg-white rounded-2xl shadow-sm hover:shadow-md transition ring-1 ring-black/5 hover:ring-black/10 flex flex-col"
                 >
-                  <div className="relative w-full aspect-square bg-gray-50 rounded-t-2xl overflow-hidden">
-                    {p.image && (
-                      <Image
-                        src={p.image}
-                        alt={p.title}
-                        fill
-                        sizes="230px"
-                        className="object-cover"
-                      />
-                    )}
-                  </div>
-                  <div className="p-3 text-center">
-                    <p className="text-[14px] font-medium text-gray-900 leading-snug">
-                      {buildDisplayTitle(p.title, inferKindFromCategorySlug(product.category?.slug || ''))}
-                    </p>
-                  </div>
-                </Link>
-              </div>
-            ))}
+                  <Link
+                    href={`/catalog/${product.category?.slug}/${p.slug}`}
+                    className="flex-1 rounded-2xl overflow-hidden"
+                  >
+                    <div className="relative w-full aspect-square bg-gray-50 rounded-t-2xl overflow-hidden">
+                      {p.image && (
+                        <Image
+                          src={p.image}
+                          alt={p.title}
+                          fill
+                          sizes="230px"
+                          className="object-cover"
+                        />
+                      )}
+                    </div>
+                    <div className="p-3 text-center">
+                      <p className="text-[14px] font-medium text-gray-900 leading-snug">
+                        {buildDisplayTitle(p.title, kind)}
+                      </p>
+                    </div>
+                  </Link>
+                </div>
+              ))}
+            </div>
+
+            {/* simple arrows that nudge the scroll container */}
+            <div className="pointer-events-none md:pointer-events-auto">
+              <button
+                aria-label="Scroll left"
+                onClick={() => {
+                  const el = document.getElementById('other-track')
+                  if (el) el.scrollBy({ left: -300, behavior: 'smooth' })
+                }}
+                className="hidden md:flex absolute -left-3 top-1/2 -translate-y-1/2 h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow ring-1 ring-black/10 hover:bg-white"
+              >
+                ‹
+              </button>
+              <button
+                aria-label="Scroll right"
+                onClick={() => {
+                  const el = document.getElementById('other-track')
+                  if (el) el.scrollBy({ left: 300, behavior: 'smooth' })
+                }}
+                className="hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2 h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow ring-1 ring-black/10 hover:bg-white"
+              >
+                ›
+              </button>
+            </div>
           </div>
-        </div>
+        </section>
       )}
+
+      {/* small FX disclaimer */}
+      <p className="text-center text-xs text-gray-500 mt-6">
+        Prices shown are <span className="font-medium">estimates per case in USD</span>. Final quotes may vary by spec and quantity.
+      </p>
     </main>
   )
 }
