@@ -1,5 +1,4 @@
-import HomeClient from "./HomeClient"
-import Script from "next/script"
+import HomeClient from "./HomeClient";
 
 export const metadata = {
   title: "Allpac Store | Wholesale Paper Cups & Lids Manufacturer Canada",
@@ -30,41 +29,31 @@ export const metadata = {
       "Trusted Canadian manufacturer of single-wall and double-wall paper cups with matching lids — serving distributors across North America.",
     images: ["https://allpacstore.com/images/hero-cups.png"],
   },
-}
+  // ✅ Structured data that Google will now detect
+  other: {
+    "application/ld+json": JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "Allpac Store",
+      url: "https://www.allpacstore.com",
+      logo: "https://www.allpacstore.com/favicon.ico",
+      description:
+        "Allpac is a Canadian manufacturer of paper cups, lids, and custom foodservice packaging — based in Windsor, Ontario and serving distributors across North America.",
+      sameAs: [
+        "https://www.linkedin.com/company/allpac",
+        "https://www.instagram.com/allpac",
+      ],
+      contactPoint: {
+        "@type": "ContactPoint",
+        telephone: "+1-226-350-4144",
+        contactType: "Sales",
+        areaServed: "CA, US",
+        availableLanguage: ["English"],
+      },
+    }),
+  },
+};
 
 export default function Home() {
-  return (
-    <>
-      {/* ✅ Clean JSON-LD that Google won’t confuse for the logo page */}
-      <Script
-        id="ld-json-home"
-        type="application/ld+json"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            name: "Allpac Store",
-            url: "https://www.allpacstore.com",
-            publisher: {
-              "@type": "Organization",
-              name: "Allpac Group",
-              logo: {
-                "@type": "ImageObject",
-                url: "https://www.allpacstore.com/favicon.ico",
-              },
-            },
-            description:
-              "Canadian manufacturer of paper cups and lids. Based in Windsor, Ontario — trusted by distributors and foodservice suppliers across North America.",
-            sameAs: [
-              "https://www.linkedin.com/company/allpac",
-              "https://www.instagram.com/allpac",
-            ],
-          }),
-        }}
-      />
-
-      <HomeClient />
-    </>
-  )
+  return <HomeClient />;
 }
