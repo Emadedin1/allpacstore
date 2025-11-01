@@ -227,14 +227,38 @@ export default async function ProductPage({ params }) {
 
     <ul className="px-4 pb-3 text-sm text-gray-700 list-disc list-inside">
       {/* Keep dynamic fields if any exist in Sanity */}
-      {Object.entries(product.specifications).map(
-        ([key, value]) =>
-          value && (
-            <li key={key}>
-              <strong>{key}:</strong> {value}
-            </li>
-          )
-      )}
+      {Object.entries(product.specifications).map(([key, value]) => {
+  if (!value) return null;
+
+  // Normalize inconsistent key names for clean, consistent labels
+     const labelMap = {
+       compatibleLid: 'Compatible Lid',
+       material: 'Material',
+       topDiameterRange: 'Top Diameter',
+       bottomDiameterRange: 'Bottom Diameter',
+       height: 'Height',
+       capacity: 'Capacity',
+       use: 'Use',
+       wallType: 'Wall Type',
+       caseDimensions: 'Case Dimensions',
+       machine: 'Machine',
+       paperType: 'Paper Type',
+       gsm: 'GSM',
+     };
+   
+     const formattedKey =
+       labelMap[key] ||
+       key
+         .replace(/([A-Z])/g, ' $1')
+         .replace(/^./, (s) => s.toUpperCase())
+         .trim();
+   
+     return (
+       <li key={key}>
+         <strong>{formattedKey}:</strong> {value}
+       </li>
+     );
+   })}
 
       {/* Static specs based on product title */}
       {(() => {
