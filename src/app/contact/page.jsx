@@ -1,8 +1,5 @@
 import Script from "next/script";
-import dynamic from "next/dynamic";
-
-// ✅ dynamically import the client component (so it's not rendered during build)
-const ContactClient = dynamic(() => import("./ContactClient"), { ssr: false });
+import ContactWrapper from "./ContactWrapper";
 
 export const metadata = {
   title: "Contact Allpac Store | Get a Quote for Paper Cups & Food Packaging",
@@ -72,7 +69,7 @@ export default function ContactPage() {
           }),
         }}
       />
-      <ContactClient />
+      <ContactWrapper />
     </>
   );
 }
