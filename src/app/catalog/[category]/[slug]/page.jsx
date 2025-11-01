@@ -28,7 +28,7 @@ const PRICE_LIDS_MM = {
   '105': 31.9,
 }
 
-// 💰 CAD → USD conversion rate
+// 💰 CAD → USD conversion
 const CAD_TO_USD = 0.73
 
 const money = (n) => `$${(Number(n) * CAD_TO_USD).toFixed(2)} USD`
@@ -122,7 +122,8 @@ export default async function ProductPage({ params }) {
     { slug }
   )
 
-  if (!product) return <div className="text-center py-20 text-gray-600">Product not found.</div>
+  if (!product)
+    return <div className="text-center py-20 text-gray-600">Product not found.</div>
 
   const otherProducts = await client.fetch(
     `
@@ -187,7 +188,8 @@ export default async function ProductPage({ params }) {
 
             {typeof est !== 'undefined' && (
               <p className="text-lg font-semibold text-gray-900 mt-2">
-                {money(est)} <span className="ml-1 text-xs text-gray-500 align-middle">USD EST</span>
+                {money(est)}{' '}
+                <span className="ml-1 text-xs text-gray-500 align-middle">USD EST</span>
               </p>
             )}
 
@@ -233,10 +235,107 @@ export default async function ProductPage({ params }) {
             </div>
           </div>
 
-          {/* TECHNICAL + NOTES remain unchanged */}
-          {/* ... */}
+          {/* TECHNICAL SPECS */}
+          {product.specifications && (
+            <details className="group bg-white border border-gray-200 rounded-lg shadow-sm" open>
+              <summary className="cursor-pointer px-4 py-3 font-medium flex justify-between items-center hover:bg-gray-50">
+                Technical Specifications{' '}
+                <span className="transition-transform duration-300 group-open:rotate-180">▼</span>
+              </summary>
+
+              <ul className="px-4 pb-3 text-sm text-gray-700 list-disc list-inside">
+                {Object.entries(product.specifications).map(([key, value]) => {
+                  if (!value) return null
+
+                  const labelMap = {
+                    compatibleLid: 'Compatible Lid',
+                    material: 'Material',
+                    topDiameterRange: 'Top Diameter',
+                    bottomDiameterRange: 'Bottom Diameter',
+                    height: 'Height',
+                    capacity: 'Capacity',
+                    use: 'Use',
+                    wallType: 'Wall Type',
+                    caseDimensions: 'Case Dimensions',
+                    machine: 'Machine',
+                    paperType: 'Paper Type',
+                    gsm: 'GSM',
+                  }
+
+                  const formattedKey =
+                    labelMap[key] ||
+                    key
+                      .replace(/([A-Z])/g, ' $1')
+                      .replace(/^./, (s) => s.toUpperCase())
+                      .trim()
+
+                  return (
+                    <li key={key}>
+                      <strong>{formattedKey}:</strong> {value}
+                    </li>
+                  )
+                })}
+
+                {kind !== 'lids' && (
+                  <li><strong>Case Dimensions:</strong> 18.5″ × 15″ × 23″</li>
+                )}
+              </ul>
+            </details>
+          )}
+
+          {/* ADDITIONAL NOTES */}
+          {notesToShow.length > 0 && (
+            <details className="group bg-white border border-gray-200 rounded-lg shadow-sm">
+              <summary className="cursor-pointer px-4 py-3 font-medium flex justify-between items-center hover:bg-gray-50">
+                Additional Notes{' '}
+                <span className="transition-transform duration-300 group-open:rotate-180">▼</span>
+              </summary>
+              <ul className="px-4 pb-3 text-sm text-gray-700 list-disc list-inside">
+                {notesToShow.map((note, i) => (
+                  <li key={i}>{note}</li>
+                ))}
+              </ul>
+            </details>
+          )}
         </div>
       </div>
+
+      {/* OTHER PRODUCTS */}
+      {otherProducts.length > 0 && (
+        <div>
+          <h2 className="text-2xl font-bold mb-5">Other Products</h2>
+          <div className="flex gap-5 overflow-x-auto pb-3 hide-scrollbar snap-x snap-mandatory scroll-smooth">
+            {otherProducts.map((p) => (
+              <div
+                key={p._id}
+                className="snap-start flex-shrink-0 w-[200px] bg-white rounded-2xl shadow-sm hover:shadow-md transition ring-1 ring-black/5 hover:ring-black/10 flex flex-col"
+              >
+                <Link
+                  href={`/catalog/${product.category?.slug}/${p.slug}`}
+                  className="flex-1 rounded-2xl overflow-hidden"
+                >
+                  <div className="relative w-full aspect-square bg-gray-50 rounded-t-2xl overflow-hidden">
+                    {p.image && (
+                      <Image
+                        src={p.image}
+                        alt={p.title}
+                        fill
+                        sizes="230px"
+                        className="object-cover"
+                      />
+                    )}
+                  </div>
+                  <div className="p-3 text-center">
+                    <p className="text-[14px] font-medium text-gray-900 leading-snug">
+                      {buildDisplayTitle(p.title, inferKindFromCategorySlug(product.category?.slug || ''))}
+                    </p>
+                  </div>
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </main>
   )
 }
