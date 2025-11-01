@@ -192,7 +192,7 @@ export default function HomeClient() {
         <div className="absolute inset-0 bg-white/80 sm:bg-white/60 backdrop-blur-sm" />
         <div className="relative z-10 max-w-3xl mx-auto">
           <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-black">
-            Allpac Store — Canada’s Most Trusted Wholesale Paper Cup Manufacturer
+            Allpac Group — Canada’s Most Trusted Wholesale Paper Cup Manufacturer
           </h1>
           <p className="text-lg mb-6 max-w-xl mx-auto text-black">
             Based in Windsor, ON
