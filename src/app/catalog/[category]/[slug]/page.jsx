@@ -189,7 +189,7 @@ export default async function ProductPage({ params }) {
             {typeof est !== 'undefined' && (
               <p className="text-lg font-semibold text-gray-900 mt-2">
                 {money(est)}{' '}
-                <span className="ml-1 text-xs text-gray-500 align-middle">USD est</span>
+                <span className="ml-1 text-xs text-gray-500 align-middle">est</span>
               </p>
             )}
 
