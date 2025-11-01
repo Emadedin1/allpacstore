@@ -220,29 +220,94 @@ export default async function ProductPage({ params }) {
 
           {/* DETAILS */}
           {product.specifications && (
-           <details className="group bg-white border border-gray-200 rounded-lg shadow-sm" open>
-             <summary className="cursor-pointer px-4 py-3 font-medium flex justify-between items-center hover:bg-gray-50">
-               Specifications <span className="transition-transform duration-300 group-open:rotate-180">▼</span>
-             </summary>
-             <ul className="px-4 pb-3 text-sm text-gray-700 list-disc list-inside">
-               {Object.entries(product.specifications).map(
-                 ([key, value]) =>
-                   value && (
-                     <li key={key}>
-                       <strong>{key}:</strong> {value}
-                     </li>
-                   )
-               )}
-         
-               {/*  Add case dimensions only for paper cups */}
-               {kind !== 'lids' && (
-                 <li>
-                   <strong>Case Dimensions:</strong> 18.5″ × 15″ × 23″
-                 </li>
-               )}
-             </ul>
-           </details>
-         )}
+  <details className="group bg-white border border-gray-200 rounded-lg shadow-sm" open>
+    <summary className="cursor-pointer px-4 py-3 font-medium flex justify-between items-center hover:bg-gray-50">
+      Specifications <span className="transition-transform duration-300 group-open:rotate-180">▼</span>
+    </summary>
+
+    <ul className="px-4 pb-3 text-sm text-gray-700 list-disc list-inside">
+      {/* Keep dynamic fields if any exist in Sanity */}
+      {Object.entries(product.specifications).map(
+        ([key, value]) =>
+          value && (
+            <li key={key}>
+              <strong>{key}:</strong> {value}
+            </li>
+          )
+      )}
+
+      {/* Static specs based on product title */}
+      {(() => {
+        const t = product.title.toLowerCase();
+
+        if (t.includes('10 oz')) return (
+          <>
+            <li><strong>Top Diameter:</strong> 90 mm</li>
+            <li><strong>Bottom Diameter:</strong> 60 mm</li>
+            <li><strong>Height:</strong> 94 mm</li>
+            <li><strong>Capacity:</strong> 353 ml (11.9 oz)</li>
+            <li><strong>Paper Type:</strong> Single PE 0.49 mm / Base 0.35 mm</li>
+            <li><strong>Machine:</strong> KSJ-160 Paper Cup Machine</li>
+          </>
+        );
+
+        if (t.includes('12 oz')) return (
+          <>
+            <li><strong>Top Diameter:</strong> 90 mm</li>
+            <li><strong>Bottom Diameter:</strong> 60 mm</li>
+            <li><strong>Height:</strong> 112 mm</li>
+            <li><strong>Capacity:</strong> 420 ml (14.2 oz)</li>
+            <li><strong>Paper Type:</strong> Single PE 0.49 mm / Base 0.35 mm</li>
+            <li><strong>Machine:</strong> KSJ-160 Paper Cup Machine</li>
+          </>
+        );
+
+        if (t.includes('16 oz')) return (
+          <>
+            <li><strong>Top Diameter:</strong> 90 mm</li>
+            <li><strong>Bottom Diameter:</strong> 60 mm</li>
+            <li><strong>Height:</strong> 137 mm</li>
+            <li><strong>Capacity:</strong> 502 ml (17 oz)</li>
+            <li><strong>Paper Type:</strong> Double PE 0.44 mm / Base 0.34 mm</li>
+            <li><strong>Machine:</strong> KSJ-120E Paper Cup Machine</li>
+          </>
+        );
+
+        if (t.includes('22 oz')) return (
+          <>
+            <li><strong>Top Diameter:</strong> 90 mm</li>
+            <li><strong>Bottom Diameter:</strong> 62 mm</li>
+            <li><strong>Height:</strong> 160 mm</li>
+            <li><strong>Capacity:</strong> 660 ml (22.3 oz)</li>
+            <li><strong>Paper Type:</strong> Double PE 0.44 mm / Base 0.34 mm</li>
+            <li><strong>Machine:</strong> KSJ-120E Paper Cup Machine</li>
+          </>
+        );
+
+        if (t.includes('32 oz')) return (
+          <>
+            <li><strong>Top Diameter:</strong> 105 mm</li>
+            <li><strong>Bottom Diameter:</strong> 71 mm</li>
+            <li><strong>Height:</strong> 179 mm</li>
+            <li><strong>Capacity:</strong> 966 ml (32.7 oz)</li>
+            <li><strong>Paper Type:</strong> Double PE 0.44 mm / Base 0.34 mm</li>
+            <li><strong>Machine:</strong> KSJ-120E Paper Cup Machine</li>
+          </>
+        );
+
+        return null;
+      })()}
+
+      {/* Case dimensions for all cups */}
+      {kind !== 'lids' && (
+        <li>
+          <strong>Case Dimensions:</strong> 18.5″ × 15″ × 23″
+        </li>
+      )}
+    </ul>
+  </details>
+)}
+
 
           {notesToShow.length > 0 && (
             <details className="group bg-white border border-gray-200 rounded-lg shadow-sm">
