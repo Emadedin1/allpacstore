@@ -15,7 +15,7 @@ export default function Footer() {
         <div className="flex-1 min-w-[200px] pt-2 pb-6 sm:pb-8">
           <h3 className="text-xl font-bold text-white mb-2">Allpac</h3>
           <p className="text-sm leading-relaxed">
-            Canadian paper cup manufacturer & paper-based packaging supplier.<br />
+            Canadian manufacturer of paper cups and lids.<br />
             Eco-friendly. Wholesale. Global delivery.
           </p>
         </div>
