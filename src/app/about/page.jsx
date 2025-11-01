@@ -34,7 +34,7 @@ export default function AboutPage() {
           </p>
           <p className="mt-3 text-gray-700 leading-relaxed">
             From regional distributors to national chains, we deliver high-volume single-wall and double-wall paper cups
-            with matching lids — quickly, reliably, and competitively.
+            with matching lids — with optional custom printing — quickly, reliably, and competitively.
           </p>
         </div>
 
