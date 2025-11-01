@@ -9,7 +9,7 @@ import Script from "next/script";
 
 export const metadata = {
   metadataBase: new URL("https://www.allpacstore.com"),
-  title: "Allpac Store | Wholesale Paper Cup Manufacturer Canada",
+  title: "Allpac Group | Wholesale Paper Cup Manufacturer Canada",
   description:
     "Allpac manufactures single-wall and double-wall paper cups with matching lids. Based in Windsor, Ontario — trusted by distributors and foodservice suppliers across North America.",
   alternates: {
