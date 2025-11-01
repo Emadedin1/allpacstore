@@ -2,32 +2,40 @@ import HomeClient from "./HomeClient"
 import Script from "next/script"
 
 export const metadata = {
-  title: "Allpac Store | Canadian Paper Cup Manufacturer & Wholesale Supplier",
+  title: "Allpac Store | Wholesale Paper Cups & Lids Manufacturer Canada",
   description:
-    "Allpac manufactures single wall and double wall paper cups in Windsor, Ontario. Trusted by distributors, importers, and coffee chains across North America for high-quality, eco-friendly paper packaging.",
+    "Allpac manufactures single-wall and double-wall paper cups with matching lids. Based in Windsor, Ontario — serving distributors and foodservice suppliers across North America.",
   alternates: { canonical: "https://allpacstore.com/" },
   openGraph: {
-    title: "Allpac | Canadian Paper Cup Manufacturer & Wholesale Supplier",
+    title: "Allpac Store | Wholesale Paper Cups & Lids Manufacturer Canada",
     description:
-      "Eco-friendly single wall and double wall paper cups manufactured in Windsor, Ontario and supplied to distributors and importers across North America.",
+      "Canada’s trusted manufacturer of paper cups and lids — low minimums, fast delivery, premium quality.",
     url: "https://allpacstore.com/",
-    siteName: "Allpac Packaging",
+    siteName: "Allpac Store",
     images: [
       {
         url: "https://allpacstore.com/images/hero-cups.png",
         width: 1200,
         height: 630,
-        alt: "Canadian Paper Cup Manufacturer",
+        alt: "Allpac paper cups and lids",
       },
     ],
     locale: "en_CA",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Allpac Store | Wholesale Paper Cups & Lids Manufacturer Canada",
+    description:
+      "Trusted Canadian manufacturer of single-wall and double-wall paper cups with matching lids — serving distributors across North America.",
+    images: ["https://allpacstore.com/images/hero-cups.png"],
   },
 }
 
 export default function Home() {
   return (
     <>
+      {/* ✅ Clean JSON-LD that Google won’t confuse for the logo page */}
       <Script
         id="ld-json-home"
         type="application/ld+json"
@@ -35,12 +43,19 @@ export default function Home() {
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "Organization",
-            name: "Allpac Packaging",
+            "@type": "WebSite",
+            name: "Allpac Store",
             url: "https://www.allpacstore.com",
-            logo: "https://www.allpacstore.com/favicon.ico",
+            publisher: {
+              "@type": "Organization",
+              name: "Allpac Group",
+              logo: {
+                "@type": "ImageObject",
+                url: "https://www.allpacstore.com/favicon.ico",
+              },
+            },
             description:
-              "Allpac is a Canadian paper cup manufacturer and wholesale supplier based in Windsor, Ontario, providing single wall, double wall, and custom eco-friendly cups.",
+              "Canadian manufacturer of paper cups and lids. Based in Windsor, Ontario — trusted by distributors and foodservice suppliers across North America.",
             sameAs: [
               "https://www.linkedin.com/company/allpac",
               "https://www.instagram.com/allpac",
@@ -48,6 +63,7 @@ export default function Home() {
           }),
         }}
       />
+
       <HomeClient />
     </>
   )
