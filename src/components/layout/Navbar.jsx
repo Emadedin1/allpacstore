@@ -188,7 +188,7 @@ export default function Navbar() {
           <div className="flex items-center justify-between w-full">
             <Link href="/">
               <img
-                src="/images/allpac-logo.png"
+                src="/images/allpac.png"
                 alt="Allpac Store"
                 className="h-12 w-auto"
               />
