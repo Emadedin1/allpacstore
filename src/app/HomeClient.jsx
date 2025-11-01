@@ -244,7 +244,7 @@ function HomeCatalogSection({
               <div className="px-3 pb-3 pt-1 text-center">
                 {est !== undefined && (
                   <div className="text-[15px] sm:text-lg font-semibold text-gray-900">
-                    {money(est)} <span className="ml-1 text-[11px] sm:text-xs text-gray-500 align-middle">EST</span>
+                    {money(est)} <span className="ml-1 text-[11px] sm:text-xs text-gray-500 align-middle">est</span>
                   </div>
                 )}
                 <Link
