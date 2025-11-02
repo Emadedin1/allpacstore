@@ -152,7 +152,7 @@ export default async function ProductPage({ params }) {
   function staticSpecs(title) {
     const t = title.toLowerCase()
     const base = { case: '18.5″ × 15″ × 23″', pack: '1000 pcs/ctn' }
-    if (t.includes('10 oz')) return { ...base, top: '90 mm', height: '94 mm', cap: '353 ml (11.9 oz)' }
+    if (t.includes('10 oz')) return { ...base, top: '80 mm', height: '94 mm', cap: '353 ml (11.9 oz)' }
     if (t.includes('12 oz')) return { ...base, top: '90 mm', height: '112 mm', cap: '420 ml (14.2 oz)' }
     if (t.includes('16 oz')) return { ...base, top: '90 mm', height: '137 mm', cap: '502 ml (17 oz)' }
     if (t.includes('22 oz')) return { ...base, top: '90 mm', height: '160 mm', cap: '660 ml (22.3 oz)' }
