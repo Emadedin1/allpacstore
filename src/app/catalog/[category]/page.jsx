@@ -170,6 +170,7 @@ export default async function CategoryProductsPage({ params }) {
 
   // Fetch all products that reference this category
 // Fetch all products alphabetically first (fast and simple GROQ)
+// Fetch all products alphabetically first (fast and simple GROQ)
 const productsRaw = await client.fetch(
   `
   *[_type == "product" && references($catId)] | order(title asc){
@@ -184,19 +185,33 @@ const productsRaw = await client.fetch(
   { catId: categoryData._id }
 );
 
-// Then sort locally by numeric size extracted from title or variants
+// Sort locally by numeric size extracted from title or variants
 const products = productsRaw.sort((a, b) => {
   const extractNum = (str) => {
     const match = String(str || "").match(/(\d+(?:\.\d+)?)/);
     return match ? parseFloat(match[1]) : Infinity;
   };
 
-  // Try variant size first, fallback to title
   const aSize = extractNum(a?.variants?.[0]?.size || a.title);
   const bSize = extractNum(b?.variants?.[0]?.size || b.title);
 
   return aSize - bSize;
 });
+
+// After sorting, swap 16 oz Hot and 16 oz Cold
+const sixteenIndexHot = products.findIndex(
+  (p) => /16\s*oz/i.test(p.title) && /hot/i.test(p.title)
+);
+const sixteenIndexCold = products.findIndex(
+  (p) => /16\s*oz/i.test(p.title) && /cold/i.test(p.title)
+);
+
+if (sixteenIndexHot !== -1 && sixteenIndexCold !== -1) {
+  const temp = products[sixteenIndexHot];
+  products[sixteenIndexHot] = products[sixteenIndexCold];
+  products[sixteenIndexCold] = temp;
+}
+
 
 
   return (
