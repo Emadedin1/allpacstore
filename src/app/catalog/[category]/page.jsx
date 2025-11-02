@@ -169,18 +169,35 @@ export default async function CategoryProductsPage({ params }) {
   }
 
   // Fetch all products that reference this category
-  const products = await client.fetch(
-    `
-    *[_type == "product" && references($catId)] | order(title asc){
-      _id,
-      title,
-      description,
-      "slug": slug.current,
-      "image": coalesce(highResImage.asset->url, mainImage.asset->url)
-    }
+// Fetch all products alphabetically first (fast and simple GROQ)
+const productsRaw = await client.fetch(
+  `
+  *[_type == "product" && references($catId)] | order(title asc){
+    _id,
+    title,
+    description,
+    "slug": slug.current,
+    "image": coalesce(highResImage.asset->url, mainImage.asset->url),
+    variants
+  }
   `,
-    { catId: categoryData._id }
-  );
+  { catId: categoryData._id }
+);
+
+// Then sort locally by numeric size extracted from title or variants
+const products = productsRaw.sort((a, b) => {
+  const extractNum = (str) => {
+    const match = String(str || "").match(/(\d+(?:\.\d+)?)/);
+    return match ? parseFloat(match[1]) : Infinity;
+  };
+
+  // Try variant size first, fallback to title
+  const aSize = extractNum(a?.variants?.[0]?.size || a.title);
+  const bSize = extractNum(b?.variants?.[0]?.size || b.title);
+
+  return aSize - bSize;
+});
+
 
   return (
     <main className="bg-white min-h-screen">
