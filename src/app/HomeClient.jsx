@@ -104,8 +104,8 @@ function buildDisplayTitle(originalTitle, kind) {
   const qtyLabel = '1000pcs'
 
   if (kind === 'lids' || isLid) {
-    if (mm === '80 mm') return `${qtyLabel} | 80mm White Dome Lid For 10oz Cups`
-    if (mm === '90 mm') return `${qtyLabel} | 90mm White Dome Lid For 12–32oz Cups`
+    if (mm === '80 mm') return `${qtyLabel} | 80mm White Dome Lid For 8oz Cups`
+    if (mm === '90 mm') return `${qtyLabel} | 90mm White Dome Lid For 10–22oz Cups`
     return `${qtyLabel} | ${mm || ''} White Dome Lid`
   }
 
