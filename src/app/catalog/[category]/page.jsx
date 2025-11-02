@@ -210,7 +210,7 @@ const products = productsRaw.sort((a, b) => {
       </div>
 
       {/* Grid */}
-      <section className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-6 pb-20">
+      <section className="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 px-4 sm:px-6 pb-20">
         {products.length === 0 && (
           <div className="col-span-full text-center text-gray-500">
             No products found for this category.
