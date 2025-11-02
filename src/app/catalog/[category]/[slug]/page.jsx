@@ -73,8 +73,8 @@ function buildDisplayTitle(originalTitle, kind) {
 
   if (kind === 'lids' || /\blid\b/i.test(t)) {
     const mm = extractMm(t)
-    if (mm === '80') return `${qty} | 90mm White Dome Lid For 10oz Cups`
-    if (mm === '90') return `${qty} | 90mm White Dome Lid For 12–32oz Cups`
+    if (mm === '80') return `${qty} | 90mm White Dome Lid For 8oz Cups`
+    if (mm === '90') return `${qty} | 90mm White Dome Lid For 10–22oz Cups`
     return `${qty} | ${mm ? `${mm}mm ` : ''}White Dome Lid`
   }
 
