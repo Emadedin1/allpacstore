@@ -132,7 +132,7 @@ export default function HomeClient() {
       try {
         const query = `
           *[_type == "product" && category->slug.current == $cat]
-          | order(toNumber(regexReplace(title, "\\D", "")) asc)[0...3]{
+          | order(title asc)[0...3]{
             _id, title, description,
             "slug": slug.current,
             "image": coalesce(highResImage.asset->url, mainImage.asset->url),
