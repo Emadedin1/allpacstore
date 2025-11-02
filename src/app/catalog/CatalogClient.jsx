@@ -13,6 +13,7 @@ export default async function CatalogClient() {
       } | order(title desc)
     `)) || [];
 
+    
   return (
     <main className="bg-white min-h-screen">
       {/* Header */}
