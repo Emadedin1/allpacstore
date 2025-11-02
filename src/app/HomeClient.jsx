@@ -11,6 +11,7 @@ import { client } from '@/sanity/lib/client'
 
 // Single-wall: your estimates (per case)
 const PRICE_SINGLE = {
+  '8 oz': 33.25,
   '10 oz': 36.02,
   '12 oz': 40.22,
   '16 oz': 47.14,
@@ -20,6 +21,7 @@ const PRICE_SINGLE = {
 
 // Double-wall: modest premium (per case)
 const PRICE_DOUBLE = {
+  '8 oz': 37.25,
   '10 oz': 40.50,
   '12 oz': 45.25,
   '16 oz': 51.77,
