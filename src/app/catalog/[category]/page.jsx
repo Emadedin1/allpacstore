@@ -12,6 +12,7 @@ const PRICE_SINGLE = {
   "10 oz": 36.02,
   "12 oz": 40.22,
   "16 oz": 47.14, // default for 16 oz cold/iced or unspecified
+  "20 oz": 58.50,
   "22 oz": 68.24,
   "32 oz": 99.92,
 };
