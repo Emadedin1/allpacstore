@@ -117,22 +117,37 @@ function inferAttrsFromTitle(title) {
 
 function buildDisplayTitle(originalTitle, kind) {
   const { size, wall, temp, isBlank, mm, lidType, isLid } = inferAttrsFromTitle(originalTitle);
-
   const qtyLabel = "1000pcs";
-  const sizeWithDot = size ? (/\.$/.test(size) ? size : `${size}.`) : null;
 
+  // If it’s a lid product, assign descriptive text based on mm size
   if (kind === "lids" || isLid) {
-    const right = [mm, lidType || "Lid", temp ? `(${temp})` : null].filter(Boolean).join(" ");
-    return `${qtyLabel} | ${right}`;
+    let lidDesc = "";
+    switch (mm) {
+      case "80 mm":
+        lidDesc = "White Dome Lid For 8oz Cups";
+        break;
+      case "90 mm":
+        lidDesc = "White Dome Lid For 10–22oz Cups";
+        break;
+      case "105 mm":
+        lidDesc = "White Dome Lid For 32oz Cups";
+        break;
+      default:
+        lidDesc = lidType ? `White ${lidType}` : "White Dome Lid";
+    }
+    return `${qtyLabel} | ${mm} ${lidDesc}`;
   }
 
+  // Otherwise, for paper cups (existing logic)
   const resolvedWall =
-    kind === "double" ? "Double-Walled" :
-    kind === "single" ? "Single-Walled" :
-    (wall || "Single-Walled");
+    kind === "double"
+      ? "Double-Walled"
+      : kind === "single"
+      ? "Single-Walled"
+      : wall || "Single-Walled";
 
   const parts = [
-    sizeWithDot,
+    size,
     isBlank ? "Blank" : null,
     resolvedWall,
     temp || "Hot",
